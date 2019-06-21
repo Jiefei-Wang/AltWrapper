@@ -14,3 +14,5 @@ setAltData1<-function(x,value){
 setAltData2<-function(x,value){
   C_set_alt_data2(x,value)
 }
+
+

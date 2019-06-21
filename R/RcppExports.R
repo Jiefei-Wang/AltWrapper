@@ -25,80 +25,52 @@ C_duplicate_object <- function(x, shallow) {
     .Call(`_AltWrapper_C_duplicate_object`, x, shallow)
 }
 
-C_create_altrep <- function(class_name, x) {
-    .Call(`_AltWrapper_C_create_altrep`, class_name, x)
+C_set_altrep_class <- function(class_symbol_name, type_name, redefineWarning) {
+    invisible(.Call(`_AltWrapper_C_set_altrep_class`, class_symbol_name, type_name, redefineWarning))
 }
 
-C_set_altrep_class <- function(class_name, type) {
-    invisible(.Call(`_AltWrapper_C_set_altrep_class`, class_name, type))
+C_set_alt_method <- function(class_symbol_name, func_symbol_name, func, redefineWarning) {
+    invisible(.Call(`_AltWrapper_C_set_alt_method`, class_symbol_name, func_symbol_name, func, redefineWarning))
 }
 
-C_set_altrep_inspect_method <- function(class_name, func) {
-    invisible(.Call(`_AltWrapper_C_set_altrep_inspect_method`, class_name, func))
+C_create_altrep <- function(class_symbol_name, x) {
+    .Call(`_AltWrapper_C_create_altrep`, class_symbol_name, x)
 }
 
-C_set_altrep_length_method <- function(class_name, func) {
-    invisible(.Call(`_AltWrapper_C_set_altrep_length_method`, class_name, func))
+C_get_alt_symbol_list <- function() {
+    .Call(`_AltWrapper_C_get_alt_symbol_list`)
 }
 
-C_set_altrep_duplicate_method <- function(class_name, func) {
-    invisible(.Call(`_AltWrapper_C_set_altrep_duplicate_method`, class_name, func))
+C_get_valid_func_name <- function() {
+    .Call(`_AltWrapper_C_get_valid_func_name`)
 }
 
-C_set_altrep_coerce_method <- function(class_name, func) {
-    invisible(.Call(`_AltWrapper_C_set_altrep_coerce_method`, class_name, func))
+C_initial_package <- function(altrep_class_space, altrep_symbol_space) {
+    invisible(.Call(`_AltWrapper_C_initial_package`, altrep_class_space, altrep_symbol_space))
 }
 
-C_set_altrep_serialize_method <- function(class_name, func) {
-    invisible(.Call(`_AltWrapper_C_set_altrep_serialize_method`, class_name, func))
+C_package_unload <- function() {
+    invisible(.Call(`_AltWrapper_C_package_unload`))
 }
 
-C_set_altrep_unserialize_method <- function(class_name, func) {
-    invisible(.Call(`_AltWrapper_C_set_altrep_unserialize_method`, class_name, func))
+C_performace_test1 <- function(a, n) {
+    .Call(`_AltWrapper_C_performace_test1`, a, n)
 }
 
-C_set_altrep_dataptr_method <- function(class_name, func) {
-    invisible(.Call(`_AltWrapper_C_set_altrep_dataptr_method`, class_name, func))
+C_performace_test2 <- function(env, sym, n) {
+    .Call(`_AltWrapper_C_performace_test2`, env, sym, n)
 }
 
-C_set_altrep_dataptr_or_null_method <- function(class_name, func) {
-    invisible(.Call(`_AltWrapper_C_set_altrep_dataptr_or_null_method`, class_name, func))
-}
-
-C_set_altrep_subset_method <- function(class_name, func) {
-    invisible(.Call(`_AltWrapper_C_set_altrep_subset_method`, class_name, func))
-}
-
-C_set_altrep_get_element_method <- function(class_name, func) {
-    invisible(.Call(`_AltWrapper_C_set_altrep_get_element_method`, class_name, func))
-}
-
-C_set_altrep_region_method <- function(class_name, func) {
-    invisible(.Call(`_AltWrapper_C_set_altrep_region_method`, class_name, func))
-}
-
-C_check_altrep_method <- function() {
-    invisible(.Call(`_AltWrapper_C_check_altrep_method`))
-}
-
-C_test1 <- function(f, x, env) {
-    .Call(`_AltWrapper_C_test1`, f, x, env)
+C_test1 <- function(f, x) {
+    .Call(`_AltWrapper_C_test1`, f, x)
 }
 
 C_test2 <- function(expr, env) {
     .Call(`_AltWrapper_C_test2`, expr, env)
 }
 
-C_setFunc <- function(f) {
-    invisible(.Call(`_AltWrapper_C_setFunc`, f))
-}
-
-C_test3 <- function(x) {
-    .Call(`_AltWrapper_C_test3`, x)
-}
-
-I_know_it_is_not_correct <- function(x, attrName) {
-    invisible(.Call(`_AltWrapper_I_know_it_is_not_correct`, x, attrName))
+C_test3 <- function(f, x) {
+    .Call(`_AltWrapper_C_test3`, f, x)
 }
 
 rcpp_hello_world <- function() {

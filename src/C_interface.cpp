@@ -1,8 +1,13 @@
 #include <Rcpp.h>
 #include "altrep.h"
 #include "tools.h"
-
+#include <string>
 using namespace Rcpp;
+
+
+
+
+
 
 // [[Rcpp::export]]
 bool C_ALTREP(SEXP x) {
@@ -38,92 +43,75 @@ SEXP C_duplicate_object(SEXP x, SEXP shallow) {
 }
 
 
-// [[Rcpp::export]]
-SEXP C_create_altrep(string class_name, SEXP x) {
-	ERROR_WHEN_NOT_FIND_STR_KEY(altrep_name_map, class_name);
-	//prepare the data
-	altClassKey key = altrep_name_map[class_name];
-	altClassType class_type = altrep_type_map[key];
-	List state = List::create(Named("class_str") = class_name, Named("class_key") = key);
-	SEXP res;
-	switch (class_type) {
-	case real:
-		res = R_new_altrep(altrep_real_class, x, wrap(state));
-		break;
-	default:
-		errorHandle("Unsupported altrep type\n");
-	}
 
+// [[Rcpp::export]]
+void C_set_altrep_class(SEXP class_symbol_name, SEXP type_name, bool redefineWarning) {
+	altClassType class_type = get_altrep_enum_type_by_type_name(type_name);
+	register_alt_class(class_symbol_name, class_type, redefineWarning);
+}
+// [[Rcpp::export]]
+void C_set_alt_method(SEXP class_symbol_name, SEXP func_symbol_name, SEXP func,bool redefineWarning) {
+	register_alt_method(class_symbol_name, func_symbol_name, func, redefineWarning);
+}
+
+// [[Rcpp::export]]
+SEXP C_create_altrep(SEXP class_symbol_name, SEXP x) {
+	//ERROR_WHEN_NOT_FIND_STR_KEY(altrep_name_map, class_name);
+	if (!has_alt_class(class_symbol_name)) {
+		errorHandle("The class '%s' is not found.\n", SYMBOL_TO_CHAR(class_symbol_name));
+	}
+	//prepare the data
+	List state = List::create(Named("class_name") = class_symbol_name, Named("class_type") = (int)get_altrep_enum_type_by_class_symbol(class_symbol_name));
+	R_altrep_class_t altrep_class = get_altrep_class(class_symbol_name);
+	SEXP res = R_new_altrep(altrep_class, x, wrap(state));
 	return res;
 }
+
 // [[Rcpp::export]]
-void C_set_altrep_class(string class_name, string type) {
-	altClassType class_type = get_altrep_type(type);
-	register_class(class_name, class_type);
+SEXP C_get_alt_symbol_list() {
+	return ALTREP_SYMBOL_LIST;
 }
 
-#define SET_ALTREP_METHOD(method)\
-void C_set_altrep_##method##_method(string class_name, SEXP func) {\
-ERROR_WHEN_NOT_FIND_STR_KEY(altrep_name_map, class_name);\
-altClassKey key = altrep_name_map[class_name];\
-if(HAS_KEY(altrep_##method##_map,key)) {\
-Rprintf("The function `%s` for the class `%s` has been defined and will be replaced by the new function",#method,class_name.c_str());\
-altrep_##method##_map.erase(key);\
-}\
-altrep_##method##_map.insert(std::pair<altClassKey, SEXP>(key, func));\
+// [[Rcpp::export]]
+SEXP C_get_valid_func_name() {
+	get_valid_func_name();
 }
 
-
-SET_ALTREP_METHOD(inspect)
-SET_ALTREP_METHOD(length)
-SET_ALTREP_METHOD(duplicate)
-SET_ALTREP_METHOD(coerce)
-SET_ALTREP_METHOD(serialize)
-SET_ALTREP_METHOD(unserialize)
-SET_ALTREP_METHOD(dataptr)
-SET_ALTREP_METHOD(dataptr_or_null)
-SET_ALTREP_METHOD(subset)
-SET_ALTREP_METHOD(get_element)
-SET_ALTREP_METHOD(region)
-
-
+// [[Rcpp::export]]
+void C_initial_package(SEXP altrep_class_space,SEXP altrep_symbol_space) {
+	ALTREP_CLASS_SPACE = altrep_class_space;
+	ALTREP_SYMBOL_LIST = altrep_symbol_space;
+	void init_altrep_symbol_list();
+	init_altrep_symbol_list();
+}
 
 // [[Rcpp::export]]
-void C_set_altrep_inspect_method(string class_name, SEXP func);
-// [[Rcpp::export]]
-void C_set_altrep_length_method(string class_name, SEXP func);
-// [[Rcpp::export]]
-void C_set_altrep_duplicate_method(string class_name, SEXP func);
-// [[Rcpp::export]]
-void C_set_altrep_coerce_method(string class_name, SEXP func);
-// [[Rcpp::export]]
-void C_set_altrep_serialize_method(string class_name, SEXP func);
-// [[Rcpp::export]]
-void C_set_altrep_unserialize_method(string class_name, SEXP func);
-// [[Rcpp::export]]
-void C_set_altrep_dataptr_method(string class_name, SEXP func);
-// [[Rcpp::export]]
-void C_set_altrep_dataptr_or_null_method(string class_name, SEXP func);
-// [[Rcpp::export]]
-void C_set_altrep_subset_method(string class_name, SEXP func);
-// [[Rcpp::export]]
-void C_set_altrep_get_element_method(string class_name, SEXP func);
-// [[Rcpp::export]]
-void C_set_altrep_region_method(string class_name, SEXP func);
+void C_package_unload() {
 
+}
 
 // [[Rcpp::export]]
-void C_check_altrep_method() {
-	for (std::map<std::string, altClassKey>::iterator it = altrep_name_map.begin(); it != altrep_name_map.end(); ++it) {
-		print_class(it->first);
+SEXP C_performace_test1(SEXP a,R_xlen_t n) {
+	SEXP x;
+	for (int i = 0; i < n; i++) {
+		x=VECTOR_ELT(a, 10);
 	}
+	return x;
 }
 
+// [[Rcpp::export]]
+SEXP C_performace_test2(SEXP env, SEXP sym, R_xlen_t n) {
+	SEXP x;
+	for (int i = 0; i < n; i++) {
+		x = Rf_findVarInFrame(env, sym);
+	}
+	return x;
+}
 
 // [[Rcpp::export]]
-SEXP C_test1(SEXP f, SEXP x, SEXP env) {
+SEXP C_test1(SEXP f, SEXP x) {
 	SEXP call =PROTECT(Rf_lang2(f, x));
-	SEXP val = R_forceAndCall(call, 1, env);
+	SEXP val = R_forceAndCall(call, 1, R_GlobalEnv);
 	UNPROTECT(1);
 	return val;
 }
@@ -133,28 +121,10 @@ SEXP C_test2(SEXP expr, SEXP env) {
 	SEXP val = Rf_eval(expr, env);
 	return val;
 }
-Function* fun;
-// [[Rcpp::export]]
-void C_setFunc(SEXP f) {
-	fun = new Function(f);
-}
 
 // [[Rcpp::export]]
-SEXP C_test3(SEXP x) {
-	return (*fun)(x);
+SEXP C_test3(SEXP f,SEXP x) {
+	Function fun(f);
+	return fun(x);
 }
 
-
-// You can include R code blocks in C++ files processed with sourceCpp
-// (useful for testing and development). The R code will be automatically 
-// run after the compilation.
-//
-
-/*** R
-timesTwo(42)
-*/
-
-// [[Rcpp::export]]
-void I_know_it_is_not_correct(SEXP x,SEXP attrName) {
-	INTEGER(Rf_getAttrib(x, attrName))[1]=2;
-}

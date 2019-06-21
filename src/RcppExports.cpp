@@ -73,169 +73,117 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// C_set_altrep_class
+void C_set_altrep_class(SEXP class_symbol_name, SEXP type_name, bool redefineWarning);
+RcppExport SEXP _AltWrapper_C_set_altrep_class(SEXP class_symbol_nameSEXP, SEXP type_nameSEXP, SEXP redefineWarningSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type class_symbol_name(class_symbol_nameSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type type_name(type_nameSEXP);
+    Rcpp::traits::input_parameter< bool >::type redefineWarning(redefineWarningSEXP);
+    C_set_altrep_class(class_symbol_name, type_name, redefineWarning);
+    return R_NilValue;
+END_RCPP
+}
+// C_set_alt_method
+void C_set_alt_method(SEXP class_symbol_name, SEXP func_symbol_name, SEXP func, bool redefineWarning);
+RcppExport SEXP _AltWrapper_C_set_alt_method(SEXP class_symbol_nameSEXP, SEXP func_symbol_nameSEXP, SEXP funcSEXP, SEXP redefineWarningSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type class_symbol_name(class_symbol_nameSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type func_symbol_name(func_symbol_nameSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type func(funcSEXP);
+    Rcpp::traits::input_parameter< bool >::type redefineWarning(redefineWarningSEXP);
+    C_set_alt_method(class_symbol_name, func_symbol_name, func, redefineWarning);
+    return R_NilValue;
+END_RCPP
+}
 // C_create_altrep
-SEXP C_create_altrep(string class_name, SEXP x);
-RcppExport SEXP _AltWrapper_C_create_altrep(SEXP class_nameSEXP, SEXP xSEXP) {
+SEXP C_create_altrep(SEXP class_symbol_name, SEXP x);
+RcppExport SEXP _AltWrapper_C_create_altrep(SEXP class_symbol_nameSEXP, SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< string >::type class_name(class_nameSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type class_symbol_name(class_symbol_nameSEXP);
     Rcpp::traits::input_parameter< SEXP >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(C_create_altrep(class_name, x));
+    rcpp_result_gen = Rcpp::wrap(C_create_altrep(class_symbol_name, x));
     return rcpp_result_gen;
 END_RCPP
 }
-// C_set_altrep_class
-void C_set_altrep_class(string class_name, string type);
-RcppExport SEXP _AltWrapper_C_set_altrep_class(SEXP class_nameSEXP, SEXP typeSEXP) {
+// C_get_alt_symbol_list
+SEXP C_get_alt_symbol_list();
+RcppExport SEXP _AltWrapper_C_get_alt_symbol_list() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(C_get_alt_symbol_list());
+    return rcpp_result_gen;
+END_RCPP
+}
+// C_get_valid_func_name
+SEXP C_get_valid_func_name();
+RcppExport SEXP _AltWrapper_C_get_valid_func_name() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(C_get_valid_func_name());
+    return rcpp_result_gen;
+END_RCPP
+}
+// C_initial_package
+void C_initial_package(SEXP altrep_class_space, SEXP altrep_symbol_space);
+RcppExport SEXP _AltWrapper_C_initial_package(SEXP altrep_class_spaceSEXP, SEXP altrep_symbol_spaceSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< string >::type class_name(class_nameSEXP);
-    Rcpp::traits::input_parameter< string >::type type(typeSEXP);
-    C_set_altrep_class(class_name, type);
+    Rcpp::traits::input_parameter< SEXP >::type altrep_class_space(altrep_class_spaceSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type altrep_symbol_space(altrep_symbol_spaceSEXP);
+    C_initial_package(altrep_class_space, altrep_symbol_space);
     return R_NilValue;
 END_RCPP
 }
-// C_set_altrep_inspect_method
-void C_set_altrep_inspect_method(string class_name, SEXP func);
-RcppExport SEXP _AltWrapper_C_set_altrep_inspect_method(SEXP class_nameSEXP, SEXP funcSEXP) {
+// C_package_unload
+void C_package_unload();
+RcppExport SEXP _AltWrapper_C_package_unload() {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< string >::type class_name(class_nameSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type func(funcSEXP);
-    C_set_altrep_inspect_method(class_name, func);
+    C_package_unload();
     return R_NilValue;
 END_RCPP
 }
-// C_set_altrep_length_method
-void C_set_altrep_length_method(string class_name, SEXP func);
-RcppExport SEXP _AltWrapper_C_set_altrep_length_method(SEXP class_nameSEXP, SEXP funcSEXP) {
+// C_performace_test1
+SEXP C_performace_test1(SEXP a, R_xlen_t n);
+RcppExport SEXP _AltWrapper_C_performace_test1(SEXP aSEXP, SEXP nSEXP) {
 BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< string >::type class_name(class_nameSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type func(funcSEXP);
-    C_set_altrep_length_method(class_name, func);
-    return R_NilValue;
+    Rcpp::traits::input_parameter< SEXP >::type a(aSEXP);
+    Rcpp::traits::input_parameter< R_xlen_t >::type n(nSEXP);
+    rcpp_result_gen = Rcpp::wrap(C_performace_test1(a, n));
+    return rcpp_result_gen;
 END_RCPP
 }
-// C_set_altrep_duplicate_method
-void C_set_altrep_duplicate_method(string class_name, SEXP func);
-RcppExport SEXP _AltWrapper_C_set_altrep_duplicate_method(SEXP class_nameSEXP, SEXP funcSEXP) {
+// C_performace_test2
+SEXP C_performace_test2(SEXP env, SEXP sym, R_xlen_t n);
+RcppExport SEXP _AltWrapper_C_performace_test2(SEXP envSEXP, SEXP symSEXP, SEXP nSEXP) {
 BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< string >::type class_name(class_nameSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type func(funcSEXP);
-    C_set_altrep_duplicate_method(class_name, func);
-    return R_NilValue;
-END_RCPP
-}
-// C_set_altrep_coerce_method
-void C_set_altrep_coerce_method(string class_name, SEXP func);
-RcppExport SEXP _AltWrapper_C_set_altrep_coerce_method(SEXP class_nameSEXP, SEXP funcSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< string >::type class_name(class_nameSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type func(funcSEXP);
-    C_set_altrep_coerce_method(class_name, func);
-    return R_NilValue;
-END_RCPP
-}
-// C_set_altrep_serialize_method
-void C_set_altrep_serialize_method(string class_name, SEXP func);
-RcppExport SEXP _AltWrapper_C_set_altrep_serialize_method(SEXP class_nameSEXP, SEXP funcSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< string >::type class_name(class_nameSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type func(funcSEXP);
-    C_set_altrep_serialize_method(class_name, func);
-    return R_NilValue;
-END_RCPP
-}
-// C_set_altrep_unserialize_method
-void C_set_altrep_unserialize_method(string class_name, SEXP func);
-RcppExport SEXP _AltWrapper_C_set_altrep_unserialize_method(SEXP class_nameSEXP, SEXP funcSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< string >::type class_name(class_nameSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type func(funcSEXP);
-    C_set_altrep_unserialize_method(class_name, func);
-    return R_NilValue;
-END_RCPP
-}
-// C_set_altrep_dataptr_method
-void C_set_altrep_dataptr_method(string class_name, SEXP func);
-RcppExport SEXP _AltWrapper_C_set_altrep_dataptr_method(SEXP class_nameSEXP, SEXP funcSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< string >::type class_name(class_nameSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type func(funcSEXP);
-    C_set_altrep_dataptr_method(class_name, func);
-    return R_NilValue;
-END_RCPP
-}
-// C_set_altrep_dataptr_or_null_method
-void C_set_altrep_dataptr_or_null_method(string class_name, SEXP func);
-RcppExport SEXP _AltWrapper_C_set_altrep_dataptr_or_null_method(SEXP class_nameSEXP, SEXP funcSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< string >::type class_name(class_nameSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type func(funcSEXP);
-    C_set_altrep_dataptr_or_null_method(class_name, func);
-    return R_NilValue;
-END_RCPP
-}
-// C_set_altrep_subset_method
-void C_set_altrep_subset_method(string class_name, SEXP func);
-RcppExport SEXP _AltWrapper_C_set_altrep_subset_method(SEXP class_nameSEXP, SEXP funcSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< string >::type class_name(class_nameSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type func(funcSEXP);
-    C_set_altrep_subset_method(class_name, func);
-    return R_NilValue;
-END_RCPP
-}
-// C_set_altrep_get_element_method
-void C_set_altrep_get_element_method(string class_name, SEXP func);
-RcppExport SEXP _AltWrapper_C_set_altrep_get_element_method(SEXP class_nameSEXP, SEXP funcSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< string >::type class_name(class_nameSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type func(funcSEXP);
-    C_set_altrep_get_element_method(class_name, func);
-    return R_NilValue;
-END_RCPP
-}
-// C_set_altrep_region_method
-void C_set_altrep_region_method(string class_name, SEXP func);
-RcppExport SEXP _AltWrapper_C_set_altrep_region_method(SEXP class_nameSEXP, SEXP funcSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< string >::type class_name(class_nameSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type func(funcSEXP);
-    C_set_altrep_region_method(class_name, func);
-    return R_NilValue;
-END_RCPP
-}
-// C_check_altrep_method
-void C_check_altrep_method();
-RcppExport SEXP _AltWrapper_C_check_altrep_method() {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    C_check_altrep_method();
-    return R_NilValue;
+    Rcpp::traits::input_parameter< SEXP >::type env(envSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type sym(symSEXP);
+    Rcpp::traits::input_parameter< R_xlen_t >::type n(nSEXP);
+    rcpp_result_gen = Rcpp::wrap(C_performace_test2(env, sym, n));
+    return rcpp_result_gen;
 END_RCPP
 }
 // C_test1
-SEXP C_test1(SEXP f, SEXP x, SEXP env);
-RcppExport SEXP _AltWrapper_C_test1(SEXP fSEXP, SEXP xSEXP, SEXP envSEXP) {
+SEXP C_test1(SEXP f, SEXP x);
+RcppExport SEXP _AltWrapper_C_test1(SEXP fSEXP, SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type f(fSEXP);
     Rcpp::traits::input_parameter< SEXP >::type x(xSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type env(envSEXP);
-    rcpp_result_gen = Rcpp::wrap(C_test1(f, x, env));
+    rcpp_result_gen = Rcpp::wrap(C_test1(f, x));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -251,36 +199,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// C_setFunc
-void C_setFunc(SEXP f);
-RcppExport SEXP _AltWrapper_C_setFunc(SEXP fSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type f(fSEXP);
-    C_setFunc(f);
-    return R_NilValue;
-END_RCPP
-}
 // C_test3
-SEXP C_test3(SEXP x);
-RcppExport SEXP _AltWrapper_C_test3(SEXP xSEXP) {
+SEXP C_test3(SEXP f, SEXP x);
+RcppExport SEXP _AltWrapper_C_test3(SEXP fSEXP, SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type f(fSEXP);
     Rcpp::traits::input_parameter< SEXP >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(C_test3(x));
+    rcpp_result_gen = Rcpp::wrap(C_test3(f, x));
     return rcpp_result_gen;
-END_RCPP
-}
-// I_know_it_is_not_correct
-void I_know_it_is_not_correct(SEXP x, SEXP attrName);
-RcppExport SEXP _AltWrapper_I_know_it_is_not_correct(SEXP xSEXP, SEXP attrNameSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type x(xSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type attrName(attrNameSEXP);
-    I_know_it_is_not_correct(x, attrName);
-    return R_NilValue;
 END_RCPP
 }
 // rcpp_hello_world
@@ -301,32 +229,27 @@ static const R_CallMethodDef CallEntries[] = {
     {"_AltWrapper_C_set_alt_data1", (DL_FUNC) &_AltWrapper_C_set_alt_data1, 2},
     {"_AltWrapper_C_set_alt_data2", (DL_FUNC) &_AltWrapper_C_set_alt_data2, 2},
     {"_AltWrapper_C_duplicate_object", (DL_FUNC) &_AltWrapper_C_duplicate_object, 2},
+    {"_AltWrapper_C_set_altrep_class", (DL_FUNC) &_AltWrapper_C_set_altrep_class, 3},
+    {"_AltWrapper_C_set_alt_method", (DL_FUNC) &_AltWrapper_C_set_alt_method, 4},
     {"_AltWrapper_C_create_altrep", (DL_FUNC) &_AltWrapper_C_create_altrep, 2},
-    {"_AltWrapper_C_set_altrep_class", (DL_FUNC) &_AltWrapper_C_set_altrep_class, 2},
-    {"_AltWrapper_C_set_altrep_inspect_method", (DL_FUNC) &_AltWrapper_C_set_altrep_inspect_method, 2},
-    {"_AltWrapper_C_set_altrep_length_method", (DL_FUNC) &_AltWrapper_C_set_altrep_length_method, 2},
-    {"_AltWrapper_C_set_altrep_duplicate_method", (DL_FUNC) &_AltWrapper_C_set_altrep_duplicate_method, 2},
-    {"_AltWrapper_C_set_altrep_coerce_method", (DL_FUNC) &_AltWrapper_C_set_altrep_coerce_method, 2},
-    {"_AltWrapper_C_set_altrep_serialize_method", (DL_FUNC) &_AltWrapper_C_set_altrep_serialize_method, 2},
-    {"_AltWrapper_C_set_altrep_unserialize_method", (DL_FUNC) &_AltWrapper_C_set_altrep_unserialize_method, 2},
-    {"_AltWrapper_C_set_altrep_dataptr_method", (DL_FUNC) &_AltWrapper_C_set_altrep_dataptr_method, 2},
-    {"_AltWrapper_C_set_altrep_dataptr_or_null_method", (DL_FUNC) &_AltWrapper_C_set_altrep_dataptr_or_null_method, 2},
-    {"_AltWrapper_C_set_altrep_subset_method", (DL_FUNC) &_AltWrapper_C_set_altrep_subset_method, 2},
-    {"_AltWrapper_C_set_altrep_get_element_method", (DL_FUNC) &_AltWrapper_C_set_altrep_get_element_method, 2},
-    {"_AltWrapper_C_set_altrep_region_method", (DL_FUNC) &_AltWrapper_C_set_altrep_region_method, 2},
-    {"_AltWrapper_C_check_altrep_method", (DL_FUNC) &_AltWrapper_C_check_altrep_method, 0},
-    {"_AltWrapper_C_test1", (DL_FUNC) &_AltWrapper_C_test1, 3},
+    {"_AltWrapper_C_get_alt_symbol_list", (DL_FUNC) &_AltWrapper_C_get_alt_symbol_list, 0},
+    {"_AltWrapper_C_get_valid_func_name", (DL_FUNC) &_AltWrapper_C_get_valid_func_name, 0},
+    {"_AltWrapper_C_initial_package", (DL_FUNC) &_AltWrapper_C_initial_package, 2},
+    {"_AltWrapper_C_package_unload", (DL_FUNC) &_AltWrapper_C_package_unload, 0},
+    {"_AltWrapper_C_performace_test1", (DL_FUNC) &_AltWrapper_C_performace_test1, 2},
+    {"_AltWrapper_C_performace_test2", (DL_FUNC) &_AltWrapper_C_performace_test2, 3},
+    {"_AltWrapper_C_test1", (DL_FUNC) &_AltWrapper_C_test1, 2},
     {"_AltWrapper_C_test2", (DL_FUNC) &_AltWrapper_C_test2, 2},
-    {"_AltWrapper_C_setFunc", (DL_FUNC) &_AltWrapper_C_setFunc, 1},
-    {"_AltWrapper_C_test3", (DL_FUNC) &_AltWrapper_C_test3, 1},
-    {"_AltWrapper_I_know_it_is_not_correct", (DL_FUNC) &_AltWrapper_I_know_it_is_not_correct, 2},
+    {"_AltWrapper_C_test3", (DL_FUNC) &_AltWrapper_C_test3, 2},
     {"_AltWrapper_rcpp_hello_world", (DL_FUNC) &_AltWrapper_rcpp_hello_world, 0},
     {NULL, NULL, 0}
 };
 
-void initialAltrepClass(DllInfo* dll);
+void init_altrep_dispatcher(DllInfo* dll);
+void init_altrep_internal_class(DllInfo* dll);
 RcppExport void R_init_AltWrapper(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
-    initialAltrepClass(dll);
+    init_altrep_dispatcher(dll);
+    init_altrep_internal_class(dll);
 }

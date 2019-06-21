@@ -1,39 +1,50 @@
 #include "Rcpp.h"
 #include <map>
 #include "altrep.h"
+#include "altrep_macro.h"
+#include "altrep_tools.h"
 #include "tools.h"
 using namespace Rcpp;
 using std::map;
 using std::pair;
 
-#define RETURN_NULL_IF_NO_KEY(map,key)\
-if (map.find(key) == map.end())return R_NilValue; 
 
 
 Rboolean altrep_inspect(SEXP x, int pre, int deep, int pvec,
 	void (*inspect_subtree)(SEXP, int, int, int)) {
 	try {
-		altClassKey key = as<altClassKey>(GET_ALT_CLASS_KEY(x));
-		ERROR_WHEN_NOT_FIND_INT_KEY(altrep_length_map, key);
-		SEXP call = PROTECT(Rf_lang2(altrep_inspect_map[key], GET_ALT_DATA(x)));
-		R_forceAndCall(call, 1, R_GlobalEnv);
-		UNPROTECT(1);
-		return TRUE;
+		SEXP alt_class_name_symbol = GET_ALT_CLASS_NAME_SYMBOL(x);
+		SEXP alt_class_func_symbol =  GET_ALT_SYMBOL(inspect);
+		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, alt_class_func_symbol);
+		if (func!=R_UnboundValue) {
+			make_call(func, GET_ALT_DATA(x));
+			return TRUE;
+		}
+		else {
+			return FALSE;
+		}
 	}
 	catch (const std::exception & ex) {
 		errorHandle("error in inspect: \n%s", ex.what());
 	}
 	return FALSE;
 }
+
+
+
 R_xlen_t altrep_length(SEXP x) {
 	DEBUG(Rprintf("accessing length\n"));
 	try {
-		altClassKey key = as<altClassKey>(GET_ALT_CLASS_KEY(x));
-		ERROR_WHEN_NOT_FIND_INT_KEY(altrep_length_map, key);
-		SEXP call = PROTECT(Rf_lang2(altrep_length_map[key], GET_ALT_DATA(x)));
-		SEXP res = R_forceAndCall(call, 1, R_GlobalEnv);
-		UNPROTECT(1);
-		return as<R_xlen_t>(res);
+		SEXP alt_class_name_symbol = GET_ALT_CLASS_NAME_SYMBOL(x);
+		SEXP alt_class_func_symbol = GET_ALT_SYMBOL(length);
+		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, alt_class_func_symbol);
+		if (func != R_UnboundValue) {
+			SEXP res =make_call(func, GET_ALT_DATA(x));
+			return as<R_xlen_t>(res);
+		}
+		else {
+			errorHandle("no Length method defined");
+		}
 	}
 	catch (const std::exception & ex) {
 		errorHandle("error in length: \n%s", ex.what());
@@ -45,17 +56,22 @@ R_xlen_t altrep_length(SEXP x) {
 void* altrep_dataptr(SEXP x, Rboolean writeable) {
 	DEBUG(Rprintf("accessing data pointer\n"));
 	try {
-		altClassKey key = as<altClassKey>(GET_ALT_CLASS_KEY(x));
-		ERROR_WHEN_NOT_FIND_INT_KEY(altrep_dataptr_map, key);
-		SEXP R_writeable = wrap<int>(writeable);
-		SEXP call = PROTECT(Rf_lang3(altrep_dataptr_map[key], GET_ALT_DATA(x), R_writeable));
-		SEXP res = R_forceAndCall(call, 2, R_GlobalEnv);
-		UNPROTECT(1);
-		switch (TYPEOF(res)) {
-		case EXTPTRSXP: 
-			return R_ExternalPtrAddr(res);
-		default:
-			return dataptr(res);
+		SEXP alt_class_name_symbol = GET_ALT_CLASS_NAME_SYMBOL(x);
+		SEXP alt_class_func_symbol = GET_ALT_SYMBOL(dataptr);
+		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, alt_class_func_symbol);
+		if (func != R_UnboundValue) {
+			SEXP R_writeable = PROTECT(wrap<int>(writeable));
+			SEXP res = make_call(func, GET_ALT_DATA(x), R_writeable);
+			UNPROTECT(1);
+			switch(TYPEOF(res)) {
+			case EXTPTRSXP:
+				return R_ExternalPtrAddr(res);
+			default:
+				return dataptr(res);
+			}
+		}
+		else {
+			errorHandle("cannot access data pointer for this ALTVEC object");
 		}
 	}
 	catch (const std::exception & ex) {
@@ -67,18 +83,19 @@ const void* altrep_dataptr_or_null(SEXP x)
 {
 	DEBUG(Rprintf("accessing data pointer or null\n"));
 	try {
-		altClassKey key = as<altClassKey>(GET_ALT_CLASS_KEY(x));
-		RETURN_NULL_IF_NO_KEY(altrep_dataptr_or_null_map, key);
-		SEXP call = PROTECT(Rf_lang2(altrep_dataptr_or_null_map[key], GET_ALT_DATA(x)));
-		SEXP res = R_forceAndCall(call, 1, R_GlobalEnv);
-		UNPROTECT(1);
-		switch (TYPEOF(res)) {
-		case NILSXP:
-			return NULL;
-		case EXTPTRSXP:
-			return R_ExternalPtrAddr(res);
-		default:
-			return dataptr(res);
+		SEXP alt_class_name_symbol = GET_ALT_CLASS_NAME_SYMBOL(x);
+		SEXP alt_class_func_symbol = GET_ALT_SYMBOL(dataptr_or_null);
+		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, alt_class_func_symbol);
+		if (func != R_UnboundValue) {
+			SEXP res = make_call(func, GET_ALT_DATA(x));
+			switch (TYPEOF(res)) {
+			case NILSXP:
+				return NULL;
+			case EXTPTRSXP:
+				return R_ExternalPtrAddr(res);
+			default:
+				return dataptr(res);
+			}
 		}
 	}
 	catch (const std::exception & ex) {
@@ -87,94 +104,127 @@ const void* altrep_dataptr_or_null(SEXP x)
 	return NULL;
 }
 
+
+
+
+
 SEXP altrep_coerce(SEXP x, int type) {
 	DEBUG(Rprintf("Coercing data\n"));
 	try {
-		altClassKey key = as<altClassKey>(GET_ALT_CLASS_KEY(x));
-		RETURN_NULL_IF_NO_KEY(altrep_coerce_map, key);
-		SEXP R_type = wrap<int>(type);
-		SEXP call = PROTECT(Rf_lang3(altrep_coerce_map[key], GET_ALT_DATA(x), R_type));
-		SEXP res = R_forceAndCall(call, 2, R_GlobalEnv);
-		UNPROTECT(1);
-		return res;
+		SEXP alt_class_name_symbol = GET_ALT_CLASS_NAME_SYMBOL(x);
+		SEXP alt_class_func_symbol = GET_ALT_SYMBOL(coerce);
+		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, alt_class_func_symbol);
+		if (func != R_UnboundValue) {
+			SEXP R_type = PROTECT(wrap<int>(type));
+			SEXP res=make_call(func, GET_ALT_DATA(x), R_type);
+			UNPROTECT(1);
+			switch (TYPEOF(res)) {
+			case NILSXP:
+				return NULL;
+			default:
+				return res;
+			}
+		}
+		else {
+			return NULL;
+		}
 	}
 	catch (const std::exception & ex) {
 		errorHandle("error in coerce: \n%s", ex.what());
 	}
-	return R_NilValue;
+	return NULL;
 }
 
 SEXP altrep_duplicate(SEXP x, Rboolean deep) {
 	DEBUG(Rprintf("Duplicating data, deep: %d\n", deep));
 	try {
-		altClassKey key = as<altClassKey>(GET_ALT_CLASS_KEY(x));
-		RETURN_NULL_IF_NO_KEY(altrep_duplicate_map, key);
-		SEXP R_deep = wrap<int>(deep);
-		SEXP call = PROTECT(Rf_lang3(altrep_duplicate_map[key], GET_ALT_DATA(x), R_deep));
-		SEXP res = R_forceAndCall(call, 2, R_GlobalEnv);
-		UNPROTECT(1);
-		return res;
+		SEXP alt_class_name_symbol = GET_ALT_CLASS_NAME_SYMBOL(x);
+		SEXP alt_class_func_symbol = GET_ALT_SYMBOL(duplicate);
+		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, alt_class_func_symbol);
+		if (func != R_UnboundValue) {
+			SEXP R_deep = PROTECT(wrap<int>(deep));
+			SEXP res = make_call(func, GET_ALT_DATA(x), R_deep);
+			UNPROTECT(1);
+			return res;
+		}
+		else {
+			return NULL;
+		}
 	}
 	catch (const std::exception & ex) {
 		errorHandle("error in duplicate: \n%s", ex.what());
 	}
-	return R_NilValue;
+	return NULL;
 }
+
+
 
 SEXP altrep_serialize_state(SEXP x) {
 	DEBUG(Rprintf("serializing data\n"););
 		try {
-		altClassKey key = as<altClassKey>(GET_ALT_CLASS_KEY(x));
-		RETURN_NULL_IF_NO_KEY(altrep_serialize_map, key);
-		SEXP call = PROTECT(Rf_lang2(altrep_serialize_map[key], GET_ALT_DATA(x)));
-		SEXP res = R_forceAndCall(call, 1, R_GlobalEnv);
-		SEXP state = PROTECT(Rf_allocVector(VECSXP, 2));
-		SET_VECTOR_ELT(state, 0, wrap(key));
-		SET_VECTOR_ELT(state, 1, res);
-		UNPROTECT(2);
-		return state;
+		SEXP alt_class_name_symbol = GET_ALT_CLASS_NAME_SYMBOL(x);
+		SEXP alt_class_func_symbol = GET_ALT_SYMBOL(serialize);
+		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, alt_class_func_symbol);
+		if (func != R_UnboundValue) {
+			SEXP res = PROTECT(make_call(func, GET_ALT_DATA(x)));
+			SEXP state = PROTECT(Rf_allocVector(VECSXP, 3));
+			//Not implemented
+			SET_VECTOR_ELT(state, 0, wrap(alt_class_name_symbol));
+			SET_VECTOR_ELT(state, 1, wrap(alt_class_name_symbol));
+			SET_VECTOR_ELT(state, 2, res);
+			UNPROTECT(2);
+			return res;
+		}
+		else {
+			return NULL;
+		}
 	}
 	catch (const std::exception & ex) {
 		errorHandle("error in serialize: \n%s", ex.what());
-	}
-	return R_NilValue;
+	} 
+	return NULL;
 }
 
 
 SEXP altrep_unserialize(SEXP R_class, SEXP state) {
 	DEBUG(Rprintf("unserializing data\n"););
 		try {
-		altClassKey key = as<altClassKey>(VECTOR_ELT(state,0));
-		ERROR_WHEN_NOT_FIND_INT_KEY(altrep_unserialize_map, key);
-		SEXP call = PROTECT(Rf_lang3(altrep_unserialize_map[key], R_class,VECTOR_ELT(state, 1)));
-		SEXP res = R_forceAndCall(call, 2, R_GlobalEnv);
-		UNPROTECT(1);
-		return res;
+		SEXP alt_class_name_symbol = VECTOR_ELT(state, 0);
+		SEXP alt_class_func_symbol = GET_ALT_SYMBOL(unserialize);
+		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, alt_class_func_symbol);
+		if (func != R_UnboundValue) {
+			SEXP res = make_call(func, R_class, VECTOR_ELT(state, 2));
+			return res;
+		}
+		else {
+			errorHandle("cannot unserialize this ALTREP object yet");
+		}
 	}
 	catch (const std::exception & ex) {
 		errorHandle("error in unserialize: \n%s", ex.what());
 	}
-	return R_NilValue;
+	return NULL;
 }
 
 
 SEXP altrep_subset(SEXP x, SEXP indx, SEXP call_stack) {
 	DEBUG(Rprintf("subsetting data\n"););
 	try {
-		altClassKey key = as<altClassKey>(GET_ALT_CLASS_KEY(x));
-		ERROR_WHEN_NOT_FIND_INT_KEY(altrep_subset_map, key);
-		//NumericVector index(indx);
-		//index = index + 1;
-		SEXP call = PROTECT(Rf_lang3(altrep_subset_map[key], GET_ALT_DATA(x), indx));
-		SEXP res = R_forceAndCall(call, 2, R_GlobalEnv);
-		UNPROTECT(1);
-		return res;
+		SEXP alt_class_name_symbol = GET_ALT_CLASS_NAME_SYMBOL(x);
+		SEXP alt_class_func_symbol = GET_ALT_SYMBOL(subset);
+		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, alt_class_func_symbol);
+		if (func != R_UnboundValue) {
+			SEXP res = make_call(func, GET_ALT_DATA(x), indx);
+			return res;
+		}
+		else {
+			return NULL;
+		}
 	}
 	catch (const std::exception& ex) {
 		errorHandle("error in subset: \n%s", ex.what());
 	}
-
-	return R_NilValue;
+	return NULL;
 }
 
 R_xlen_t altrep_internal_length(SEXP x) {
