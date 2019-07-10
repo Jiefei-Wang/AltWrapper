@@ -172,16 +172,17 @@ removeClass <- function(className) {
 
 altClassStatus <- function(className=NULL,x=NULL) {
   className=getClassNameDispatcher(className=className,x=x)
+  classType=getClassType(className,x)
   if (!isAltClassExist(className)) {
     stop("The class '", className, "' is not found.")
   }
   classEnv = .getClassEnvironment(className)
-  cat("Class name:\t", className, "\n")
+  cat("Class name :\t", className, "\n")
+  cat("","data type :\t", classType, "\n")
   statusChar = c("defined", "undefined")
   for (i in altrepClassFunctionList) {
     if(is.na(i)) break
     isExist = statusChar[is.null(classEnv[[i]]) + 1]
     cat("", as.character(i), ":\t", isExist, "\n")
   }
-  
 }
