@@ -6,7 +6,7 @@
   .setMethod(classEnv,functionName,func)
 }
 .setS3Method<-function(className,functionName,func){
-  classEnv=altrepRegistryEnvironment[[className]][["functionSpace"]]
+  classEnv=.getClassFunctionEnvironment(className)
   .setMethod(classEnv,functionName,func)
 }
 
@@ -32,10 +32,9 @@
   altrepRegistryEnvironment[[className]]=classEnv
 }
 
-
 .getClassFunctionEnvironment<-function(className){
-  classEnv=.classEnvironment(className)
-  classEnv[["functionSpace"]]
+  classEnv=.getClassEnvironment(className)
+  classEnv[["functionEnvironment"]]
 }
 
 

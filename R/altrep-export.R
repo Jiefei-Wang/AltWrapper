@@ -143,7 +143,7 @@ getClassType<-function(className=NULL,x=NULL){
   classEnv[["classType"]]
 }
 
-getAltMethod<-function(className=NULL,x=NULL,methodName){
+getAltMethod<-function(className=NULL,methodName,x=NULL){
   if(length(methodName)>1){
     return(sapply(methodName,function(y)getAltFunction(className,x,y)))
   }
@@ -186,3 +186,8 @@ altClassStatus <- function(className=NULL,x=NULL) {
     cat("", as.character(i), ":\t", isExist, "\n")
   }
 }
+
+
+
+
+
