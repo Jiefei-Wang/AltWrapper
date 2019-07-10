@@ -3,7 +3,7 @@ using std::string;
 
 #define PACKAGE_NAME "SharedObject"
 #define PACKAGE_ENV_NAME "package:" PACKAGE_NAME
-#define DEBUG(x) x
+#define DEBUG(x)
 
 #define HAS_KEY(map,key) map.find(key)!=map.end()
 #define ERROR_WHEN_NOT_FIND_STR_KEY(map,key)\
