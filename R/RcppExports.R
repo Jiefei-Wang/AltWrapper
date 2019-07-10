@@ -25,24 +25,8 @@ C_duplicate_object <- function(x, shallow) {
     .Call(`_AltWrapper_C_duplicate_object`, x, shallow)
 }
 
-C_set_altrep_class <- function(class_symbol_name, type_name, redefineWarning) {
-    invisible(.Call(`_AltWrapper_C_set_altrep_class`, class_symbol_name, type_name, redefineWarning))
-}
-
-C_set_alt_method <- function(class_symbol_name, func_symbol_name, func, redefineWarning) {
-    invisible(.Call(`_AltWrapper_C_set_alt_method`, class_symbol_name, func_symbol_name, func, redefineWarning))
-}
-
-C_create_altrep <- function(class_symbol_name, x) {
-    .Call(`_AltWrapper_C_create_altrep`, class_symbol_name, x)
-}
-
-C_get_alt_symbol_list <- function() {
-    .Call(`_AltWrapper_C_get_alt_symbol_list`)
-}
-
-C_get_valid_func_name <- function() {
-    .Call(`_AltWrapper_C_get_valid_func_name`)
+C_create_altrep <- function(class_symbol_name, x, class_type, state) {
+    .Call(`_AltWrapper_C_create_altrep`, class_symbol_name, x, class_type, state)
 }
 
 C_initial_package <- function(altrep_class_space, altrep_symbol_space) {

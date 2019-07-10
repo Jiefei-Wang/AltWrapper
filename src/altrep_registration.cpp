@@ -3,12 +3,11 @@
 #include "altrep.h"
 #include "tools.h"
 #include "altrep_macro.h"
-#include "altrep_common_func.h"
-#include "altrep_template.h"
+#include "altrep_functions.h"
 
 using namespace Rcpp;
 
-SEXP ALTREP_CLASS_SPACE;
+SEXP ALTREP_REGISTRY_ENVIRONMENT;
 
 R_altrep_class_t altrep_real_class;
 R_altrep_class_t altrep_integer_class;
@@ -48,7 +47,7 @@ void init_altrep_dispatcher(DllInfo* dll) {
 
 
 	class_name = "alt_integer";
-	alt_class = R_make_altreal_class(class_name, PACKAGE_NAME, dll);
+	alt_class = R_make_altinteger_class(class_name, PACKAGE_NAME, dll);
 	ALTREP_COMMOM_REGISTRATION(alt_class);
 	R_set_altinteger_Elt_method(alt_class, altrep_get_element<int>);
 	R_set_altinteger_Get_region_method(alt_class, numeric_region<int>);

@@ -73,60 +73,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// C_set_altrep_class
-void C_set_altrep_class(SEXP class_symbol_name, SEXP type_name, bool redefineWarning);
-RcppExport SEXP _AltWrapper_C_set_altrep_class(SEXP class_symbol_nameSEXP, SEXP type_nameSEXP, SEXP redefineWarningSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type class_symbol_name(class_symbol_nameSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type type_name(type_nameSEXP);
-    Rcpp::traits::input_parameter< bool >::type redefineWarning(redefineWarningSEXP);
-    C_set_altrep_class(class_symbol_name, type_name, redefineWarning);
-    return R_NilValue;
-END_RCPP
-}
-// C_set_alt_method
-void C_set_alt_method(SEXP class_symbol_name, SEXP func_symbol_name, SEXP func, bool redefineWarning);
-RcppExport SEXP _AltWrapper_C_set_alt_method(SEXP class_symbol_nameSEXP, SEXP func_symbol_nameSEXP, SEXP funcSEXP, SEXP redefineWarningSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type class_symbol_name(class_symbol_nameSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type func_symbol_name(func_symbol_nameSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type func(funcSEXP);
-    Rcpp::traits::input_parameter< bool >::type redefineWarning(redefineWarningSEXP);
-    C_set_alt_method(class_symbol_name, func_symbol_name, func, redefineWarning);
-    return R_NilValue;
-END_RCPP
-}
 // C_create_altrep
-SEXP C_create_altrep(SEXP class_symbol_name, SEXP x);
-RcppExport SEXP _AltWrapper_C_create_altrep(SEXP class_symbol_nameSEXP, SEXP xSEXP) {
+SEXP C_create_altrep(SEXP class_symbol_name, SEXP x, SEXP class_type, SEXP state);
+RcppExport SEXP _AltWrapper_C_create_altrep(SEXP class_symbol_nameSEXP, SEXP xSEXP, SEXP class_typeSEXP, SEXP stateSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type class_symbol_name(class_symbol_nameSEXP);
     Rcpp::traits::input_parameter< SEXP >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(C_create_altrep(class_symbol_name, x));
-    return rcpp_result_gen;
-END_RCPP
-}
-// C_get_alt_symbol_list
-SEXP C_get_alt_symbol_list();
-RcppExport SEXP _AltWrapper_C_get_alt_symbol_list() {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(C_get_alt_symbol_list());
-    return rcpp_result_gen;
-END_RCPP
-}
-// C_get_valid_func_name
-SEXP C_get_valid_func_name();
-RcppExport SEXP _AltWrapper_C_get_valid_func_name() {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(C_get_valid_func_name());
+    Rcpp::traits::input_parameter< SEXP >::type class_type(class_typeSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type state(stateSEXP);
+    rcpp_result_gen = Rcpp::wrap(C_create_altrep(class_symbol_name, x, class_type, state));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -229,11 +186,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_AltWrapper_C_set_alt_data1", (DL_FUNC) &_AltWrapper_C_set_alt_data1, 2},
     {"_AltWrapper_C_set_alt_data2", (DL_FUNC) &_AltWrapper_C_set_alt_data2, 2},
     {"_AltWrapper_C_duplicate_object", (DL_FUNC) &_AltWrapper_C_duplicate_object, 2},
-    {"_AltWrapper_C_set_altrep_class", (DL_FUNC) &_AltWrapper_C_set_altrep_class, 3},
-    {"_AltWrapper_C_set_alt_method", (DL_FUNC) &_AltWrapper_C_set_alt_method, 4},
-    {"_AltWrapper_C_create_altrep", (DL_FUNC) &_AltWrapper_C_create_altrep, 2},
-    {"_AltWrapper_C_get_alt_symbol_list", (DL_FUNC) &_AltWrapper_C_get_alt_symbol_list, 0},
-    {"_AltWrapper_C_get_valid_func_name", (DL_FUNC) &_AltWrapper_C_get_valid_func_name, 0},
+    {"_AltWrapper_C_create_altrep", (DL_FUNC) &_AltWrapper_C_create_altrep, 4},
     {"_AltWrapper_C_initial_package", (DL_FUNC) &_AltWrapper_C_initial_package, 2},
     {"_AltWrapper_C_package_unload", (DL_FUNC) &_AltWrapper_C_package_unload, 0},
     {"_AltWrapper_C_performace_test1", (DL_FUNC) &_AltWrapper_C_performace_test1, 2},

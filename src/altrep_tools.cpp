@@ -23,44 +23,24 @@ SEXP make_call(SEXP fun, SEXP x1, SEXP x2, SEXP x3, SEXP x4) {
 	SEXP call = Rf_lang5(fun, x1, x2, x3, x4);
 	return R_forceAndCall(call, 4, R_GlobalEnv);
 }
-
-
-void remove_object(SEXP env, SEXP symbol) {
-	try {
-		Environment package_env(R_FindNamespace(Rf_mkString("base")));
-		Function remove = package_env["remove"];
-
-		remove(Named("list")=wrap(SYMBOL_TO_CHAR(symbol)), Named("envir")= env);
-	}
-	catch (const std::exception& ex) {
-		errorHandle("Error in removing an object\n%s", ex.what());
-	}
-
+SEXP make_call(SEXP fun, SEXP x1, SEXP x2, SEXP x3, SEXP x4, SEXP x5) {
+	SEXP call = Rf_lang6(fun, x1, x2, x3, x4, x5);
+	return R_forceAndCall(call, 5, R_GlobalEnv);
 }
-
 SEXP ALTREP_SYMBOL_LIST;
 
 SEXP get_alt_symbol(const char* name) {
 #define X(i,func_name) \
 if (std::strcmp(name, #func_name)==0)\
 	return VECTOR_ELT(ALTREP_SYMBOL_LIST, i);
-	ALTREP_FUNCTIONS
+	ALTREP_SYMBOLS
 #undef X
-	unsigned int offset = ALTREP_FUNCTION_NUMBER;
+	unsigned int offset = 40;
 	if (std::strcmp(name, "class_type") == 0)
 		return VECTOR_ELT(ALTREP_SYMBOL_LIST, offset+0);
 	errorHandle("The symbol '%s' is not found.\n", name);
-}
 
-//Initialize the symbol list
-void init_altrep_symbol_list() {
-#define X(i,func_name) \
-SET_VECTOR_ELT(ALTREP_SYMBOL_LIST, i, Rf_install(#func_name));
-	ALTREP_FUNCTIONS
-#undef X
-	unsigned int offset = ALTREP_FUNCTION_NUMBER;
-	SET_VECTOR_ELT(ALTREP_SYMBOL_LIST, offset, Rf_install("class_type"));
-	//Rf_PrintValue(ALTREP_SYMBOL_LIST);
+	return ALTREP_SYMBOL_LIST;
 }
 
 

@@ -16,8 +16,7 @@ SEXP make_call(SEXP fun,SEXP x1);
 SEXP make_call(SEXP fun, SEXP x1, SEXP x2);
 SEXP make_call(SEXP fun, SEXP x1, SEXP x2, SEXP x3);
 SEXP make_call(SEXP fun, SEXP x1, SEXP x2, SEXP x3, SEXP x4);
-//Remove an object from an environment
-void remove_object(SEXP env, SEXP symbol);
+SEXP make_call(SEXP fun, SEXP x1, SEXP x2, SEXP x3, SEXP x4, SEXP x5);
 
 
 /*

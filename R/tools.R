@@ -16,3 +16,12 @@ setAltData2<-function(x,value){
 }
 
 
+
+removeWrapper<-function(x){
+  repeat{
+    if(!is.altrep(x)) stop("The object is not an altWrapper")
+    if(.isAltWrapper(x)) return(x)
+    x=getAltData1(x)
+  }
+  return(x)
+}

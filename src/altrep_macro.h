@@ -1,18 +1,20 @@
 
 #define ALTREP_FUNCTION_NUMBER 11
 
-#define ALTREP_FUNCTIONS \
+#define ALTREP_SYMBOLS \
 X(0,inspect)\
-X(1,length)\
-X(2,duplicate)\
-X(3,coerce)\
-X(4,serialize)\
-X(5,unserialize)\
-X(6,dataptr)\
-X(7,dataptr_or_null)\
-X(8,subset)\
-X(9,get_element)\
-X(10,region)
+X(1,getLength)\
+X(2,getDataptr)\
+X(3,getDataptrOrNull)\
+X(4,getSubset)\
+X(5,getElement)\
+X(6,getRegion)\
+X(7,duplicate)\
+X(8,coerce)\
+X(9,serialize)\
+X(10,unserialize)\
+X(40, classType)\
+X(41, functionEnvironment)
 
 
 
@@ -20,8 +22,8 @@ X(10,region)
 #define HAS_ENV_VAR(env,x) (Rf_findVarInFrame3(env, x, FALSE)!= R_UnboundValue)
 
 // x must be a symbol
-#define HAS_ALT_CLASS(x) HAS_ENV_VAR(ALTREP_CLASS_SPACE,x)
-#define GET_ALT_CLASS(x) Rf_findVarInFrame(ALTREP_CLASS_SPACE, x)
+#define HAS_ALT_CLASS(x) HAS_ENV_VAR(ALTREP_REGISTRY_ENVIRONMENT,x)
+#define GET_ALT_CLASS(x) Rf_findVarInFrame(ALTREP_REGISTRY_ENVIRONMENT, x)
 
 // alt is an environment, func must be a symbol
 #define HAS_ALT_METHOD(alt,func) HAS_ENV_VAR(alt,func)
@@ -31,10 +33,12 @@ X(10,region)
 #define GET_ALT_ATTR(x,i) VECTOR_ELT(R_altrep_data2(x),i)
 #define SET_ALT_ATTR(x,i,value) SET_VECTOR_ELT(R_altrep_data2(x),i,value)
 
-#define GET_ALT_CLASS_NAME_SYMBOL(x) GET_ALT_ATTR(x,0)
-#define GET_ALT_CLASS_TYPE(x) GET_ALT_ATTR(x,1)
-#define SET_ALT_CLASS_NAME_SYMBOL(x,value) SET_ALT_ATTR(x,0,value)
-#define SET_ALT_CLASS_TYPE(x,value) SET_ALT_ATTR(x,1,value)
+//This need to be refined
+#define GET_ALT_CLASS_NAME_SYMBOL(x) GET_ALT_ATTR(x,1)
+#define GET_ALT_CLASS_TYPE(x) GET_ALT_ATTR(x,2)
+
+#define SET_ALT_CLASS_NAME_SYMBOL(x,value) SET_ALT_ATTR(x,1,value)
+#define SET_ALT_CLASS_TYPE(x,value) SET_ALT_ATTR(x,2,value)
 
 
 

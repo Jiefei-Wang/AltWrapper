@@ -15,7 +15,11 @@ getAltWrapperOptions<-function(...){
   if(length(options)==0){
     return(as.list(globalSettings))
   }
-  return(as.list(globalSettings)[options])
+  res=as.list(globalSettings)[options]
+  if(length(options)==1){
+    return(res[[1]])
+  }
+  return(res)
 }
 
 ## Check if options exist or not

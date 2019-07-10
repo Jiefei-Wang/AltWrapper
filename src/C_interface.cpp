@@ -45,50 +45,27 @@ SEXP C_duplicate_object(SEXP x, SEXP shallow) {
 
 
 // [[Rcpp::export]]
-void C_set_altrep_class(SEXP class_symbol_name, SEXP type_name, bool redefineWarning) {
-	altClassType class_type = get_altrep_enum_type_by_type_name(type_name);
-	register_alt_class(class_symbol_name, class_type, redefineWarning);
-}
-// [[Rcpp::export]]
-void C_set_alt_method(SEXP class_symbol_name, SEXP func_symbol_name, SEXP func,bool redefineWarning) {
-	register_alt_method(class_symbol_name, func_symbol_name, func, redefineWarning);
-}
-
-// [[Rcpp::export]]
-SEXP C_create_altrep(SEXP class_symbol_name, SEXP x) {
-	//ERROR_WHEN_NOT_FIND_STR_KEY(altrep_name_map, class_name);
-	if (!has_alt_class(class_symbol_name)) {
-		errorHandle("The class '%s' is not found.\n", SYMBOL_TO_CHAR(class_symbol_name));
-	}
-	//prepare the data
-	List state = List::create(Named("class_name") = class_symbol_name, Named("class_type") = (int)get_altrep_enum_type_by_class_symbol(class_symbol_name));
-	R_altrep_class_t altrep_class = get_altrep_class(class_symbol_name);
-	SEXP res = R_new_altrep(altrep_class, x, wrap(state));
+SEXP C_create_altrep(SEXP class_symbol_name, SEXP x,SEXP class_type,SEXP state) {
+	R_altrep_class_t altrep_class = get_altrep_class(class_type);
+	SEXP res = R_new_altrep(altrep_class, x, state);
 	return res;
 }
 
-// [[Rcpp::export]]
-SEXP C_get_alt_symbol_list() {
-	return ALTREP_SYMBOL_LIST;
-}
-
-// [[Rcpp::export]]
-SEXP C_get_valid_func_name() {
-	get_valid_func_name();
-}
 
 // [[Rcpp::export]]
 void C_initial_package(SEXP altrep_class_space,SEXP altrep_symbol_space) {
-	ALTREP_CLASS_SPACE = altrep_class_space;
+	ALTREP_REGISTRY_ENVIRONMENT = altrep_class_space;
 	ALTREP_SYMBOL_LIST = altrep_symbol_space;
-	void init_altrep_symbol_list();
-	init_altrep_symbol_list();
 }
 
 // [[Rcpp::export]]
 void C_package_unload() {
 
 }
+
+
+
+
 
 // [[Rcpp::export]]
 SEXP C_performace_test1(SEXP a,R_xlen_t n) {
@@ -98,6 +75,7 @@ SEXP C_performace_test1(SEXP a,R_xlen_t n) {
 	}
 	return x;
 }
+
 
 // [[Rcpp::export]]
 SEXP C_performace_test2(SEXP env, SEXP sym, R_xlen_t n) {
