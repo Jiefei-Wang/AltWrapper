@@ -66,3 +66,7 @@ or a method attached to the altWrapper class.
 
 \code{altClassStatus} : Show the status of an altWrapper class
 }
+\examples{
+aaa
+
+}

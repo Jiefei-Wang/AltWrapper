@@ -233,7 +233,8 @@ setAltMethod <- function(className,
 #' 
 #' @inheritParams makeAltrep
 #' @param ... Named arguments. The functions that you want to attach to the class. 
-#' 
+#' @inherit makeAltrep examples
+#'
 #' 
 #' @export
 attachAltMethod <- function(className, ...) {
@@ -253,6 +254,42 @@ attachAltMethod <- function(className, ...) {
 #' The function is only allowed to be called in an ALTREP API.
 #' Please refer to `?setAltMethod` to find a full list of the ALTREP APIs.
 #' 
+#' @examples 
+#' ## The data is a list
+#' data=list(data=runif(10))
+#' 
+#' ## Define the ALTREP functions
+#' length_func<-function(x) length(x$data)
+#' get_ptr_func<-function(x,writeable) x$data
+#' 
+#' ## Define a sum function, 
+#' ## after the fisrt computation, 
+#' ## store the result in the list.
+#' ## Call `setAltData` to set the data
+#' sum_func<-function(x, na.rm) {
+#'    if(is.null(x$sum)){
+#'      message("computing sum")
+#'      x$sum = sum(x$data)
+#'      setAltData(x)
+#'      return(x$sum)
+#'    }else{
+#'      message("reading sum result")
+#'      return(x$sum)
+#'    }
+#' }
+#' 
+#' ## Define the altWrapper class and its functions
+#' setAltClass(className = "example", classType = "real")
+#' setAltMethod(className = "example", getLength = length_func)
+#' setAltMethod(className = "example", getDataptr = get_ptr_func)
+#' setAltMethod(className = "example", sum = sum_func)
+#' 
+#' A=makeAltrep(className = "example", x = data)
+#' 
+#' #First sum call
+#' sum(A)
+#' #Second sum call
+#' sum(A)
 #' @export
 setAltData<-function(x){
   altObject=get(".self",envir = parent.frame())
@@ -269,6 +306,9 @@ setAltData<-function(x){
 #' @param className Character, the name of an altWrapper class
 #' @param methodName Character, the name of a function
 #' @param x an altwrapper object
+#' @inherit makeAltrep examples
+#' @examples 
+#' aaa
 #' 
 #' @details 
 #' `isAltClassExist` : Whether an altWrapper class exist or not

@@ -11,3 +11,40 @@ Set the data for an altwrapper object,
 The function is only allowed to be called in an ALTREP API.
 Please refer to \code{?setAltMethod} to find a full list of the ALTREP APIs.
 }
+\examples{
+## The data is a list
+data=list(data=runif(10))
+
+## Define the ALTREP functions
+length_func<-function(x) length(x$data)
+get_ptr_func<-function(x,writeable) x$data
+
+## Define a sum function, 
+## after the fisrt computation, 
+## store the result in the list.
+## Call `setAltData` to set the data
+sum_func<-function(x, na.rm) {
+   if(is.null(x$sum)){
+     message("computing sum")
+     x$sum = sum(x$data)
+     setAltData(x)
+     return(x$sum)
+   }else{
+     message("reading sum result")
+     return(x$sum)
+   }
+}
+
+## Define the altWrapper class and its functions
+setAltClass(className = "example", classType = "real")
+setAltMethod(className = "example", getLength = length_func)
+setAltMethod(className = "example", getDataptr = get_ptr_func)
+setAltMethod(className = "example", sum = sum_func)
+
+A=makeAltrep(className = "example", x = data)
+
+#First sum call
+sum(A)
+#Second sum call
+sum(A)
+}
