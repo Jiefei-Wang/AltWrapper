@@ -25,8 +25,8 @@ C_duplicate_object <- function(x, shallow) {
     .Call(`_AltWrapper_C_duplicate_object`, x, shallow)
 }
 
-C_create_altrep <- function(class_symbol_name, x, class_type, state) {
-    .Call(`_AltWrapper_C_create_altrep`, class_symbol_name, x, class_type, state)
+C_create_altrep <- function(class_symbol_name, x, class_type, state, attrName, attributes) {
+    .Call(`_AltWrapper_C_create_altrep`, class_symbol_name, x, class_type, state, attrName, attributes)
 }
 
 C_initial_package <- function(altrep_class_space, altrep_symbol_space) {

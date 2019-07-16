@@ -13,6 +13,11 @@ X(7,duplicate)\
 X(8,coerce)\
 X(9,serialize)\
 X(10,unserialize)\
+X(11,isSorted)\
+X(12,noNA)\
+X(13,sum)\
+X(14,min)\
+X(15,max)\
 X(40, classType)\
 X(41, functionEnvironment)
 
@@ -45,7 +50,7 @@ X(41, functionEnvironment)
 
 #define ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, alt_class_func_symbol)\
 SEXP alt_class_env =GET_ALT_CLASS(alt_class_name_symbol);\
-if(alt_class_env==R_UnboundValue) errorHandle("Unable to find the var '%s' in the class '%s'",SEXP_TO_CHAR(alt_class_func_symbol),SEXP_TO_CHAR(alt_class_name_symbol));\
+if(alt_class_env==R_UnboundValue) errorHandle("Unable to find the var '%s' in the class '%s'",SYMBOL_TO_CHAR(alt_class_func_symbol),SYMBOL_TO_CHAR(alt_class_name_symbol));\
 SEXP func = GET_ALT_METHOD(alt_class_env, alt_class_func_symbol);
 
 

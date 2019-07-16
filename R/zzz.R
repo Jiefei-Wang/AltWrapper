@@ -1,6 +1,6 @@
 #' @useDynLib AltWrapper, .registration = TRUE
 #' @importFrom Rcpp sourceCpp
-#' @importFrom AltrepPointer wrapPointer
+#' @importFrom DescTools StrAlign
 
 .onLoad<- function(libname, pkgname){
   C_initial_package(altrepRegistryEnvironment,altrepSymbolList)

@@ -74,8 +74,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // C_create_altrep
-SEXP C_create_altrep(SEXP class_symbol_name, SEXP x, SEXP class_type, SEXP state);
-RcppExport SEXP _AltWrapper_C_create_altrep(SEXP class_symbol_nameSEXP, SEXP xSEXP, SEXP class_typeSEXP, SEXP stateSEXP) {
+SEXP C_create_altrep(SEXP class_symbol_name, SEXP x, SEXP class_type, SEXP state, SEXP attrName, SEXP attributes);
+RcppExport SEXP _AltWrapper_C_create_altrep(SEXP class_symbol_nameSEXP, SEXP xSEXP, SEXP class_typeSEXP, SEXP stateSEXP, SEXP attrNameSEXP, SEXP attributesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -83,7 +83,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< SEXP >::type x(xSEXP);
     Rcpp::traits::input_parameter< SEXP >::type class_type(class_typeSEXP);
     Rcpp::traits::input_parameter< SEXP >::type state(stateSEXP);
-    rcpp_result_gen = Rcpp::wrap(C_create_altrep(class_symbol_name, x, class_type, state));
+    Rcpp::traits::input_parameter< SEXP >::type attrName(attrNameSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type attributes(attributesSEXP);
+    rcpp_result_gen = Rcpp::wrap(C_create_altrep(class_symbol_name, x, class_type, state, attrName, attributes));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -186,7 +188,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_AltWrapper_C_set_alt_data1", (DL_FUNC) &_AltWrapper_C_set_alt_data1, 2},
     {"_AltWrapper_C_set_alt_data2", (DL_FUNC) &_AltWrapper_C_set_alt_data2, 2},
     {"_AltWrapper_C_duplicate_object", (DL_FUNC) &_AltWrapper_C_duplicate_object, 2},
-    {"_AltWrapper_C_create_altrep", (DL_FUNC) &_AltWrapper_C_create_altrep, 4},
+    {"_AltWrapper_C_create_altrep", (DL_FUNC) &_AltWrapper_C_create_altrep, 6},
     {"_AltWrapper_C_initial_package", (DL_FUNC) &_AltWrapper_C_initial_package, 2},
     {"_AltWrapper_C_package_unload", (DL_FUNC) &_AltWrapper_C_package_unload, 0},
     {"_AltWrapper_C_performace_test1", (DL_FUNC) &_AltWrapper_C_performace_test1, 2},

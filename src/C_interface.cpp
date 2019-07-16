@@ -42,14 +42,23 @@ SEXP C_duplicate_object(SEXP x, SEXP shallow) {
 	}
 }
 
+void C_attachAttr(SEXP R_source, SEXP R_tag, SEXP R_attr) {
+	const char* tag = R_CHAR(Rf_asChar(R_tag));
+	Rf_setAttrib(R_source, Rf_install(tag), R_attr);
+}
 
 
 // [[Rcpp::export]]
-SEXP C_create_altrep(SEXP class_symbol_name, SEXP x,SEXP class_type,SEXP state) {
+SEXP C_create_altrep(SEXP class_symbol_name, SEXP x,SEXP class_type,SEXP state, SEXP attrName, SEXP attributes) {
 	R_altrep_class_t altrep_class = get_altrep_class(class_type);
 	SEXP res = R_new_altrep(altrep_class, x, state);
+	for (int i = 0; i < LENGTH(attrName); i++) {
+		C_attachAttr(res, STRING_ELT(attrName, i), VECTOR_ELT(attributes, i));
+	}
 	return res;
 }
+
+
 
 
 // [[Rcpp::export]]

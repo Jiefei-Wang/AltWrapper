@@ -192,17 +192,25 @@ T altrep_get_element(SEXP x, R_xlen_t i) {
 	return 0;
 }
 
-template<class T>
-SEXP wrap_out_pointer(T * out, R_xlen_t size) {
-	Environment package_env(PACKAGE_ENV_NAME);
-	if (std::is_same<T, double>::value) {
-		return R_new_altrep(altrep_internal_real_class, R_MakeExternalPtr(out, R_NilValue, R_NilValue), wrap(size));
+
+SEXP wrap_out_pointer(void* out, R_xlen_t length, const char* type) {
+
+	if (std::strcmp(type, "raw") == 0) {
+		return R_new_altrep(altrep_internal_raw_class, R_MakeExternalPtr(out, R_NilValue, R_NilValue), wrap(length));
 	}
-	if (std::is_same<T, int>::value) {
-		return R_new_altrep(altrep_internal_integer_class, R_MakeExternalPtr(out, R_NilValue, R_NilValue), wrap(size));
+	if (std::strcmp(type, "logical") == 0) {
+		return R_new_altrep(altrep_internal_logical_class, R_MakeExternalPtr(out, R_NilValue, R_NilValue), wrap(length));
+	}
+	if (std::strcmp(type, "integer") == 0) {
+		return R_new_altrep(altrep_internal_integer_class, R_MakeExternalPtr(out, R_NilValue, R_NilValue), wrap(length));
+	}
+	if (std::strcmp(type,"real")==0) {
+		return R_new_altrep(altrep_internal_real_class, R_MakeExternalPtr(out, R_NilValue, R_NilValue), wrap(length));
 	}
 	errorHandle("Unsupported output type\n");
+	return NULL;
 }
+	
 
 template<class T>
 R_xlen_t numeric_region(SEXP x, R_xlen_t start, R_xlen_t size, T * out) {
@@ -212,7 +220,8 @@ R_xlen_t numeric_region(SEXP x, R_xlen_t start, R_xlen_t size, T * out) {
 		SEXP alt_class_func_symbol = GET_ALT_SYMBOL(getRegion);
 		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, alt_class_func_symbol);
 		if (func != R_UnboundValue) {
-			SEXP output = PROTECT(wrap_out_pointer(out, size));
+			const char* alt_class_type = CHARSXP_TO_CHAR(GET_ALT_CLASS_TYPE(x));
+			SEXP output = PROTECT(wrap_out_pointer(out, size, alt_class_type));
 			SEXP res = make_call(func, GET_ALT_DATA(x), wrap(start + 1), wrap(size), output, x);
 			UNPROTECT(1);
 			return as<R_xlen_t>(res);
@@ -294,12 +303,12 @@ SEXP altrep_serialize_state(SEXP x) {
 		SEXP alt_class_func_symbol = GET_ALT_SYMBOL(serialize);
 		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, alt_class_func_symbol);
 		if (func != R_UnboundValue) {
-			SEXP res = PROTECT(make_call(func, GET_ALT_DATA(x), x));
-			SEXP state = PROTECT(Rf_allocVector(VECSXP, 3));
+			SEXP state = PROTECT(make_call(func, GET_ALT_DATA(x), x));
 			//Not implemented
-			SET_VECTOR_ELT(state, 0, wrap(alt_class_name_symbol));
-			SET_VECTOR_ELT(state, 1, wrap(alt_class_name_symbol));
-			SET_VECTOR_ELT(state, 2, res);
+			SEXP alt_class_name = PROTECT(wrap(SYMBOL_TO_CHAR(alt_class_name_symbol)));
+			Environment package_env(PACKAGE_NAMESPACE);
+			Function serializeAltWrapper = package_env[".serializeAltWrapper"];
+			SEXP res = serializeAltWrapper(alt_class_name, state);
 			UNPROTECT(2);
 			return res;
 		}
@@ -313,15 +322,28 @@ SEXP altrep_serialize_state(SEXP x) {
 	return NULL;
 }
 
+static void loadLibrary() {
+	SEXP e;
+	Rf_protect(e = Rf_lang2(Rf_install("library"), Rf_mkString(PACKAGE_NAME)));
+	R_tryEval(e, R_GlobalEnv, NULL);
+	Rf_unprotect(1);
+}
 
-SEXP altrep_unserialize(SEXP R_class, SEXP state) {
+SEXP altrep_unserialize(SEXP R_class, SEXP serializedInfo) {
 	DEBUG(Rprintf("unserializing data\n"););
 	try {
-		SEXP alt_class_name_symbol = VECTOR_ELT(state, 0);
+		loadLibrary();
+
+		Environment package_env(PACKAGE_NAMESPACE);
+		Function unserializeAltWrapper = package_env[".unserializeAltWrapper"];
+		unserializeAltWrapper(serializedInfo);
+
+		SEXP state = VECTOR_ELT(serializedInfo, 2);
+		SEXP alt_class_name_symbol = VECTOR_ELT(serializedInfo, 0);
 		SEXP alt_class_func_symbol = GET_ALT_SYMBOL(unserialize);
 		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, alt_class_func_symbol);
 		if (func != R_UnboundValue) {
-			SEXP res = make_call(func, R_class, VECTOR_ELT(state, 2), R_NilValue);
+			SEXP res = make_call(func, R_class, state, R_NilValue);
 			return res;
 		}
 		else {
@@ -330,6 +352,118 @@ SEXP altrep_unserialize(SEXP R_class, SEXP state) {
 	}
 	catch (const std::exception & ex) {
 		errorHandle("error in unserialize: \n%s", ex.what());
+	}
+	return NULL;
+}
+
+
+
+int altrep_is_sorted(SEXP x) {
+	DEBUG(Rprintf("is_sorted function\n"););
+	try {
+		SEXP alt_class_name_symbol = GET_ALT_CLASS_NAME_SYMBOL(x);
+		SEXP alt_class_func_symbol = GET_ALT_SYMBOL(isSorted);
+		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, alt_class_func_symbol);
+		if (func != R_UnboundValue) {
+			SEXP res = PROTECT(make_call(func, GET_ALT_DATA(x), x));
+			UNPROTECT(1);
+			return as<int>(res);
+		}
+		else {
+			return UNKNOWN_SORTEDNESS;
+		}
+	}
+	catch (const std::exception& ex) {
+		errorHandle("error in serialize: \n%s", ex.what());
+	}
+	return NULL;
+
+
+}
+
+int altrep_no_NA(SEXP x) {
+	DEBUG(Rprintf("no_NA function\n"););
+	try {
+		SEXP alt_class_name_symbol = GET_ALT_CLASS_NAME_SYMBOL(x);
+		SEXP alt_class_func_symbol = GET_ALT_SYMBOL(noNA);
+		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, alt_class_func_symbol);
+		if (func != R_UnboundValue) {
+			SEXP res = PROTECT(make_call(func, GET_ALT_DATA(x), x));
+			UNPROTECT(1);
+			return as<int>(res);
+		}
+		else {
+			return 0;
+		}
+	}
+	catch (const std::exception& ex) {
+		errorHandle("error in serialize: \n%s", ex.what());
+	}
+	return NULL;
+}
+
+SEXP altrep_sum(SEXP x, Rboolean na_rm) {
+	DEBUG(Rprintf("sum function\n"););
+	try {
+		SEXP alt_class_name_symbol = GET_ALT_CLASS_NAME_SYMBOL(x);
+		SEXP alt_class_func_symbol = GET_ALT_SYMBOL(sum);
+		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, alt_class_func_symbol);
+		if (func != R_UnboundValue) {
+			SEXP R_na_rm = PROTECT(wrap((bool)na_rm));
+			SEXP res = PROTECT(make_call(func, GET_ALT_DATA(x), R_na_rm, x));
+			UNPROTECT(2);
+			return res;
+		}
+		else {
+			return NULL;
+		}
+	}
+	catch (const std::exception& ex) {
+		errorHandle("error in serialize: \n%s", ex.what());
+	}
+	return NULL;
+}
+
+SEXP altrep_min(SEXP x, Rboolean na_rm) {
+	DEBUG(Rprintf("min function\n"););
+	try {
+		SEXP alt_class_name_symbol = GET_ALT_CLASS_NAME_SYMBOL(x);
+		SEXP alt_class_func_symbol = GET_ALT_SYMBOL(min);
+		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, alt_class_func_symbol);
+		if (func != R_UnboundValue) {
+			SEXP R_na_rm = PROTECT(wrap((bool)na_rm));
+			SEXP res = PROTECT(make_call(func, GET_ALT_DATA(x), R_na_rm, x));
+			UNPROTECT(2);
+			return res;
+		}
+		else {
+			return NULL;
+		}
+	}
+	catch (const std::exception& ex) {
+		errorHandle("error in serialize: \n%s", ex.what());
+	}
+	return NULL;
+}
+
+SEXP altrep_max(SEXP x, Rboolean na_rm) {
+	DEBUG(Rprintf("max function\n"););
+	try {
+		SEXP alt_class_name_symbol = GET_ALT_CLASS_NAME_SYMBOL(x);
+		SEXP alt_class_func_symbol = GET_ALT_SYMBOL(max);
+		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, alt_class_func_symbol);
+		if (func != R_UnboundValue) {
+			SEXP R_na_rm = PROTECT(wrap((bool)na_rm));
+			SEXP res = PROTECT(make_call(func, GET_ALT_DATA(x), R_na_rm, x));
+			UNPROTECT(2);
+			return res;
+		}
+		else {
+			return NULL;
+		}
+	}
+	catch (const std::exception& ex) {
+		errorHandle("error in serialize: \n%s", ex.what());
 	}
 	return NULL;
 }
@@ -347,4 +481,3 @@ void* altrep_internal_dataptr(SEXP x, Rboolean writeable) {
 SEXP altrep_internal_duplicate(SEXP x, Rboolean deep) {
 	return x;
 }
-

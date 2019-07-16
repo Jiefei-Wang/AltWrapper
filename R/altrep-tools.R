@@ -5,7 +5,7 @@
   func=addAltrepArg(func)
   .setMethod(classEnv,functionName,func)
 }
-.setS3Method<-function(className,functionName,func){
+.attachAltMethod<-function(className,functionName,func){
   classEnv=.getClassFunctionEnvironment(className)
   .setMethod(classEnv,functionName,func)
 }
@@ -78,5 +78,21 @@ removeAltrepArg<-function(func){
   func
 }
 
+.serializeAltWrapper<-function(className,state){
+  classEnv=.getClassEnvironment(className)
+  list(className=as.symbol(className),classEnv=classEnv,state=state)
+}
 
+.unserializeAltWrapper<-function(serializedInfo){
+  className=as.character(serializedInfo[["className"]])
+  classEnv=serializedInfo[["classEnv"]]
+  .setClassEnvironment(className,classEnv)
+}
 
+.wrapPointer<-function(ptr,length,dataType){
+  wrapPointer(ptr,length,dataType,
+              duplicateMethod="sameObject",
+              coerceMethod="error",
+              coerceErrorMessage="The internal object is not allowed to be coerced!"
+              )
+}

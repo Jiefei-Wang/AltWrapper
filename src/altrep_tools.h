@@ -3,12 +3,16 @@
 #include "R_ext/Altrep.h"
 using namespace Rcpp;
 //Dispacher altrep class
-extern R_altrep_class_t altrep_real_class;
+extern R_altrep_class_t altrep_raw_class;
+extern R_altrep_class_t altrep_logical_class;
 extern R_altrep_class_t altrep_integer_class;
+extern R_altrep_class_t altrep_real_class;
 //Internal altrep class
 //A wrapper for the pointer type
-extern R_altrep_class_t altrep_internal_real_class;
+extern R_altrep_class_t altrep_internal_raw_class;
+extern R_altrep_class_t altrep_internal_logical_class;
 extern R_altrep_class_t altrep_internal_integer_class;
+extern R_altrep_class_t altrep_internal_real_class;
 
 //Call a function with arguments
 SEXP make_call(SEXP fun);
