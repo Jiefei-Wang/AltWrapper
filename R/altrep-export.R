@@ -291,6 +291,7 @@ attachAltMethod <- function(className, ...) {
 #' #Second sum call
 #' sum(A)
 #' @export
+#setAltSelfData
 setAltData<-function(x){
   altObject=get(".self",envir = parent.frame())
   altObject=removeWrapper(altObject)
@@ -306,9 +307,27 @@ setAltData<-function(x){
 #' @param className Character, the name of an altWrapper class
 #' @param methodName Character, the name of a function
 #' @param x an altwrapper object
-#' @inherit makeAltrep examples
 #' @examples 
-#' aaa
+#' ## Define the ALTREP functions
+#' length_func<-function(x) length(x)
+#' get_ptr_func<-function(x,writeable) x
+#' 
+#' ## Define a function to compute variance for the altWrapper object.
+#' var_func<-function(x, y = NULL, na.rm = FALSE, use) return()
+#' 
+#' ## Define the altWrapper class and its functions
+#' setAltClass(className = "example", classType = "integer")
+#' setAltMethod(className = "example", getLength = length_func)
+#' setAltMethod(className = "example", getDataptr = get_ptr_func)
+#' 
+#' ## Create an altWrapper object by providing the class name and data.
+#' A=makeAltrep(className = "example", x = 1L:10L)
+#' A
+#' 
+#' ## Check the existance of the altWrapper class
+#' isAltClassExist(className = "example")
+#' 
+#' isAltMethodExist(className = "example", methodName = "getLength")
 #' 
 #' @details 
 #' `isAltClassExist` : Whether an altWrapper class exist or not
@@ -408,10 +427,10 @@ setAltWrapperData<-function(x,value){
 
 
 #' @details 
-#' `removeClass` : Remove an AltWrapper class
+#' `deleteClass` : Remove an AltWrapper class
 #' @rdname altwrapper-api
 #' @export
-removeClass <- function(className) {
+deleteClass <- function(className) {
   className = as.character(className)
   if (isAltClassExist(className)) {
     rm(list = className, envir = altrepRegistryEnvironment)

@@ -333,7 +333,7 @@ SEXP altrep_unserialize(SEXP R_class, SEXP serializedInfo) {
 	DEBUG(Rprintf("unserializing data\n"););
 	try {
 		loadLibrary();
-
+		Rf_PrintValue(R_class);
 		Environment package_env(PACKAGE_NAMESPACE);
 		Function unserializeAltWrapper = package_env[".unserializeAltWrapper"];
 		unserializeAltWrapper(serializedInfo);

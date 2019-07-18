@@ -55,6 +55,7 @@ SEXP C_create_altrep(SEXP class_symbol_name, SEXP x,SEXP class_type,SEXP state, 
 	for (int i = 0; i < LENGTH(attrName); i++) {
 		C_attachAttr(res, STRING_ELT(attrName, i), VECTOR_ELT(attributes, i));
 	}
+	SET_NAMED(res, 0);
 	return res;
 }
 

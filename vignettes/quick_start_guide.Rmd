@@ -1,0 +1,64 @@
+---
+title: "Package Quick Start Guide"
+author: 
+- name: Jiefei Wang
+  affiliation: Roswell Park Comprehensive Cancer Center, Buffalo, NY
+date: "`r Sys.Date()`"
+output:
+    BiocStyle::html_document:
+        toc: true
+        toc_float: true
+vignette: >
+  %\VignetteIndexEntry{quickStart}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+package: AltWrapper
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+library("AltWrapper")
+```
+
+# Introduction
+There are numerous data sources in R. When data is not in a standard R format, R provide a variaty of methods to read it. One can write a function to convert the data into an R data structure, or implement an S3/S4 class and keep the data in its original format. However, this flexibility introduces a lot of troubles when the data is interacting with the other R packages. While one package may assume the data is an R vector, the other package may expect the data is an S4 object with `[` and `[<-` implemented. Without a standard, it will waste a lot of time to handle the data structure, instead of doing the data analysis. 
+
+`ALTREP` is a set of new APIs in R provided since R 3.5. It is designed to represent a non-standard data structure to a standard R vector using the unified APIs. At R level, there is no difference between an R vector and an `ALTREP` vector. This mechanism provides a possibility to wrap any data to a lightweight R vector without using S3/S4 class while still preserving it original data format. While `ALTREP` has the potential to be an official way to read any non-standard data in R, the requirement of knowing C++ language and R's C interfact and lacking of official document impede its development. Even for those who is familar with C++ language, it will takes a lot of energy to learn `ALTREP` and manage their C++ code. `AltWrapper` is a package for developers to make the use of `ALTREP` simpler in R. Developers are able to define all `ALTREP` APIs using R functions, and to debug and replace an `ALTREP` function at any time without doing compilation. While R code is generally slower compared to C++ code,  a special consideration is token to minimize the overhead of calling an user-defined R function. With the help of `AltWrapper`, Users are not required to know C++ language to use `ALTREP`.
+
+# Example
+
+We will illustrate the package with a simplest example. Suppose we want to represent a sequence vector in a compact format, which means the sequence will only have a starting value and its increment as the data. We will use this compacted sequence to create a standard R vecotr by defining `ALTREP` APIS.
+
+```{r}
+#sequence 1:10
+A_compact=list(start=1L,by=1L,length=10L)
+
+#Define ALTREP APIs
+lengthFunc<-function(x){
+  return(x$length)
+}
+getElementFunc<-function(x,i){
+  return(x$start+x$by*(i-1))
+}
+
+#Register ALTREP class and functions
+setAltClass(className="compactSeq","integer")
+setAltMethod(className="compactSeq",getLength = lengthFunc)
+setAltMethod(className="compactSeq",getElement = getElementFunc)
+
+
+
+
+```
+
+
+
+
+
+
+
+
+
