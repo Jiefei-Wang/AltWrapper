@@ -30,29 +30,39 @@ There are numerous data sources in R. When data is not in a standard R format, R
 
 # Example
 
-We will illustrate the package with a simplest example. Suppose we want to represent a sequence vector in a compact format, which means the sequence will only have a starting value and its increment as the data. We will use this compacted sequence to create a standard R vecotr by defining `ALTREP` APIS.
+We will illustrate the package with a simple example. Suppose we want to represent a sequence vector in a compact format. The sequence only has a starting value and its increment as the data. We will create a compacted R vecotr by defining `ALTREP` APIS.
 
 ```{r}
 #sequence 1:10
-A_compact=list(start=1L,by=1L,length=10L)
+A_compact = list(start = 1L, by = 1L, length = 10L)
 
 #Define ALTREP APIs
-lengthFunc<-function(x){
+lengthFunc <- function(x) {
   return(x$length)
 }
-getElementFunc<-function(x,i){
-  return(x$start+x$by*(i-1))
+getElementFunc <- function(x, i) {
+  return(x$start + x$by * (i - 1))
 }
 
 #Register ALTREP class and functions
-setAltClass(className="compactSeq","integer")
-setAltMethod(className="compactSeq",getLength = lengthFunc)
-setAltMethod(className="compactSeq",getElement = getElementFunc)
+setAltClass(className = "compactSeq", "integer")
+setAltMethod(className = "compactSeq", getLength = lengthFunc)
+setAltMethod(className = "compactSeq", getElement = getElementFunc)
 
+#Create altWrapper object
+A_vector = makeAltrep(className = "compactSeq", x = A_compact)
 
-
-
+#Check the result
+is.vector(A_vector)
+A_vector[1:10]
 ```
+The return value is an R vector. The value can be accessed via regular `[` operator. Please note that the variable `A_vector` cannot be printed just by typing its variable name in the console since 
+ALTREP is still underdevelopment and some R functions do not catch up with it. The problem will be fixed in future R release.
+
+
+
+
+
 
 
 

@@ -8,7 +8,7 @@
 \alias{getAltMethod}
 \alias{getAltWrapperData}
 \alias{setAltWrapperData}
-\alias{removeClass}
+\alias{deleteClass}
 \alias{altClassStatus}
 \title{AltWrapper APIs}
 \usage{
@@ -26,7 +26,7 @@ getAltWrapperData(x)
 
 setAltWrapperData(x, value)
 
-removeClass(className)
+deleteClass(className)
 
 altClassStatus(className = NULL, x = NULL)
 }
@@ -62,11 +62,30 @@ or a method attached to the altWrapper class.
 
 \code{setAltWrapperData} : Set the data for an altwrapper object
 
-\code{removeClass} : Remove an AltWrapper class
+\code{deleteClass} : Remove an AltWrapper class
 
 \code{altClassStatus} : Show the status of an altWrapper class
 }
 \examples{
-aaa
+## Define the ALTREP functions
+length_func<-function(x) length(x)
+get_ptr_func<-function(x,writeable) x
+
+## Define a function to compute variance for the altWrapper object.
+var_func<-function(x, y = NULL, na.rm = FALSE, use) return()
+
+## Define the altWrapper class and its functions
+setAltClass(className = "example", classType = "integer")
+setAltMethod(className = "example", getLength = length_func)
+setAltMethod(className = "example", getDataptr = get_ptr_func)
+
+## Create an altWrapper object by providing the class name and data.
+A=makeAltrep(className = "example", x = 1L:10L)
+A
+
+## Check the existance of the altWrapper class
+isAltClassExist(className = "example")
+
+isAltMethodExist(className = "example", methodName = "getLength")
 
 }
