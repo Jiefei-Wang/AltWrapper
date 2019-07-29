@@ -11,6 +11,9 @@ attachAltMethod(className, ...)
 
 \item{...}{Named arguments. The functions that you want to attach to the class.}
 }
+\value{
+No return value
+}
 \description{
 Attach a function to an altwrapper class. The function will
 not be called by R automatically. It is designed to mimic
@@ -21,17 +24,26 @@ the object-oriented feature for an altwrapper class.
 length_func<-function(x) length(x)
 get_ptr_func<-function(x,writeable) x
 
-## Define a function to compute variance for the altWrapper object.
-var_func<-function(x, y = NULL, na.rm = FALSE, use) return()
 
 ## Define the altWrapper class and its functions
 setAltClass(className = "example", classType = "integer")
 setAltMethod(className = "example", getLength = length_func)
 setAltMethod(className = "example", getDataptr = get_ptr_func)
 
+
 ## Create an altWrapper object by providing the class name and data.
 A=makeAltrep(className = "example", x = 1L:10L)
 A
 
+
+## Define a function to compute variance for the altWrapper object.
+var_func <- function(x, y = NULL, na.rm = FALSE, use)
+  return(var(x, y, na.rm, use))
+
+## attach the function to the altWrapper class
+## The function cannot be called automatically by R
+## Users can retrieve the function via `getAltMethod`
+## and call it explicitly.
+attachAltMethod(className = "example", var = var_func)
 
 }

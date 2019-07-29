@@ -44,7 +44,8 @@ getElementFunc <- function(x, i) {
   return(x$start + x$by * (i - 1))
 }
 
-#Register ALTREP class and functions
+## Register ALTREP class and functions
+## The type of the vector is integer
 setAltClass(className = "compactSeq", "integer")
 setAltMethod(className = "compactSeq", getLength = lengthFunc)
 setAltMethod(className = "compactSeq", getElement = getElementFunc)
@@ -54,10 +55,86 @@ A_vector = makeAltrep(className = "compactSeq", x = A_compact)
 
 #Check the result
 is.vector(A_vector)
-A_vector[1:10]
 ```
-The return value is an R vector. The value can be accessed via regular `[` operator. Please note that the variable `A_vector` cannot be printed just by typing its variable name in the console since 
-ALTREP is still underdevelopment and some R functions do not catch up with it. The problem will be fixed in future R release.
+We claim that the altWrapper class is an integer class. Therefore, the return value of the function `makeAltrep` is an integer R vector. The value can be accessed via regular `[` operator. An altWrapper object must have `getLength` defined. For most operations, altWrapper API `getDataptr` is required. Since there is no actual data for a compact sequence, we define the API `getElement` instead. Please refer to `?setAltMethod` to see a full list of available APIs.
+
+Please note that the variable `A_vector` cannot be printed just by typing its variable name in the console for 
+ALTREP is still underdevelopment and some R functions do not catch up with it. The problem will be fixed in future R release. In the current stage, the variable can be printed out either by using `[` operator to force R to use `get_Elt` method, or by using `printAltWrapper` function providing  by AltWrapper package.
+```{r}
+## Use [ operator
+A_vector[1:10]
+
+## Use print method
+printAltWrapper(A_vector)
+```
+Alternatively, there is an S3 print method defined for the altWrapper class, you can create an S3 object by calling the function `makeAltrep` with the argument `S3Class=TRUE`.
+```{r}
+#Create an S3 version of altWrapper object
+A_vector_s3 = makeAltrep(className = "compactSeq", x = A_compact, S3Class=TRUE)
+A_vector_s3
+#Check class type
+class(A_vector)
+class(A_vector_s3)
+```
+
+
+# Manage AltWrapper Class
+## Function Define/Redefine
+The definition of an API of an altWrapper class is ad hoc. You can change the API even after an object is created. For example, we can define the sum function of the class `compactSeq` given that we have created an object `A_vector` for the class. 
+```{r}
+sumFunc <- function(x, na.rm) {
+  message("Sum function")
+  a1 = x$start
+  n = x$length
+  d = x$by
+  return(n * a1 + n * (n - 1) * d / 2)
+}
+
+setAltMethod(className = "compactSeq", sum = sumFunc)
+
+sum(A_vector)
+```
+The variable `A_vector` has been made before we define the sum function for its class, but we still see the message from our customized sum function. We can also redefine the sum function at any moment.
+```{r}
+sumFunc <- function(x, na.rm) {
+  message("Sum function V2")
+  a1 = x$start
+  n = x$length
+  d = x$by
+  return(n * a1 + n * (n - 1) * d / 2)
+}
+
+setAltMethod(className = "compactSeq", sum = sumFunc)
+
+sum(A_vector)
+```
+A warning will be shown to indicate the sum function has been defined previously. It can be suppressed by calling `setAltWrapperOptions(redefineWarning=FALSE)`. A function can be deleted by setting its value to `NULL`. For example, The sum function can be removed from the class `compactSeq` via `setAltMethod(className = "compactSeq", sum = NULL)`.
+
+
+## Check Class Functions
+The following example shows how to retrieve a function from an altWrapper class.
+```{r}
+sumFunc = getAltMethod(className = "compactSeq", methodName = "sum")
+sumFunc
+```
+A NULL value will be returned if the function is not found. Note that there is an extra argument `.self` in `sumFunc` function. This argument is used to pass the altWrapper object itself. 
+
+You can also get a summary report of an altWrapper class
+```{r}
+altClassStatus(className = "compactSeq")
+```
+The report shows the type of the ALTREP class and status of all ALTREP APIs. The attached function number are the functions which are not ALTREP APIs and associated with the altWrapper class. Please refer to `?attachAltMethod` to see the details.
+
+
+# Session Info
+```{r}
+sessionInfo()
+```
+
+
+
+
+
 
 
 

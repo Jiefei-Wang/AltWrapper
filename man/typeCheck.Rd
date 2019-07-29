@@ -12,6 +12,11 @@ is.altWrapper(x)
 \arguments{
 \item{x}{An object}
 }
+\value{
+Logical value indicating whether the object is an ALTREP
+
+Logical value indicating whether the object is an altWrapper
+}
 \description{
 Check the type of an object
 }

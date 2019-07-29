@@ -20,12 +20,23 @@ setAltData2(x, value)
 
 \item{value}{The data that will be set to an ALTREP object}
 }
+\value{
+\code{getAltData1} : An R object in data1 slot of the ALTREP
+
+\code{getAltData2} : An R object in data2 slot of the ALTREP
+
+\code{setAltData1} : \code{TRUE} if the value has been set or
+\code{FALSE} if the object is not an ALTREP
+
+\code{setAltData2} : \code{TRUE} if the value has been set or
+\code{FALSE} if the object is not an ALTREP
+}
 \description{
 Get / Set data1 or data2 from an ALTREP object.
 The function will return \code{NULL} if the object is
-not an ALTREP. These are native ALTREP APIs, please
-do not try to modify an altWrapper object with naive APIs
-if you do not know the implementation of the altWrapper.
+not an ALTREP. These are native ALTREP APIs, it is
+not recommended to call these functions to modify an
+ALTREP object.
 }
 \examples{
 ## A compact sequence is an ALTREP, 

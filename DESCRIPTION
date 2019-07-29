@@ -1,16 +1,30 @@
 Package: AltWrapper
 Type: Package
-Title: What the Package Does in One 'Title Case' Line
-Version: 1.0
+Title: 
+    A wrapper of ALTREP APIs.
+    User can define and manage an ALTREP class in purely R level. 
+    Knowledge of C++ is not required for using this package
+Version: 0.99.0
 Date: 2019-06-04
-Author: Your Name
-Maintainer: Your Name <your@email.com>
-Description: One paragraph description of what the package does as one or more full
-         sentences.
+Author: Jiefei Wang
+Maintainer: Jiefei Wang <szwjf08@gmail.com>
+Description: 
+    The package is designed for facilitating development of ALTREP-related 
+    packages. It provides a set of functions to define and manage an ALTREP 
+    class in purely R level. Defining an ALTREP
+    function is informal and ad hoc. There is no compilation for defining 
+    an ALTREP function and the function can be redefined at any time.
+    Users are expected to call setAltClass to define the class name and 
+    type first. Then calling setAltMethod to define the behavior of an ALTREP
+    class. Finally an ALTREP object can be made by calling makeAltrep.
 License: GPL (>= 2)
-Imports: Rcpp (>= 1.0.1)
+Imports: 
+    Rcpp (>= 1.0.1),
+    DescTools,
+    BiocStyle
 LinkingTo: Rcpp
 RoxygenNote: 6.1.1
+biocViews: Infrastructure
 Suggests: 
     testthat,
     knitr,

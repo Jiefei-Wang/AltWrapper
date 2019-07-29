@@ -4,7 +4,7 @@
 \alias{makeAltrep}
 \title{Make an altWrapper object}
 \usage{
-makeAltrep(className, x, attributes = NULL)
+makeAltrep(className, x, attributes = NULL, S3Class = FALSE)
 }
 \arguments{
 \item{className}{Character, the name of an altWrapper class}
@@ -12,6 +12,13 @@ makeAltrep(className, x, attributes = NULL)
 \item{x}{The data of the returned altWrapper object}
 
 \item{attributes}{Named list, attributes that will be attached to the object}
+
+\item{S3Class}{Logical, whether the return value is of an AltWrapper S3 class. If the
+argument \code{attributes} also contains \code{class} entry, AltWrapper will be a subclass of the class
+specified in the argument \code{attributes}.}
+}
+\value{
+An ALTREP vector
 }
 \description{
 This function make an altWrapper object from an altWrapper class
@@ -23,17 +30,26 @@ be set via \code{setAltClass} and \code{setAltMethod} functions.
 length_func<-function(x) length(x)
 get_ptr_func<-function(x,writeable) x
 
-## Define a function to compute variance for the altWrapper object.
-var_func<-function(x, y = NULL, na.rm = FALSE, use) return()
 
 ## Define the altWrapper class and its functions
 setAltClass(className = "example", classType = "integer")
 setAltMethod(className = "example", getLength = length_func)
 setAltMethod(className = "example", getDataptr = get_ptr_func)
 
+
 ## Create an altWrapper object by providing the class name and data.
 A=makeAltrep(className = "example", x = 1L:10L)
 A
 
+
+## Define a function to compute variance for the altWrapper object.
+var_func <- function(x, y = NULL, na.rm = FALSE, use)
+  return(var(x, y, na.rm, use))
+
+## attach the function to the altWrapper class
+## The function cannot be called automatically by R
+## Users can retrieve the function via `getAltMethod`
+## and call it explicitly.
+attachAltMethod(className = "example", var = var_func)
 
 }

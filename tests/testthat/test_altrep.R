@@ -115,8 +115,8 @@ for(i in seq_along(classTypeList)){
   })
   
   test_that("remove class",{
-    expect_warning(removeClass(className = "test1"))
-    expect_error(removeClass(className = "test"),NA)
+    expect_warning(deleteClass(className = "test1"))
+    expect_error(deleteClass(className = "test"),NA)
   })
   
 }

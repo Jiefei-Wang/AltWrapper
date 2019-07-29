@@ -29,12 +29,20 @@ C_create_altrep <- function(class_symbol_name, x, class_type, state, attrName, a
     .Call(`_AltWrapper_C_create_altrep`, class_symbol_name, x, class_type, state, attrName, attributes)
 }
 
-C_initial_package <- function(altrep_class_space, altrep_symbol_space) {
-    invisible(.Call(`_AltWrapper_C_initial_package`, altrep_class_space, altrep_symbol_space))
+C_create_internal_altrep <- function(class_type, length) {
+    .Call(`_AltWrapper_C_create_internal_altrep`, class_type, length)
 }
 
-C_package_unload <- function() {
-    invisible(.Call(`_AltWrapper_C_package_unload`))
+C_getName <- function(x) {
+    .Call(`_AltWrapper_C_getName`, x)
+}
+
+C_duplicate <- function(x, shallow) {
+    .Call(`_AltWrapper_C_duplicate`, x, shallow)
+}
+
+C_initial_package <- function(altrep_class_space, altrep_symbol_space) {
+    invisible(.Call(`_AltWrapper_C_initial_package`, altrep_class_space, altrep_symbol_space))
 }
 
 C_performace_test1 <- function(a, n) {
@@ -55,6 +63,10 @@ C_test2 <- function(expr, env) {
 
 C_test3 <- function(f, x) {
     .Call(`_AltWrapper_C_test3`, f, x)
+}
+
+C_test4 <- function(x) {
+    invisible(.Call(`_AltWrapper_C_test4`, x))
 }
 
 rcpp_hello_world <- function() {

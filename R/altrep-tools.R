@@ -19,7 +19,7 @@
     return()
   }
   if((!is.null(classEnv[[functionName]]))&&getAltWrapperOptions("redefineWarning")){
-    warning("The method '",functionName,"' has been define and will be replaced.")
+    warning("The method '",functionName,"' has been defined and will be replaced.")
   }
   classEnv[[functionName]]=func
 }
@@ -65,11 +65,13 @@ getClassNameDispatcher<-function(className=NULL,x=NULL){
 
 #add an altrep argument(.self) to a function
 addAltrepArg<-function(func){
+  if(is.null(func)) return(NULL)
   args=formals(func)
   formals(func)<-c(args,alist(.self=))
   func
 }
 removeAltrepArg<-function(func){
+  if(is.null(func)) return(NULL)
   args=formals(func)
   argName=names(args)
   if(argName[length(argName)]==".self"){
@@ -89,10 +91,3 @@ removeAltrepArg<-function(func){
   .setClassEnvironment(className,classEnv)
 }
 
-.wrapPointer<-function(ptr,length,dataType){
-  wrapPointer(ptr,length,dataType,
-              duplicateMethod="sameObject",
-              coerceMethod="error",
-              coerceErrorMessage="The internal object is not allowed to be coerced!"
-              )
-}

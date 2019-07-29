@@ -10,6 +10,41 @@ setAltMethod(className, inspect, getLength, getDataptr, getDataptrOrNull,
 }
 \arguments{
 \item{className}{Character, the name of the class}
+
+\item{inspect}{Function, see detail}
+
+\item{getLength}{Function, see detail}
+
+\item{getDataptr}{Function, see detail}
+
+\item{getDataptrOrNull}{Function, see detail}
+
+\item{getElement}{Function, see detail}
+
+\item{getSubset}{Function, see detail}
+
+\item{getRegion}{Function, see detail}
+
+\item{duplicate}{Function, see detail}
+
+\item{coerce}{Function, see detail}
+
+\item{serialize}{Function, see detail}
+
+\item{unserialize}{Function, see detail}
+
+\item{isSorted}{Function, see detail}
+
+\item{noNA}{Function, see detail}
+
+\item{sum}{Function, see detail}
+
+\item{min}{Function, see detail}
+
+\item{max}{Function, see detail}
+}
+\value{
+No return value
 }
 \description{
 Define altWrapper methods which are
@@ -102,17 +137,26 @@ functions are only available for \code{integer} and \code{real} ALTREP class typ
 length_func<-function(x) length(x)
 get_ptr_func<-function(x,writeable) x
 
-## Define a function to compute variance for the altWrapper object.
-var_func<-function(x, y = NULL, na.rm = FALSE, use) return()
 
 ## Define the altWrapper class and its functions
 setAltClass(className = "example", classType = "integer")
 setAltMethod(className = "example", getLength = length_func)
 setAltMethod(className = "example", getDataptr = get_ptr_func)
 
+
 ## Create an altWrapper object by providing the class name and data.
 A=makeAltrep(className = "example", x = 1L:10L)
 A
 
+
+## Define a function to compute variance for the altWrapper object.
+var_func <- function(x, y = NULL, na.rm = FALSE, use)
+  return(var(x, y, na.rm, use))
+
+## attach the function to the altWrapper class
+## The function cannot be called automatically by R
+## Users can retrieve the function via `getAltMethod`
+## and call it explicitly.
+attachAltMethod(className = "example", var = var_func)
 
 }
