@@ -4,7 +4,7 @@ using std::string;
 #define PACKAGE_NAME "AltWrapper"
 #define PACKAGE_ENV_NAME "namespace:" PACKAGE_NAME
 #define PACKAGE_NAMESPACE R_FindNamespace(Rf_mkString(PACKAGE_NAME))
-#define DEBUG(x)
+#define DEBUG(x) x
 
 #define HAS_KEY(map,key) map.find(key)!=map.end()
 #define ERROR_WHEN_NOT_FIND_STR_KEY(map,key)\

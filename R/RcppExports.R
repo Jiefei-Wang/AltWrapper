@@ -69,6 +69,10 @@ C_test4 <- function(x) {
     invisible(.Call(`_AltWrapper_C_test4`, x))
 }
 
+C_test5 <- function(x) {
+    invisible(.Call(`_AltWrapper_C_test5`, x))
+}
+
 rcpp_hello_world <- function() {
     .Call(`_AltWrapper_rcpp_hello_world`)
 }

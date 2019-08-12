@@ -107,13 +107,26 @@ void* altrep_dataptr(SEXP x, Rboolean writeable) {
 				return dataptr(res);
 			}
 		}
-		else {
-			errorHandle("cannot access data pointer for this ALTVEC object");
+		//Check if the pointer is accessable from dataptrOrNull function
+		DEBUG(Rprintf("data pointer is not available. Auto accessing data pointer or null\n"));
+		alt_class_func_symbol = GET_ALT_SYMBOL(getDataptrOrNull);
+		func = GET_ALT_METHOD(alt_class_env, alt_class_func_symbol);
+		if (func != R_UnboundValue) {
+			SEXP res = make_call(func, GET_ALT_DATA(x), x);
+			switch (TYPEOF(res)) {
+			case NILSXP:
+				return NULL;
+			case EXTPTRSXP:
+				return R_ExternalPtrAddr(res);
+			default:
+				return DATAPTR(res);
+			}
 		}
 	}
 	catch (const std::exception & ex) {
 		errorHandle("error in dataptr: \n%s", ex.what());
 	}
+	errorHandle("cannot access data pointer for this ALTVEC object");
 	return NULL;
 }
 const void* altrep_dataptr_or_null(SEXP x)
@@ -131,8 +144,6 @@ const void* altrep_dataptr_or_null(SEXP x)
 			case EXTPTRSXP:
 				return R_ExternalPtrAddr(res);
 			default:
-				//double* ptr = (double*)DATAPTR(res);
-				//printf("check,%f \n", ptr[0]);
 				return DATAPTR(res);
 			}
 		}
@@ -258,7 +269,18 @@ SEXP altrep_duplicate(SEXP x, Rboolean deep) {
 			return res;
 		}
 		else {
-			return NULL;
+			if (GET_ALT_CLASS_SETTING_DUPLICATE(alt_class_name_symbol)) {
+				DEBUG(Rprintf("Auto duplicate\n"));
+				SEXP class_type = GET_ALT_CLASS_TYPE(x);
+				R_altrep_class_t altrep_class = get_altrep_class(class_type);
+				SEXP data = PROTECT(Rf_shallow_duplicate(R_altrep_data1(x)));
+				SEXP duplicated_object = R_new_altrep(altrep_class, data, R_altrep_data2(x));
+				UNPROTECT(1);
+				return(duplicated_object);
+			}
+			else {
+				return NULL;
+			}
 		}
 	}
 	catch (const std::exception & ex) {
@@ -297,24 +319,35 @@ SEXP altrep_coerce(SEXP x, int type) {
 
 
 SEXP altrep_serialize_state(SEXP x) {
-	DEBUG(Rprintf("serializing data\n"););
+	DEBUG(Rprintf("serializing data\n"));
 	try {
 		SEXP alt_class_name_symbol = GET_ALT_CLASS_NAME_SYMBOL(x);
 		SEXP alt_class_func_symbol = GET_ALT_SYMBOL(serialize);
 		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, alt_class_func_symbol);
+		SEXP state;
 		if (func != R_UnboundValue) {
-			SEXP state = PROTECT(make_call(func, GET_ALT_DATA(x), x));
-			//Not implemented
-			SEXP alt_class_name = PROTECT(wrap(SYMBOL_TO_CHAR(alt_class_name_symbol)));
-			Environment package_env(PACKAGE_NAMESPACE);
-			Function serializeAltWrapper = package_env[".serializeAltWrapper"];
-			SEXP res = serializeAltWrapper(alt_class_name, state);
-			UNPROTECT(2);
-			return res;
+			state = PROTECT(make_call(func, GET_ALT_DATA(x), x));
 		}
 		else {
-			return NULL;
+			//If a user has not provided a serialize function, use the default if auto serialize is on
+			if (GET_ALT_CLASS_SETTING_SERIALIZE(alt_class_name_symbol)) {
+				DEBUG(Rprintf("Auto serializing data\n"));
+				state = PROTECT(wrap(List::create(R_altrep_data1(x), R_altrep_data2(x))));
+			}
+			else {
+				//If the auto serialize function has been turned off, return NULL
+				return NULL;
+			}
 		}
+		//printf("check\n");
+		//Create character class name since symbol name will be recognized as a variable
+		SEXP alt_class_name = PROTECT(wrap(SYMBOL_TO_CHAR(alt_class_name_symbol)));
+		//call package serialize function
+		Environment package_env(PACKAGE_NAMESPACE);
+		Function serializeAltWrapper = package_env[".serializeAltWrapper"];
+		SEXP res = serializeAltWrapper(alt_class_name, state);
+		UNPROTECT(2);
+		return res;
 	}
 	catch (const std::exception & ex) {
 		errorHandle("error in serialize: \n%s", ex.what());
@@ -331,22 +364,41 @@ static void loadLibrary() {
 
 SEXP altrep_unserialize(SEXP R_class, SEXP serializedInfo) {
 	DEBUG(Rprintf("unserializing data\n"););
+
+	//Rf_PrintValue(serializedInfo);
 	try {
 		loadLibrary();
 		Environment package_env(PACKAGE_NAMESPACE);
 		Function unserializeAltWrapper = package_env[".unserializeAltWrapper"];
 		unserializeAltWrapper(serializedInfo);
 
-		SEXP state = VECTOR_ELT(serializedInfo, 2);
-		SEXP alt_class_name_symbol = VECTOR_ELT(serializedInfo, 0);
+		List serializedInfoList = serializedInfo;
+		SEXP state = serializedInfoList["state"];
+		SEXP alt_class_name_symbol = serializedInfoList["className"];
 		SEXP alt_class_func_symbol = GET_ALT_SYMBOL(unserialize);
 		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, alt_class_func_symbol);
+
 		if (func != R_UnboundValue) {
 			SEXP res = make_call(func, R_class, state, R_NilValue);
 			return res;
 		}
 		else {
-			errorHandle("cannot unserialize this ALTREP object yet");
+			//Check if auto serialize is on
+			if (GET_ALT_CLASS_SETTING_SERIALIZE(alt_class_name_symbol)) {
+				DEBUG(Rprintf("Auto unserializing data\n"));
+				if (HAS_ALT_CLASS(alt_class_name_symbol)) {
+					SEXP class_type = GET_ALT_CLASS_TYPE_BY_NAME(alt_class_name_symbol);
+					R_altrep_class_t altrep_class = get_altrep_class(class_type);
+					SEXP res = R_new_altrep(altrep_class, VECTOR_ELT(state, 0), VECTOR_ELT(state, 1));
+					return(res);
+				}
+				else {
+					errorHandle("The class %s has not been defined", SYMBOL_TO_CHAR(alt_class_name_symbol));
+				}
+			}
+			else {
+				errorHandle("cannot unserialize this ALTREP object yet");
+			}
 		}
 	}
 	catch (const std::exception & ex) {

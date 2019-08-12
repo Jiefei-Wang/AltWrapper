@@ -17,13 +17,13 @@ This function can only be used with an altWrapper object. It
 will remove the wrapper created by R.
 }
 \examples{
-## Define an altWrapper class 
+## Define an altWrapper class
 length_func<-function(x) length(x)
 setAltClass(className = "example", classType = "integer")
 setAltMethod(className = "example", getLength = length_func)
 A=makeAltrep(className = "example", x = 1L:10L)
 
-## Since A is a new object and does not have a wrapper, 
+## Since A is a new object and does not have a wrapper,
 ## calling `removeWrapper` does not have any effect.
 A=removeWrapper(A)
 }

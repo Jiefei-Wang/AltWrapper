@@ -206,6 +206,16 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// C_test5
+void C_test5(SEXP x);
+RcppExport SEXP _AltWrapper_C_test5(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type x(xSEXP);
+    C_test5(x);
+    return R_NilValue;
+END_RCPP
+}
 // rcpp_hello_world
 List rcpp_hello_world();
 RcppExport SEXP _AltWrapper_rcpp_hello_world() {
@@ -235,6 +245,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_AltWrapper_C_test2", (DL_FUNC) &_AltWrapper_C_test2, 2},
     {"_AltWrapper_C_test3", (DL_FUNC) &_AltWrapper_C_test3, 2},
     {"_AltWrapper_C_test4", (DL_FUNC) &_AltWrapper_C_test4, 1},
+    {"_AltWrapper_C_test5", (DL_FUNC) &_AltWrapper_C_test5, 1},
     {"_AltWrapper_rcpp_hello_world", (DL_FUNC) &_AltWrapper_rcpp_hello_world, 0},
     {NULL, NULL, 0}
 };

@@ -39,7 +39,7 @@ not recommended to call these functions to modify an
 ALTREP object.
 }
 \examples{
-## A compact sequence is an ALTREP, 
+## A compact sequence is an ALTREP,
 ## so ALTREP API can get the data that supports the compact sequence.
 ## The data is for developer only and not supposed to be used by users.
 x=1:10

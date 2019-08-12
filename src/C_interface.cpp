@@ -150,3 +150,7 @@ SEXP C_test3(SEXP f,SEXP x) {
 void C_test4(SEXP x) {
 	SET_INTEGER_ELT(x,0,100);
 }
+// [[Rcpp::export]]
+void C_test5(SEXP x) {
+	ALTINTEGER_SET_ELT(x, 0, 100);
+}
