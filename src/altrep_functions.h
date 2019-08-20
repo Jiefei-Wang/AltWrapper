@@ -239,8 +239,10 @@ R_xlen_t numeric_region(SEXP x, R_xlen_t start, R_xlen_t size, T * out) {
 		}
 		else {
 			const T* x_ptr = (const T*)DATAPTR_OR_NULL(x);
-			if (DATAPTR_OR_NULL(x) == NULL)
-				errorHandle("The data pointer or null function returns NULL. For the performance reason, unable to use the default method for the region function\n");
+			if (DATAPTR_OR_NULL(x) == NULL) {
+				x_ptr = (const T*)DATAPTR(x);
+			}
+			//errorHandle("The data pointer or null function returns NULL. For the performance reason, unable to use the default method for the region function\n");
 			R_xlen_t n = XLENGTH(x);
 			R_xlen_t ncopy = n - start > size ? n : n - start;
 			for (R_xlen_t k = 0; k < ncopy; k++)

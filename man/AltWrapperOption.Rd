@@ -15,6 +15,10 @@ or a vector of character names to get the package settings. Currently the
 only available setting is \code{redefineWarning}, which controls whether an warning
 can be given when users try to redine a function or a class of an AltWrapper class.}
 }
+\value{
+\code{setAltWrapperOptions}: No return value
+\code{getAltWrapperOptions}: A list of package settings
+}
 \description{
 Get and set the package settings
 }

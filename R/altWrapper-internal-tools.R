@@ -33,6 +33,7 @@
                 functionName,
                 "' has been defined and will be replaced.")
     }
+    #environment(func) = classEnv
     classEnv[[functionName]] = func
 }
 
@@ -45,6 +46,7 @@
     classEnv
 }
 .setClassEnvironment <- function(className, classEnv) {
+    parent.env(classEnv)= altrepRegistryEnvironment
     altrepRegistryEnvironment[[className]] = classEnv
 }
 ## Get the class function environment
@@ -146,23 +148,24 @@ getClassName <-
 #'
 #' @noRd
 .serializeAltWrapper <- function(className, state) {
-    print("Internal serialize altWrapper function")
-    # autoExport = getAltClassSetting(className = className,
-    #                                 settingName = "autoExportClassDef")
-    # serializeObject = list(
-    #     autoExport = autoExport,
-    #     className = as.symbol(className),
-    #     classEnv = NULL,
-    #     state = state
-    # )
-    # 
-    # if (autoExport) {
-    #     classEnv = .getClassEnvironment(className)
-    #     #print(as.list(classEnv))
-    #     serializeObject[["classEnv"]] = classEnv
-    # }
-    # serializeObject
-    NULL
+    #print("Internal serialize altWrapper function")
+    autoExport = getAltClassSetting(className = className,
+                                    settingName = "autoExportClassDef")
+    serializeObject = list(
+        autoExport = autoExport,
+        className = as.symbol(className),
+        classEnv = NULL,
+        state = state
+    )
+
+    if (autoExport) {
+        classEnv = .getClassEnvironment(className)
+        #print(as.list(classEnv))
+        # serializeObject[["classEnv"]] = classEnv
+        serializeObject[["classEnv"]] = as.list(classEnv)
+    }
+    
+    serializeObject
 }
 
 #' Unserialize altWraper object
@@ -172,11 +175,13 @@ getClassName <-
 #'
 #' @noRd
 .unserializeAltWrapper <- function(serializedInfo) {
-    print("Internal unserialize altWrapper function")
+    #browser()
+    #print("Internal unserialize altWrapper function")
     #message(serializedInfo)
     if (serializedInfo[["autoExport"]]) {
         className = as.character(serializedInfo[["className"]])
-        classEnv = serializedInfo[["classEnv"]]
+        # classEnv = serializedInfo[["classEnv"]]
+        classEnv = list2env(serializedInfo[["classEnv"]],parent=emptyenv())
         # print(serializedInfo)
         # print(classEnv)
         # print(as.list(classEnv))

@@ -18,6 +18,9 @@ globalSettings$redefineWarning = TRUE
 #' ## Get the settings again to see the change
 #' getAltWrapperOptions("redefineWarning")
 #'
+#' @return 
+#' `setAltWrapperOptions`: No return value 
+#' `getAltWrapperOptions`: A list of package settings
 #' @rdname AltWrapperOption
 #' @export
 setAltWrapperOptions <- function(...) {

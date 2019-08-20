@@ -50,6 +50,7 @@ unserialize_func <- function(x) {
     x
 }
 classTypeList = list(integer = as.integer, real = as.numeric)
+deleteClass(className = "test",warning=FALSE)
 
 for (i in seq_along(classTypeList)) {
     classType = names(classTypeList)[i]

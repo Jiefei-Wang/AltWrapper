@@ -66,7 +66,7 @@ setAltSelfData <- function(x) {
 #'
 #' @param className Character, the name of an altWrapper class
 #' @param methodName Character, the name of a function
-#' @param x an altwrapper object
+#' @param x An altwrapper object
 #' @examples
 #' ## Define the ALTREP functions
 #' length_func<-function(x) length(x)
@@ -185,7 +185,11 @@ getAltMethod <- function(className = NULL,
                          x = NULL) {
     if (length(methodName) > 1) {
         return(lapply(methodName, function(method)
-            getAltMethod(className=className, methodName=method, x=x)))
+            getAltMethod(
+                className = className,
+                methodName = method,
+                x = x
+            )))
     }
     
     .getAltMethod(
@@ -235,16 +239,19 @@ setAltWrapperData <- function(x, value) {
 
 #' @details
 #' `deleteClass` : Delete an AltWrapper class
+#' @param warning Logical, whether to give an warning if the class is not found.
 #' @rdname altwrapper-api
 #' @return
 #' `deleteClass` : No return value
 #' @export
-deleteClass <- function(className) {
+deleteClass <- function(className, warning = TRUE) {
     className = as.character(className)
     if (isAltClassExist(className)) {
         rm(list = className, envir = altrepRegistryEnvironment)
     } else{
-        warning("The class '", className, "' is not found")
+        if (warning) {
+            warning("The class '", className, "' is not found")
+        }
     }
 }
 
@@ -280,33 +287,88 @@ altClassStatus <- function(className = NULL, x = NULL) {
     cat(output, sep = "")
 }
 
+#' Get/Set altClass settings
+#'
+#' The function get or set altClass settings. The setting include
+#' `autoExportClassDef`, `autoDuplicate` and `autoSerialize`.
+#'
+#' @inheritParams getClassType
+#' @param settingName A character vector. The name of the setting you want to query
+#' @param ... Named arguments. It is used to change the setting.
+#' @details
+#' `autoExportClassDef` determines whether the definition of a class will be exported to
+#' other processes along with the exported variable(Default `TRUE`). If the setting
+#' is FALSE, users are responsible to export the class definition to the other processes before
+#' exporting an altWrapper variable in order to make sure the exported variable works properly.
+#'
+#' `autoDuplicate` determines whether an altWrapper class can use a default duplication method
+#' (Default `TRUE`).
+#' The default duplication method will copy the underlying data that an altWrapper variable
+#' is using to duplicate the altWrapper variable and resulting a new altWrapper object.
+#' The default duplication is useful when
+#' the data is not a reference of the other data sources. In case that the underlying data
+#' is a reference(eg. file handle), the default duplication will fail to duplicate the
+#' variable since only the handle will be duplicated. Users should define the
+#' duplication function to overwrite the default behavior. An error will be thrown out
+#' If `autoDuplicate` is FALSE and no duplication method is provided.
+#'
+#' `autoSerialize` determines whether an altWrapper class can use a default serialize method
+#' (Default `TRUE`). The default serialize method will serialize the underlying data of an
+#' altWrapper object and send it to the other processes. If the altWrapper object relys on the
+#' other data that is only available in the current processes, users should provide their customized
+#' serialize function to overwrite the default serialize function. An error will be thrown out
+#' If `autoSerialize` is FALSE and no serialize method is provided.
+#' @examples 
+#' ## Define the ALTREP functions
+#' length_func<-function(x) length(x)
+#' get_ptr_func<-function(x,writeable) x
+#'
+#'
+#' ## Define the altWrapper class and its functions
+#' setAltClass(className = "example", classType = "integer")
+#' setAltMethod(className = "example", getLength = length_func)
+#' setAltMethod(className = "example", getDataptr = get_ptr_func)
+#'
+#' ## Create an altWrapper object by providing the class name and data.
+#' A=makeAltrep(className = "example", x = 1L:10L)
+#' A
+#' 
+#' ##Get altWrapper class settings by class name
+#' getAltClassSetting(className = "example")
+#' 
+#' ##Get altWrapper class settings by altWrapper object
+#' getAltClassSetting(x = A)
+#' 
+#' @rdname altWrapper-setting
+#' @return The settings of an altWrapper class
 #' @export
-getAltClassSetting<-function(className = NULL, 
-                             settingName =NULL,
-                             x = NULL){
+getAltClassSetting <- function(className = NULL,
+                               settingName = NULL,
+                               x = NULL) {
     className = getClassName(className = className, x = x)
-    if(is.null(settingName)){
-        settingName=names(altWrapperClassDefaultSettings)
+    if (is.null(settingName)) {
+        settingName = names(altWrapperClassDefaultSettings)
     }
-    result=.getAltClassSetting(className=className,settingName)
-    if(length(result)==1) 
-        result=unlist(result)
+    result = .getAltClassSetting(className = className, settingName)
+    if (length(result) == 1)
+        result = unlist(result)
     result
 }
+#' @rdname altWrapper-setting
 #' @export
-setAltClassSetting<-function(className= NULL,
-                             ...,
-                             x=NULL){
+setAltClassSetting <- function(className = NULL,
+                               ...,
+                               x = NULL) {
     className = getClassName(className = className, x = x)
-    args=c(...)
-    argNames=names(args)
-    missingInd=which(!argNames%in%names(altWrapperClassDefaultSettings))
-    if(length(missingInd)>0){
-        warning("Unsupported settings: ",paste0(argNames[missingInd],collapse=", "))
+    args = c(...)
+    argNames = names(args)
+    missingInd = which(!argNames %in% names(altWrapperClassDefaultSettings))
+    if (length(missingInd) > 0) {
+        warning("Unsupported settings: ",
+                paste0(argNames[missingInd], collapse = ", "))
     }
-    for(i in argNames){
+    for (i in argNames) {
         .setAltClassSetting(className, i, args[[i]])
     }
     
 }
-

@@ -154,3 +154,5 @@ void C_test4(SEXP x) {
 void C_test5(SEXP x) {
 	ALTINTEGER_SET_ELT(x, 0, 100);
 }
+
+

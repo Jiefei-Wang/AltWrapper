@@ -37,6 +37,7 @@
 #' @return No return value
 #' @export
 print.altWrapper <- function(x, ...) {
+    #browser()
     if (!is.altWrapper(x))
         stop("The object is not created by AltWrapper package")
     x = removeWrapper(x)

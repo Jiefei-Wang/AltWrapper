@@ -10,7 +10,7 @@ ptr_or_null_func <- function(x) {
     return(x)
 }
 
-
+deleteClass(className = "test",warning=FALSE)
 setAltClass("test", "real")
 setAltMethod("test", getLength = length_func)
 setAltMethod("test", getDataptr = get_ptr_func)

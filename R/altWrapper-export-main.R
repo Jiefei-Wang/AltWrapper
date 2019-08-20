@@ -2,34 +2,38 @@
 ## AltWrapper symbol list
 ################################
 altrepRegistryEnvironment = new.env()
-altrepClassFunctionArgNum=c(
-    inspect=1,
-    getLength=1,
-    getDataptr=2,
-    getDataptrOrNull=1,
-    getSubset=2,
-    getElement=2,
-    getRegion=4,
-    duplicate=2,
-    coerce=2,
-    serialize=1,
-    unserialize=2,
-    isSorted=1,
-    noNA=1,
-    sum=2,
-    min=2,
-    max=2
+altrepClassFunctionArgNum = c(
+    inspect = 1,
+    getLength = 1,
+    getDataptr = 2,
+    getDataptrOrNull = 1,
+    getSubset = 2,
+    getElement = 2,
+    getRegion = 4,
+    duplicate = 2,
+    coerce = 2,
+    serialize = 1,
+    unserialize = 2,
+    isSorted = 1,
+    noNA = 1,
+    sum = 2,
+    min = 2,
+    max = 2
 )
 
 altrepClassFunctionList = names(altrepClassFunctionArgNum)
 length(altrepClassFunctionList) = 40
 altrepSymbolList = c(altrepClassFunctionList,
-                     "classType", "functionEnvironment","classSettings")
+                     "classType",
+                     "functionEnvironment",
+                     "classSettings")
 altrepSymbolList = lapply(altrepSymbolList, as.symbol)
 
-altWrapperClassDefaultSettings = list(autoExportClassDef = TRUE, 
-                                      autoDuplicate = TRUE,
-                                      autoSerialize = TRUE)
+altWrapperClassDefaultSettings = list(
+    autoExportClassDef = TRUE,
+    autoDuplicate = TRUE,
+    autoSerialize = TRUE
+)
 ################################
 ##Mian function
 ################################
@@ -56,7 +60,6 @@ altWrapperClassDefaultSettings = list(autoExportClassDef = TRUE,
 #' setAltMethod(className = "example", getLength = length_func)
 #' setAltMethod(className = "example", getDataptr = get_ptr_func)
 #'
-#'
 #' ## Create an altWrapper object by providing the class name and data.
 #' A=makeAltrep(className = "example", x = 1L:10L)
 #' A
@@ -65,13 +68,13 @@ altWrapperClassDefaultSettings = list(autoExportClassDef = TRUE,
 #' ## Define a function to compute variance for the altWrapper object.
 #' var_func <- function(x, y = NULL, na.rm = FALSE, use)
 #'   return(var(x, y, na.rm, use))
-#' 
+#'
 #' ## attach the function to the altWrapper class
 #' ## The function cannot be called automatically by R
 #' ## Users can retrieve the function via `getAltMethod`
 #' ## and call it explicitly.
 #' attachAltMethod(className = "example", var = var_func)
-#' 
+#'
 #' @return An ALTREP vector
 #' @export
 makeAltrep <- function(className,
@@ -97,7 +100,12 @@ makeAltrep <- function(className,
         classType = classType
     )
     
-    C_create_altrep(className, x, classType, state, names(attributes), attributes)
+    C_create_altrep(className,
+                    x,
+                    classType,
+                    state,
+                    names(attributes),
+                    attributes)
 }
 
 
@@ -128,9 +136,9 @@ setAltClass <-
                     "' has been defined and will be replaced.")
         }
         
-        classEnv = new.env()
+        classEnv = new.env(parent = globalenv())
         classEnv[["classType"]] = classType
-        classEnv[["functionEnvironment"]] = new.env()
+        classEnv[["functionEnvironment"]] = new.env(parent = classEnv)
         classEnv[["classSettings"]] = altWrapperClassDefaultSettings
         
         .setClassEnvironment(className, classEnv)
@@ -159,7 +167,7 @@ setAltClass <-
 #' @param sum Function, see detail
 #' @param min Function, see detail
 #' @param max Function, see detail
-#' 
+#'
 #' @inherit makeAltrep examples
 #'
 #'
@@ -245,7 +253,7 @@ setAltClass <-
 #'
 #' `sum`, `min` and `max` have the same meaning as R's corresponding functions. These
 #' functions are only available for `integer` and `real` ALTREP class type.
-#' 
+#'
 #' @return No return value
 #' @export
 setAltMethod <- function(className,

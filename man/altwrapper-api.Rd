@@ -26,7 +26,7 @@ getAltWrapperData(x)
 
 setAltWrapperData(x, value)
 
-deleteClass(className)
+deleteClass(className, warning = TRUE)
 
 altClassStatus(className = NULL, x = NULL)
 }
@@ -35,9 +35,11 @@ altClassStatus(className = NULL, x = NULL)
 
 \item{methodName}{Character, the name of a function}
 
-\item{x}{an altwrapper object}
+\item{x}{An altwrapper object}
 
 \item{value}{The data of an altWrapper object}
+
+\item{warning}{Logical, whether to give an warning if the class is not found.}
 }
 \value{
 \code{isAltClassExist} : Logical
