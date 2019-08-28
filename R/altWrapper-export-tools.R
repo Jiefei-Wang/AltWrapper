@@ -57,6 +57,58 @@ setAltSelfData <- function(x) {
     setAltData1(altObject, x)
 }
 
+################################
+## Altwrapper operations
+################################
+#' @details
+#' `is.altWrapper` : Is an object altWrapper?
+#' @rdname typeCheck
+#' @examples
+#'
+#' ## An altWrapper object is ALTREP and altWrapper
+#' length_func<-function(x) length(x)
+#' setAltClass(className = "example", classType = "integer")
+#' setAltMethod(className = "example", getLength = length_func)
+#' A=makeAltrep(className = "example", x = 1L:10L)
+#' is.altrep(x)
+#' is.altWrapper(A)
+#' @return Logical value indicating whether the object is an altWrapper
+#' @export
+is.altWrapper <- function(x) {
+    if (!is.altrep(x))
+        return(FALSE)
+    .isAltWrapper(x)
+}
+
+#' Remove the wrapper created by R
+#'
+#' This function can only be used with an altWrapper object. It
+#' will remove the wrapper created by R.
+#'
+#' @param x An altWrapper object
+#'
+#' @examples
+#' ## Define an altWrapper class
+#' length_func<-function(x) length(x)
+#' setAltClass(className = "example", classType = "integer")
+#' setAltMethod(className = "example", getLength = length_func)
+#' A=makeAltrep(className = "example", x = 1L:10L)
+#'
+#' ## Since A is a new object and does not have a wrapper,
+#' ## calling `removeWrapper` does not have any effect.
+#' A=removeWrapper(A)
+#' @return An altWrapper object
+#' @export
+removeWrapper <- function(x) {
+    repeat {
+        if (!is.altrep(x))
+            stop("The object is not an altWrapper")
+        if (.isAltWrapper(x))
+            return(x)
+        x = getAltData1(x)
+    }
+    return(x)
+}
 
 
 ################################

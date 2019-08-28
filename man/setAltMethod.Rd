@@ -88,7 +88,9 @@ Return value = \code{FALSE} means using the default method to inspect the object
 The argument \code{writeable} means whether R will write data to the pointer.
 Unlike \code{getDataptrOrNull} function. This function must return a pointer.
 It is suggested to throw an error if the ALTREP object does not have a
-data pointer.
+data pointer. Please note that before R 3.7, \code{getDataptr} is the only way
+to print out an ALTREP object without using \code{S3} or \code{S4} method dispatching
+when the data pointer of the object is not available.
 
 \code{getDataptrOrNull} function is similar to \code{getDataptr} function, but it can
 return \code{NULL} if the data pointer is not available.

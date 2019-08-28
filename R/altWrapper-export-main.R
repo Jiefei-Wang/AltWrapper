@@ -239,7 +239,9 @@ setAltClass <-
 #' The argument `writeable` means whether R will write data to the pointer.
 #' Unlike `getDataptrOrNull` function. This function must return a pointer.
 #' It is suggested to throw an error if the ALTREP object does not have a
-#' data pointer.
+#' data pointer. Please note that before R 3.7, `getDataptr` is the only way 
+#' to print out an ALTREP object without using `S3` or `S4` method dispatching 
+#' when the data pointer of the object is not available.
 #'
 #' `getDataptrOrNull` function is similar to `getDataptr` function, but it can
 #' return `NULL` if the data pointer is not available.
@@ -258,10 +260,7 @@ setAltClass <-
 #' `[<-` operator to change the value of the `output` argument. The return value
 #' of `getRegion` function is the true number of reads in the `output` argument.
 #' In most case the return value is the same as `length`, it will be different only when
-#' `start + length - 1` exceeds the length of the ALTREP vector. Please note that 
-#' at the time of this writing(R 3.7 devel), `getRegion` is the only way to print out
-#' an ALTREP object without using `S3` or `S4` method dispatching 
-#' when the data pointer of the object is not available.
+#' `start + length - 1` exceeds the length of the ALTREP vector. 
 #' 
 #'
 #' `duplicate` function duplicates the ALTREP vector. The argument `deep` determines

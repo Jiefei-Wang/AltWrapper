@@ -2,9 +2,21 @@
 % Please edit documentation in R/altWrapper-class.R
 \name{altWrapperPrint}
 \alias{altWrapperPrint}
+\alias{print.altRaw}
+\alias{print.altInteger}
+\alias{print.altLogical}
+\alias{print.altReal}
 \alias{printAltWrapper}
 \title{Print altWrapper vector values}
 \usage{
+\method{print}{altRaw}(x, ...)
+
+\method{print}{altInteger}(x, ...)
+
+\method{print}{altLogical}(x, ...)
+
+\method{print}{altReal}(x, ...)
+
 printAltWrapper(x, ...)
 }
 \arguments{

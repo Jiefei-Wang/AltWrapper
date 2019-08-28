@@ -26,7 +26,7 @@ get_subset_func <- function(x, ind) {
     return(x[ind])
 }
 
-
+deleteClass(className = "test",warning=FALSE)
 setAltClass("test", "real")
 setAltMethod("test", getLength = length_func)
 a = runif(10)

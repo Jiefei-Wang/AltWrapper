@@ -34,12 +34,3 @@ biocViews: Infrastructure
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 VignetteBuilder: knitr
-Collate: 
-    'RcppExports.R'
-    'altWrapper-class.R'
-    'altWrapper-export-main.R'
-    'altWrapper-export-tools.R'
-    'altWrapper-internal-tools.R'
-    'pkgSetting.R'
-    'tools.R'
-    'zzz.R'
