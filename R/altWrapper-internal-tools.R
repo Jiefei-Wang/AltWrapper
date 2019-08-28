@@ -92,6 +92,20 @@ getClassName <-
     }
 
 
+## Convert classType to a base R type
+toBaseRType<-function(classType){
+    if(classType=="real") classType="numeric"
+    classType
+}
+
+## Get the alt class name from class type
+## altRaw, altLogical, altInteger, altReal
+getAltBaseClassName<-function(classType){
+    ## Capitalize the first letter
+    classType=paste0(toupper(substr(classType,1,1)),substring(classType,2))
+    paste0("alt",classType)
+}
+
 ## Add an altrep argument(.self) to a function
 .addAltrepArg <- function(func) {
     if (is.null(func))

@@ -142,42 +142,6 @@ for (i in seq_along(classTypeList)) {
     
     
     
-    ################################
-    ## Print the altWrapper object
-    ################################
-    ##Disable data pointer access
-    setAltMethod(className="test",getDataptr = NULL)
-    setAltMethod(className="test",getDataptrOrNull = NULL)
-    
-    ## Make an S3 class ALTREP
-    b_s3=makeAltrep("test",a,S3Class=TRUE)
-    
-    test_that("No print method defined",{
-        expect_error(print(b_s3))
-    })
-    test_that("print object from pointer", {
-        setAltMethod(className="test",getDataptrOrNull = ptr_or_null_func)
-        expect_output(print(b_s3))
-    })
-    test_that("print object from region", {
-        setAltMethod(className="test",getDataptrOrNull = NULL)
-        setAltMethod(className="test", getRegion = region_func)
-        expect_output(print(b_s3),NULL)
-    })
-    test_that("print object from subset", {
-        setAltMethod(className="test",getRegion = NULL)
-        setAltMethod(className="test", getSubset  = get_subset_func)
-        expect_output(print(b_s3),NULL)
-    })
-    
-    test_that("print object from element", {
-        setAltMethod(className="test",getSubset = NULL)
-        setAltMethod(className="test", getElement  = get_element_func)
-        expect_output(print(b_s3),NULL)
-    })
-    ## restore default
-    setAltMethod(className="test",getDataptrOrNull=ptr_or_null_func)
-    setAltMethod(className="test",getDataptr=get_ptr_func)
     
     ################################
     ## AltWrapper set self data
@@ -218,3 +182,6 @@ for (i in seq_along(classTypeList)) {
         expect_error(b, NA)
     })
 }
+
+
+

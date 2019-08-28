@@ -4,7 +4,8 @@
 \alias{makeAltrep}
 \title{Make an altWrapper object}
 \usage{
-makeAltrep(className, x, attributes = NULL, S3Class = FALSE)
+makeAltrep(className, x, attributes = NULL, S3Class = FALSE,
+  S4Class = FALSE)
 }
 \arguments{
 \item{className}{Character, the name of an altWrapper class}
@@ -14,8 +15,11 @@ makeAltrep(className, x, attributes = NULL, S3Class = FALSE)
 \item{attributes}{Named list, attributes that will be attached to the object}
 
 \item{S3Class}{Logical, whether the return value is of an AltWrapper S3 class. If the
-argument \code{attributes} also contains \code{class} entry, AltWrapper will be a subclass of the class
-specified in the argument \code{attributes}.}
+argument \code{attributes} also contains \code{class} element, AltWrapper will be a subclass of the class
+specified in the element \code{class}.}
+
+\item{S4Class}{Logical,  whether the return value is of an AltWrapper S4 class.
+An error will be returned if both \code{S3Class} and \code{S4Class} are TRUE.}
 }
 \value{
 An ALTREP vector

@@ -1,26 +1,149 @@
 #include "Rcpp.h"
-#include <map>
 #include "altrep.h"
 #include "altrep_macro.h"
 #include "altrep_tools.h"
 #include "tools.h"
 #include <type_traits>
-
-
 using namespace Rcpp;
-using std::map;
-using std::pair;
-/*
-SEXP alt_class_name_symbol = GET_ALT_CLASS_NAME_SYMBOL(x);
-SEXP alt_class_func_symbol = GET_ALT_SYMBOL(inspect);
-ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, alt_class_func_symbol);
-if (func != R_UnboundValue) {
-	SEXP res = make_call(func, GET_ALT_DATA(x));
-	return res;
+
+//an all-in-one function to access the values of an altWrapper object
+//The bool arguments indicate whether it is allowed to get the data from the corresponding function
+//start must be specified if index is a null pointer. The function will first uses index, if not available it uses start.
+template<class T>
+int get_altrep_data(T* result, ULLong n, SEXP x, ULLong* index, ULLong start, bool ptr, bool ptr_or_null, bool element, bool subset) {
+	SEXP alt_class_name_symbol = GET_ALT_CLASS_NAME_SYMBOL(x);
+	SEXP alt_class_env = GET_ALT_CLASS(alt_class_name_symbol);
+	if (alt_class_env == R_UnboundValue)
+		errorHandle("Unable to find the the class '%s'", SYMBOL_TO_CHAR(alt_class_name_symbol));
+	if (ptr_or_null) {
+		//Check whether the pointer is available
+		SEXP alt_class_func_symbol = GET_ALT_SYMBOL(getDataptrOrNull);
+		SEXP func = GET_ALT_METHOD(alt_class_env, alt_class_func_symbol);
+		if (func != R_UnboundValue) {
+			DEBUG(Rprintf("Alternatively access ptr_or_null\n"));
+			SEXP res = make_call(func, GET_ALT_DATA(x), x);
+			const T* ptr = nullptr;
+			switch (TYPEOF(res)) {
+			case NILSXP:
+				break;
+			case EXTPTRSXP:
+				ptr = (const T*)R_ExternalPtrAddr(res);
+			default:
+				ptr = (const T*)DATAPTR_OR_NULL(res);
+			}
+			if (ptr != nullptr) {
+				for (ULLong i = 0; i < n; i++) {
+					if (index != nullptr) {
+						result[i] = ptr[index[i]];
+					}
+					else {
+						result[i] = ptr[start + i];
+					}
+				}
+				return 0;
+			}
+		}
+	}
+
+	//This is a shortcut for getting only one element
+	if (element && n == 1) {
+		//Check whether the element function is available
+		SEXP alt_class_func_symbol = GET_ALT_SYMBOL(getElement);
+		SEXP func = GET_ALT_METHOD(alt_class_env, alt_class_func_symbol);
+		if (func != R_UnboundValue) {
+			DEBUG(Rprintf("Alternatively access element\n"));
+			SEXP res;
+			if (index != nullptr) {
+				res = make_call(func, GET_ALT_DATA(x), wrap(index[0] + 1), x);
+			}
+			else {
+				res = make_call(func, GET_ALT_DATA(x), wrap(start + 1), x);
+			}
+
+			result[0] = as<T>(res);
+			return 0;
+		}
+	}
+
+	if (subset) {
+		//Check whether the subset function is available
+		SEXP alt_class_func_symbol = GET_ALT_SYMBOL(getSubset);
+		SEXP func = GET_ALT_METHOD(alt_class_env, alt_class_func_symbol);
+		if (func != R_UnboundValue) {
+			DEBUG(Rprintf("Alternatively access subset\n"));
+			NumericVector indx(10);			for (ULLong i = 0; i < n; i++) {
+				if (index != nullptr) {
+					indx[i] = index[i] + 1;
+				}
+				else {
+					indx[i] = start + i + 1;
+				}
+			}
+			NumericVector res = NumericVector(make_call(func, GET_ALT_DATA(x), wrap(indx), x));
+			for (ULLong i = 0; i < n; i++) {
+				result[i] = res[i];
+			}
+			return 0;
+		}
+	}
+
+	if (element) {
+		//Check whether the element function is available
+		SEXP alt_class_func_symbol = GET_ALT_SYMBOL(getElement);
+		SEXP func = GET_ALT_METHOD(alt_class_env, alt_class_func_symbol);
+		if (func != R_UnboundValue) {
+			DEBUG(Rprintf("Alternatively access element\n"));
+			for (ULLong i = 0; i < n; i++) {
+				SEXP res;
+				if (index != nullptr) {
+					res = make_call(func, GET_ALT_DATA(x), wrap(index[i] + 1), x);
+				}
+				else {
+					res = make_call(func, GET_ALT_DATA(x), wrap(start + i + 1), x);
+				}
+				result[i] = as<T>(res);
+			}
+			return 0;
+		}
+	}
+
+	if (ptr) {
+		//Check whether the pointer is available
+		SEXP alt_class_func_symbol = GET_ALT_SYMBOL(getDataptr);
+		SEXP func = GET_ALT_METHOD(alt_class_env, alt_class_func_symbol);
+		if (func != R_UnboundValue) {
+			DEBUG(Rprintf("Alternatively access ptr\n"));
+			SEXP R_writeable = PROTECT(wrap<int>(0));
+			SEXP res = make_call(func, GET_ALT_DATA(x), R_writeable, x);
+			T* ptr = nullptr;
+			switch (TYPEOF(res)) {
+			case NILSXP:
+				break;
+			case EXTPTRSXP:
+				ptr = (T*)R_ExternalPtrAddr(res);
+			default:
+				ptr = (T*)DATAPTR(res);
+			}
+			if (ptr != nullptr) {
+				for (ULLong i = 0; i < n; i++) {
+					if (index != nullptr) {
+						result[i] = ptr[index[i]];
+					}
+					else {
+						result[i] = ptr[start + i];
+					}
+				}
+				return 0;
+			}
+		}
+	}
+
+	//If no function available, return -1
+	return -1;
 }
-else {
-}
-*/
+
+
+
 
 /*
 #define ALTREP_FUNCTIONS \
@@ -36,10 +159,6 @@ X(8,subset)\
 X(9,get_element)\
 X(10,region)
 */
-
-
-
-
 
 
 Rboolean altrep_inspect(SEXP x, int pre, int deep, int pvec,
@@ -144,7 +263,7 @@ const void* altrep_dataptr_or_null(SEXP x)
 			case EXTPTRSXP:
 				return R_ExternalPtrAddr(res);
 			default:
-				return DATAPTR(res);
+				return DATAPTR_OR_NULL(res);
 			}
 		}
 	}
@@ -190,11 +309,12 @@ T altrep_get_element(SEXP x, R_xlen_t i) {
 			return returnValue;
 		}
 		else {
-			T* ptr = (T*)DATAPTR_OR_NULL(x);
-			if (ptr == NULL) {
-				errorHandle("Unable to get the data pointer from dataptr_or_null.");
+			T result;
+			ULLong index = i;
+			if (get_altrep_data(&result, 1, x, &index, 0, false, true, false, true) == -1) {
+				errorHandle("Get element function error: Unable to get the data from the ALTREP object.");
 			}
-			return ptr[i];
+			return result;
 		}
 	}
 	catch (const std::exception & ex) {
@@ -238,15 +358,11 @@ R_xlen_t numeric_region(SEXP x, R_xlen_t start, R_xlen_t size, T * out) {
 			return as<R_xlen_t>(res);
 		}
 		else {
-			const T* x_ptr = (const T*)DATAPTR_OR_NULL(x);
-			if (DATAPTR_OR_NULL(x) == NULL) {
-				x_ptr = (const T*)DATAPTR(x);
+			ULLong n = XLENGTH(x);
+			ULLong ncopy = n - start > size ? n : n - start;
+			if (get_altrep_data(out, ncopy, x, nullptr, start, false, true, true, true) == -1) {
+				errorHandle("Get region function error: Unable to get the data from the ALTREP object.");
 			}
-			//errorHandle("The data pointer or null function returns NULL. For the performance reason, unable to use the default method for the region function\n");
-			R_xlen_t n = XLENGTH(x);
-			R_xlen_t ncopy = n - start > size ? n : n - start;
-			for (R_xlen_t k = 0; k < ncopy; k++)
-				out[k] = x_ptr[k + start];
 			return ncopy;
 		}
 	}

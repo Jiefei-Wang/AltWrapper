@@ -60,7 +60,8 @@ X(42, classSettings)
 
 #define ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, alt_class_func_symbol)\
 SEXP alt_class_env =GET_ALT_CLASS(alt_class_name_symbol);\
-if(alt_class_env==R_UnboundValue) errorHandle("Unable to find the var '%s' in the class '%s'",SYMBOL_TO_CHAR(alt_class_func_symbol),SYMBOL_TO_CHAR(alt_class_name_symbol));\
+if(alt_class_env==R_UnboundValue) errorHandle("Unable to find the var '%s' in the class '%s': Class does not exist",\
+												SYMBOL_TO_CHAR(alt_class_func_symbol),SYMBOL_TO_CHAR(alt_class_name_symbol));\
 SEXP func = GET_ALT_METHOD(alt_class_env, alt_class_func_symbol);
 
 

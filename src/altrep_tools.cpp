@@ -43,4 +43,3 @@ if (std::strcmp(name, #func_name)==0)\
 	return ALTREP_SYMBOL_LIST;
 }
 
-
