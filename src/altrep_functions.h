@@ -392,7 +392,14 @@ SEXP altrep_duplicate(SEXP x, Rboolean deep) {
 				DEBUG(Rprintf("Auto duplicate\n"));
 				SEXP class_type = GET_ALT_CLASS_TYPE(x);
 				R_altrep_class_t altrep_class = get_altrep_class(class_type);
-				SEXP data = PROTECT(Rf_shallow_duplicate(R_altrep_data1(x)));
+				SEXP data;
+				if (deep) {
+					data = PROTECT(Rf_duplicate(R_altrep_data1(x)));
+				}
+				else {
+					data = PROTECT(Rf_shallow_duplicate(R_altrep_data1(x)));
+				}
+				
 				SEXP duplicated_object = R_new_altrep(altrep_class, data, R_altrep_data2(x));
 				UNPROTECT(1);
 				return(duplicated_object);
