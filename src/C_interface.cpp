@@ -154,8 +154,10 @@ void C_test4(SEXP x) {
 void C_test5(SEXP x) {
 	ALTINTEGER_SET_ELT(x, 0, 100);
 }
+
+
 // [[Rcpp::export]]
 double C_test6(SEXP x) {
-	REAL_ELT(x, 3);
+	return REAL_ELT(x, 3);
 }
 

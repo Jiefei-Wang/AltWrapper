@@ -49,7 +49,7 @@ altWrapperClassDefaultSettings = list(
 #' @param S3Class Logical, whether the return value is of an AltWrapper S3 class. If the
 #' argument `attributes` also contains `class` element, AltWrapper will be a subclass of the class
 #' specified in the element `class`.
-#' @param S4Class Logical,  whether the return value is of an AltWrapper S4 class. 
+#' @param S4Class Logical,  whether the return value is of an AltWrapper S4 class.
 #' An error will be returned if both `S3Class` and `S4Class` are TRUE.
 #' @examples
 #' ## Define the ALTREP functions
@@ -83,8 +83,7 @@ makeAltrep <- function(className,
                        x,
                        attributes = NULL,
                        S3Class = FALSE,
-                       S4Class = FALSE
-) {
+                       S4Class = FALSE) {
     if (!isAltClassExist(className)) {
         stop("The class '", className, "' is not found.")
     }
@@ -96,7 +95,7 @@ makeAltrep <- function(className,
     }
     
     classType = getClassType(className)
-    altBaseClassName=getAltBaseClassName(classType)
+    altBaseClassName = getAltBaseClassName(classType)
     
     if (S3Class) {
         if (is.null(attributes))
@@ -115,25 +114,21 @@ makeAltrep <- function(className,
     ## For S4 object the reference number is 7
     ## Hopefully it can be removed in future
     if (S4Class) {
-        altWrapperObject= C_create_altrep(
-            className,
-            x,
-            classType,
-            state,
-            names(attributes),
-            attributes
-        )
-        new(altBaseClassName,altWrapperObject)
+        altWrapperObject = C_create_altrep(className,
+                                           x,
+                                           classType,
+                                           state,
+                                           names(attributes),
+                                           attributes)
+        new(altBaseClassName, altWrapperObject)
         #altClassConstructorList[[altBaseClassName]](altWrapperObject)
-    }else{
-        C_create_altrep(
-            className,
-            x,
-            classType,
-            state,
-            names(attributes),
-            attributes
-        )
+    } else{
+        C_create_altrep(className,
+                        x,
+                        classType,
+                        state,
+                        names(attributes),
+                        attributes)
     }
 }
 
@@ -239,8 +234,8 @@ setAltClass <-
 #' The argument `writeable` means whether R will write data to the pointer.
 #' Unlike `getDataptrOrNull` function. This function must return a pointer.
 #' It is suggested to throw an error if the ALTREP object does not have a
-#' data pointer. Please note that before R 3.7, `getDataptr` is the only way 
-#' to print out an ALTREP object without using `S3` or `S4` method dispatching 
+#' data pointer. Please note that before R 3.7, `getDataptr` is the only way
+#' to print out an ALTREP object without using `S3` or `S4` method dispatching
 #' when the data pointer of the object is not available.
 #'
 #' `getDataptrOrNull` function is similar to `getDataptr` function, but it can
@@ -260,8 +255,8 @@ setAltClass <-
 #' `[<-` operator to change the value of the `output` argument. The return value
 #' of `getRegion` function is the true number of reads in the `output` argument.
 #' In most case the return value is the same as `length`, it will be different only when
-#' `start + length - 1` exceeds the length of the ALTREP vector. 
-#' 
+#' `start + length - 1` exceeds the length of the ALTREP vector.
+#'
 #'
 #' `duplicate` function duplicates the ALTREP vector. The argument `deep` determines
 #' whether it is a deep copy or not. A default duplicate method will be used if the

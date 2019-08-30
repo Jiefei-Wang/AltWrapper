@@ -1,16 +1,16 @@
 ################################
 ##Class definition
 ################################
-altClassList<-data.frame(
-    type=c("raw","logical","integer","numeric"),
-    className=c("altRaw","altLogical","altInteger","altReal"),
+altClassList <- data.frame(
+    type = c("raw", "logical", "integer", "numeric"),
+    className = c("altRaw", "altLogical", "altInteger", "altReal"),
     stringsAsFactors = FALSE
 )
 
 
 ## Make S3 class compatible with S4 dispatching
-for(i in seq_len(nrow(altClassList))){
-    setOldClass(c(altClassList$className[i],altClassList$type[i]))
+for (i in seq_len(nrow(altClassList))) {
+    setOldClass(c(altClassList$className[i], altClassList$type[i]))
 }
 
 
@@ -84,22 +84,22 @@ NULL
 
 #' @rdname print-function
 #' @export
-print.altRaw<-function(x,...){
+print.altRaw <- function(x, ...) {
     printAltWrapper(x)
 }
 #' @rdname print-function
 #' @export
-print.altInteger<-function(x,...){
+print.altInteger <- function(x, ...) {
     printAltWrapper(x)
 }
 #' @rdname print-function
 #' @export
-print.altLogical<-function(x,...){
+print.altLogical <- function(x, ...) {
     printAltWrapper(x)
 }
 #' @rdname print-function
 #' @export
-print.altReal<-function(x,...){
+print.altReal <- function(x, ...) {
     printAltWrapper(x)
 }
 
@@ -125,9 +125,9 @@ printAltWrapper <- function(x, ...) {
     func = .getAltMethod(className = className, methodName = "getDataptr")
     if (!is.null(func)) {
         return(NextMethod())
-    } 
+    }
     
-   
+    
     ## Chunk settings
     maxPrint = getOption("max.print")
     printSize = min(maxPrint, length(x))
@@ -151,11 +151,10 @@ printAltWrapper <- function(x, ...) {
         }
         print(output)
         return(invisible(x))
-    } 
+    }
     
     ## print from subset or element method
     output[seq_len(printSize)] = x[seq_len(printSize)]
     print(output)
     return(invisible(x))
 }
-

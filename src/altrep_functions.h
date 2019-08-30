@@ -71,7 +71,8 @@ int get_altrep_data(T* result, ULLong n, SEXP x, ULLong* index, ULLong start, bo
 		SEXP func = GET_ALT_METHOD(alt_class_env, alt_class_func_symbol);
 		if (func != R_UnboundValue) {
 			DEBUG(Rprintf("Alternatively access subset\n"));
-			NumericVector indx(10);			for (ULLong i = 0; i < n; i++) {
+			NumericVector indx(10);
+			for (ULLong i = 0; i < n; i++) {
 				if (index != nullptr) {
 					indx[i] = index[i] + 1;
 				}
@@ -545,7 +546,7 @@ int altrep_is_sorted(SEXP x) {
 	catch (const std::exception& ex) {
 		errorHandle("error in serialize: \n%s", ex.what());
 	}
-	return NULL;
+	return UNKNOWN_SORTEDNESS;
 
 
 }
@@ -568,7 +569,7 @@ int altrep_no_NA(SEXP x) {
 	catch (const std::exception& ex) {
 		errorHandle("error in serialize: \n%s", ex.what());
 	}
-	return NULL;
+	return 0;
 }
 
 SEXP altrep_sum(SEXP x, Rboolean na_rm) {
