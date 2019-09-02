@@ -98,12 +98,18 @@ test_that("cluster export, auto serialize, no auto export class def", {
     #browser()
     cl=makeCluster(1)
     expect_error(clusterExport(cl,"b",envir = environment()))
-    expect_error(stopCluster(cl))
+    if( .Platform$OS.type=="windows"){
+        expect_error(stopCluster(cl))
+        ## Close the error connection
+        con2=showConnections(all = FALSE)
+        errorIndex=as.integer(rownames(con2)[!rownames(con2)%in%rownames(con1)])
+        close(getConnection(errorIndex))
+    }else{
+        stopCluster(cl)
+    }
+    
 
-    ## Close the error connection
-    con2=showConnections(all = FALSE)
-    errorIndex=as.integer(rownames(con2)[!rownames(con2)%in%rownames(con1)])
-    close(getConnection(errorIndex))
+    
     
     ## manually export functions
     ## should be no error
