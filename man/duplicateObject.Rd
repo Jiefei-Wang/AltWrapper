@@ -16,5 +16,6 @@ An object of the same type as the input
 }
 \description{
 Duplicate an R object, the argument shallow controls whether
-to duplicate the container only or the entire object.
+to duplicate the container only or the entire object. It can
+be useful in defining the duplication function of an ALTREP.
 }
