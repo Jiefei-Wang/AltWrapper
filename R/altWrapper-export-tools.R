@@ -110,6 +110,21 @@ removeWrapper <- function(x) {
     return(x)
 }
 
+#' Duplicate an R object
+#' 
+#' Duplicate an R object, the argument shallow controls whether
+#' to duplicate the container only or the entire object. It can
+#' be useful in defining the duplication function of an ALTREP.
+#' 
+#' @param x The object that will be duplicated
+#' @param shallow Logical, shallow duplicate or not
+#' 
+#' @return An object of the same type as the input
+#' @export
+duplicateObject<-function(x, shallow){
+    C_duplicate(x, shallow)
+}
+
 
 ################################
 ## Altwrapper settings

@@ -135,98 +135,6 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
-// C_performace_test1
-SEXP C_performace_test1(SEXP a, R_xlen_t n);
-RcppExport SEXP _AltWrapper_C_performace_test1(SEXP aSEXP, SEXP nSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type a(aSEXP);
-    Rcpp::traits::input_parameter< R_xlen_t >::type n(nSEXP);
-    rcpp_result_gen = Rcpp::wrap(C_performace_test1(a, n));
-    return rcpp_result_gen;
-END_RCPP
-}
-// C_performace_test2
-SEXP C_performace_test2(SEXP env, SEXP sym, R_xlen_t n);
-RcppExport SEXP _AltWrapper_C_performace_test2(SEXP envSEXP, SEXP symSEXP, SEXP nSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type env(envSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type sym(symSEXP);
-    Rcpp::traits::input_parameter< R_xlen_t >::type n(nSEXP);
-    rcpp_result_gen = Rcpp::wrap(C_performace_test2(env, sym, n));
-    return rcpp_result_gen;
-END_RCPP
-}
-// C_test1
-SEXP C_test1(SEXP f, SEXP x);
-RcppExport SEXP _AltWrapper_C_test1(SEXP fSEXP, SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type f(fSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(C_test1(f, x));
-    return rcpp_result_gen;
-END_RCPP
-}
-// C_test2
-SEXP C_test2(SEXP expr, SEXP env);
-RcppExport SEXP _AltWrapper_C_test2(SEXP exprSEXP, SEXP envSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type expr(exprSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type env(envSEXP);
-    rcpp_result_gen = Rcpp::wrap(C_test2(expr, env));
-    return rcpp_result_gen;
-END_RCPP
-}
-// C_test3
-SEXP C_test3(SEXP f, SEXP x);
-RcppExport SEXP _AltWrapper_C_test3(SEXP fSEXP, SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type f(fSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(C_test3(f, x));
-    return rcpp_result_gen;
-END_RCPP
-}
-// C_test4
-void C_test4(SEXP x);
-RcppExport SEXP _AltWrapper_C_test4(SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type x(xSEXP);
-    C_test4(x);
-    return R_NilValue;
-END_RCPP
-}
-// C_test5
-void C_test5(SEXP x);
-RcppExport SEXP _AltWrapper_C_test5(SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type x(xSEXP);
-    C_test5(x);
-    return R_NilValue;
-END_RCPP
-}
-// C_test6
-double C_test6(SEXP x);
-RcppExport SEXP _AltWrapper_C_test6(SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(C_test6(x));
-    return rcpp_result_gen;
-END_RCPP
-}
 // rcpp_hello_world
 List rcpp_hello_world();
 RcppExport SEXP _AltWrapper_rcpp_hello_world() {
@@ -250,14 +158,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_AltWrapper_C_getName", (DL_FUNC) &_AltWrapper_C_getName, 1},
     {"_AltWrapper_C_duplicate", (DL_FUNC) &_AltWrapper_C_duplicate, 2},
     {"_AltWrapper_C_initial_package", (DL_FUNC) &_AltWrapper_C_initial_package, 2},
-    {"_AltWrapper_C_performace_test1", (DL_FUNC) &_AltWrapper_C_performace_test1, 2},
-    {"_AltWrapper_C_performace_test2", (DL_FUNC) &_AltWrapper_C_performace_test2, 3},
-    {"_AltWrapper_C_test1", (DL_FUNC) &_AltWrapper_C_test1, 2},
-    {"_AltWrapper_C_test2", (DL_FUNC) &_AltWrapper_C_test2, 2},
-    {"_AltWrapper_C_test3", (DL_FUNC) &_AltWrapper_C_test3, 2},
-    {"_AltWrapper_C_test4", (DL_FUNC) &_AltWrapper_C_test4, 1},
-    {"_AltWrapper_C_test5", (DL_FUNC) &_AltWrapper_C_test5, 1},
-    {"_AltWrapper_C_test6", (DL_FUNC) &_AltWrapper_C_test6, 1},
     {"_AltWrapper_rcpp_hello_world", (DL_FUNC) &_AltWrapper_rcpp_hello_world, 0},
     {NULL, NULL, 0}
 };

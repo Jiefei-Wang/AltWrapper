@@ -17,8 +17,6 @@ if (map.find(key) == map.end()) errorHandle("Unable to find the key `%d` in the 
 #define SYMBOL_TO_CHAR(x) CHAR(PRINTNAME(x))
 #define CHARSXP_TO_CHAR(x) CHAR(STRING_ELT(x, 0))
 
-#define ULLong unsigned long long
-
 
 void errorHandle(std::string msg);
 void errorHandle(const char* fmt, ...);

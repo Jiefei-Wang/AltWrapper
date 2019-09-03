@@ -107,57 +107,57 @@ void C_initial_package(SEXP altrep_class_space,SEXP altrep_symbol_space) {
 
 
 
-
-// [[Rcpp::export]]
-SEXP C_performace_test1(SEXP a,R_xlen_t n) {
-	SEXP x;
-	for (int i = 0; i < n; i++) {
-		x=VECTOR_ELT(a, 10);
-	}
-	return x;
-}
-
-
-// [[Rcpp::export]]
-SEXP C_performace_test2(SEXP env, SEXP sym, R_xlen_t n) {
-	SEXP x;
-	for (int i = 0; i < n; i++) {
-		x = Rf_findVarInFrame(env, sym);
-	}
-	return x;
-}
-
-// [[Rcpp::export]]
-SEXP C_test1(SEXP f, SEXP x) {
-	SEXP call =PROTECT(Rf_lang2(f, x));
-	SEXP val = R_forceAndCall(call, 1, R_GlobalEnv);
-	UNPROTECT(1);
-	return val;
-}
-
-// [[Rcpp::export]]
-SEXP C_test2(SEXP expr, SEXP env) {
-	SEXP val = Rf_eval(expr, env);
-	return val;
-}
-
-// [[Rcpp::export]]
-SEXP C_test3(SEXP f,SEXP x) {
-	Function fun(f);
-	return fun(x);
-}
-// [[Rcpp::export]]
-void C_test4(SEXP x) {
-	SET_INTEGER_ELT(x,0,100);
-}
-// [[Rcpp::export]]
-void C_test5(SEXP x) {
-	ALTINTEGER_SET_ELT(x, 0, 100);
-}
-
-
-// [[Rcpp::export]]
-double C_test6(SEXP x) {
-	return REAL_ELT(x, 3);
-}
-
+//
+//// [[Rcpp::export]]
+//SEXP C_performace_test1(SEXP a,R_xlen_t n) {
+//	SEXP x;
+//	for (int i = 0; i < n; i++) {
+//		x=VECTOR_ELT(a, 10);
+//	}
+//	return x;
+//}
+//
+//
+//// [[Rcpp::export]]
+//SEXP C_performace_test2(SEXP env, SEXP sym, R_xlen_t n) {
+//	SEXP x;
+//	for (int i = 0; i < n; i++) {
+//		x = Rf_findVarInFrame(env, sym);
+//	}
+//	return x;
+//}
+//
+//// [[Rcpp::export]]
+//SEXP C_test1(SEXP f, SEXP x) {
+//	SEXP call =PROTECT(Rf_lang2(f, x));
+//	SEXP val = R_forceAndCall(call, 1, R_GlobalEnv);
+//	UNPROTECT(1);
+//	return val;
+//}
+//
+//// [[Rcpp::export]]
+//SEXP C_test2(SEXP expr, SEXP env) {
+//	SEXP val = Rf_eval(expr, env);
+//	return val;
+//}
+//
+//// [[Rcpp::export]]
+//SEXP C_test3(SEXP f,SEXP x) {
+//	Function fun(f);
+//	return fun(x);
+//}
+//// [[Rcpp::export]]
+//void C_test4(SEXP x) {
+//	SET_INTEGER_ELT(x,0,100);
+//}
+//// [[Rcpp::export]]
+//void C_test5(SEXP x) {
+//	ALTINTEGER_SET_ELT(x, 0, 100);
+//}
+//
+//
+//// [[Rcpp::export]]
+//double C_test6(SEXP x) {
+//	return REAL_ELT(x, 3);
+//}
+//

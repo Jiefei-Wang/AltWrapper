@@ -45,38 +45,6 @@ C_initial_package <- function(altrep_class_space, altrep_symbol_space) {
     invisible(.Call(`_AltWrapper_C_initial_package`, altrep_class_space, altrep_symbol_space))
 }
 
-C_performace_test1 <- function(a, n) {
-    .Call(`_AltWrapper_C_performace_test1`, a, n)
-}
-
-C_performace_test2 <- function(env, sym, n) {
-    .Call(`_AltWrapper_C_performace_test2`, env, sym, n)
-}
-
-C_test1 <- function(f, x) {
-    .Call(`_AltWrapper_C_test1`, f, x)
-}
-
-C_test2 <- function(expr, env) {
-    .Call(`_AltWrapper_C_test2`, expr, env)
-}
-
-C_test3 <- function(f, x) {
-    .Call(`_AltWrapper_C_test3`, f, x)
-}
-
-C_test4 <- function(x) {
-    invisible(.Call(`_AltWrapper_C_test4`, x))
-}
-
-C_test5 <- function(x) {
-    invisible(.Call(`_AltWrapper_C_test5`, x))
-}
-
-C_test6 <- function(x) {
-    .Call(`_AltWrapper_C_test6`, x)
-}
-
 rcpp_hello_world <- function() {
     .Call(`_AltWrapper_rcpp_hello_world`)
 }

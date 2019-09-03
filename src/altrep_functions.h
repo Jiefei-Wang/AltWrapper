@@ -10,7 +10,7 @@ using namespace Rcpp;
 //The bool arguments indicate whether it is allowed to get the data from the corresponding function
 //start must be specified if index is a null pointer. The function will first uses index, if not available it uses start.
 template<class T>
-int get_altrep_data(T* result, ULLong n, SEXP x, ULLong* index, ULLong start, bool ptr, bool ptr_or_null, bool element, bool subset) {
+int get_altrep_data(T* result, R_xlen_t n, SEXP x, R_xlen_t* index, R_xlen_t start, bool ptr, bool ptr_or_null, bool element, bool subset) {
 	SEXP alt_class_name_symbol = GET_ALT_CLASS_NAME_SYMBOL(x);
 	SEXP alt_class_env = GET_ALT_CLASS(alt_class_name_symbol);
 	if (alt_class_env == R_UnboundValue)
@@ -32,7 +32,7 @@ int get_altrep_data(T* result, ULLong n, SEXP x, ULLong* index, ULLong start, bo
 				ptr = (const T*)DATAPTR_OR_NULL(res);
 			}
 			if (ptr != nullptr) {
-				for (ULLong i = 0; i < n; i++) {
+				for (R_xlen_t i = 0; i < n; i++) {
 					if (index != nullptr) {
 						result[i] = ptr[index[i]];
 					}
@@ -72,7 +72,7 @@ int get_altrep_data(T* result, ULLong n, SEXP x, ULLong* index, ULLong start, bo
 		if (func != R_UnboundValue) {
 			DEBUG(Rprintf("Alternatively access subset\n"));
 			NumericVector indx(10);
-			for (ULLong i = 0; i < n; i++) {
+			for (R_xlen_t i = 0; i < n; i++) {
 				if (index != nullptr) {
 					indx[i] = index[i] + 1;
 				}
@@ -81,7 +81,7 @@ int get_altrep_data(T* result, ULLong n, SEXP x, ULLong* index, ULLong start, bo
 				}
 			}
 			NumericVector res = NumericVector(make_call(func, GET_ALT_DATA(x), wrap(indx), x));
-			for (ULLong i = 0; i < n; i++) {
+			for (R_xlen_t i = 0; i < n; i++) {
 				result[i] = res[i];
 			}
 			return 0;
@@ -94,7 +94,7 @@ int get_altrep_data(T* result, ULLong n, SEXP x, ULLong* index, ULLong start, bo
 		SEXP func = GET_ALT_METHOD(alt_class_env, alt_class_func_symbol);
 		if (func != R_UnboundValue) {
 			DEBUG(Rprintf("Alternatively access element\n"));
-			for (ULLong i = 0; i < n; i++) {
+			for (R_xlen_t i = 0; i < n; i++) {
 				SEXP res;
 				if (index != nullptr) {
 					res = make_call(func, GET_ALT_DATA(x), wrap(index[i] + 1), x);
@@ -126,7 +126,7 @@ int get_altrep_data(T* result, ULLong n, SEXP x, ULLong* index, ULLong start, bo
 				ptr = (T*)DATAPTR(res);
 			}
 			if (ptr != nullptr) {
-				for (ULLong i = 0; i < n; i++) {
+				for (R_xlen_t i = 0; i < n; i++) {
 					if (index != nullptr) {
 						result[i] = ptr[index[i]];
 					}
@@ -311,8 +311,8 @@ T altrep_get_element(SEXP x, R_xlen_t i) {
 		}
 		else {
 			T result;
-			ULLong index = i;
-			if (get_altrep_data(&result, 1, x, &index, 0, false, true, false, true) == -1) {
+			R_xlen_t index = i;
+			if (get_altrep_data(&result, 1, x, &index, 0, true, true, false, true) == -1) {
 				errorHandle("Get element function error: Unable to get the data from the ALTREP object.");
 			}
 			return result;
@@ -359,9 +359,9 @@ R_xlen_t numeric_region(SEXP x, R_xlen_t start, R_xlen_t size, T * out) {
 			return as<R_xlen_t>(res);
 		}
 		else {
-			ULLong n = XLENGTH(x);
-			ULLong ncopy = n - start > size ? n : n - start;
-			if (get_altrep_data(out, ncopy, x, nullptr, start, false, true, true, true) == -1) {
+			R_xlen_t n = XLENGTH(x);
+			R_xlen_t ncopy = n - start > size ? n : n - start;
+			if (get_altrep_data(out, ncopy, x, nullptr, start, true, true, true, true) == -1) {
 				errorHandle("Get region function error: Unable to get the data from the ALTREP object.");
 			}
 			return ncopy;
