@@ -116,6 +116,7 @@ int get_altrep_data(T* result, R_xlen_t n, SEXP x, R_xlen_t* index, R_xlen_t sta
 			DEBUG(Rprintf("Alternatively access ptr\n"));
 			SEXP R_writeable = PROTECT(wrap<int>(0));
 			SEXP res = make_call(func, GET_ALT_DATA(x), R_writeable, x);
+			UNPROTECT(1);
 			T* ptr = nullptr;
 			switch (TYPEOF(res)) {
 			case NILSXP:
@@ -544,6 +545,7 @@ int altrep_is_sorted(SEXP x) {
 		if (func != R_UnboundValue) {
 			SEXP res = PROTECT(make_call(func, GET_ALT_DATA(x), x));
 			UNPROTECT(1);
+			printf("%d\n", as<int>(res));
 			return as<int>(res);
 		}
 		else {
