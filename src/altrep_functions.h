@@ -545,7 +545,6 @@ int altrep_is_sorted(SEXP x) {
 		if (func != R_UnboundValue) {
 			SEXP res = PROTECT(make_call(func, GET_ALT_DATA(x), x));
 			UNPROTECT(1);
-			printf("%d\n", as<int>(res));
 			return as<int>(res);
 		}
 		else {
