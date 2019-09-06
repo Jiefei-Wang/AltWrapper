@@ -102,9 +102,23 @@ void C_initial_package(SEXP altrep_class_space,SEXP altrep_symbol_space) {
 	ALTREP_SYMBOL_LIST = altrep_symbol_space;
 }
 
+// [[Rcpp::export]]
+List C_get_sortness_macro() {
+	List sortness_macro= List::create(Named("decreasing_NA_1st") = (int)SORTED_DECR_NA_1ST,
+		Named("decreasing") = (int)SORTED_DECR,
+		Named("unknown") = (int)UNKNOWN_SORTEDNESS,
+		Named("increasing") = (int)SORTED_INCR,
+		Named("increasing_NA_1st") = (int)SORTED_INCR_NA_1ST,
+		Named("known_unsorted") = (int)KNOWN_UNSORTED);
+	return(sortness_macro);
+}
 
-
-
+// [[Rcpp::export]]
+List C_get_NA_status_macro() {
+	List NA_status_macro = List::create(Named("unknown") = 0L,
+		Named("no_NA") = 1L);
+	return(NA_status_macro);
+}
 
 
 //

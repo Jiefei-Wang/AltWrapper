@@ -4,10 +4,11 @@
 \alias{duplicateObject}
 \title{Duplicate an R object}
 \usage{
-duplicateObject(x, shallow)
+duplicateObject(x, shallow = FALSE)
 }
 \arguments{
-\item{x}{The object that will be duplicated}
+\item{x}{The object that will be duplicated. The object should
+not be an enviroment object.}
 
 \item{shallow}{Logical, shallow duplicate or not}
 }
@@ -18,4 +19,12 @@ An object of the same type as the input
 Duplicate an R object, the argument shallow controls whether
 to duplicate the container only or the entire object. It can
 be useful in defining the duplication function of an ALTREP.
+Please note that the function does not work with an enviroment
+object. It will return the same enviroment object.
+}
+\examples{
+a = 10
+b = duplicateObject(a)
+.Internal(inspect(a))
+.Internal(inspect(b))
 }

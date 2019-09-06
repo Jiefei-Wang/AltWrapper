@@ -1,3 +1,23 @@
+#' ALTREP macro
+#' 
+#' @details 
+#' `altrepSortStatus` is a list containing all sortness status of an ALTREP object.
+#' It can be used as the return value of `isSorted` function when defining
+#' an ALTREP class. The sortness status can be unknown sortness, 
+#' known unsorted, ascending, descending, ascending with NA first,
+#' descending with NA first.
+#' 
+#' Similarly, `altrepNAStatus` contains all possible NA status of an ALTREP object.
+#' The current available status are unknow and no NA.
+#' 
+#' 
+#' @name altrepMacro
+#' @aliases altrepSortStatus altrepNAStatus altrepMacro
+#' @export altrepSortStatus altrepNAStatus
+NULL
+
+
+
 #' Check the type of an object
 #'
 #' @param x An object

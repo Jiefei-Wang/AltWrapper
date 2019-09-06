@@ -274,9 +274,13 @@ setAltClass <-
 #' the return value of `serialize` function. The argument `R_class` is for compatibility
 #' only.
 #'
-#' `isSorted` and `noNA` check whether the ALTREP vector is sorted and contains any
-#' NA value respectively. The return value is an Integer where 0 mean `FALSE` and 1
-#' means `TRUE`.
+#' `isSorted` whether the ALTREP vector is sorted in the ascending or descending order. 
+#' The vector status can be unknown sortness, known unsorted, ascending, descending,
+#' ascending with NA first, descending with NA first. You can find the corresponding
+#' return values by accessing the list variable `altrepSortStatus`.
+#' 
+#' `noNA` check whether the ALTREP vector contains any NA value.
+#'  The return value must be an element of the list `altrepNAStatus`. 
 #'
 #' `sum`, `min` and `max` have the same meaning as R's corresponding functions. These
 #' functions are only available for `integer` and `real` ALTREP class type.

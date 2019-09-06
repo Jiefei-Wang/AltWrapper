@@ -115,13 +115,21 @@ removeWrapper <- function(x) {
 #' Duplicate an R object, the argument shallow controls whether
 #' to duplicate the container only or the entire object. It can
 #' be useful in defining the duplication function of an ALTREP.
+#' Please note that the function does not work with an enviroment
+#' object. It will return the same enviroment object.
 #' 
-#' @param x The object that will be duplicated
+#' @param x The object that will be duplicated. The object should 
+#' not be an enviroment object.
 #' @param shallow Logical, shallow duplicate or not
 #' 
 #' @return An object of the same type as the input
+#' @examples 
+#' a = 10
+#' b = duplicateObject(a)
+#' .Internal(inspect(a))
+#' .Internal(inspect(b))
 #' @export
-duplicateObject<-function(x, shallow){
+duplicateObject<-function(x, shallow = FALSE){
     C_duplicate(x, shallow)
 }
 

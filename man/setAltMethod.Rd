@@ -127,9 +127,13 @@ and will be used in \code{unserialize} function.
 the return value of \code{serialize} function. The argument \code{R_class} is for compatibility
 only.
 
-\code{isSorted} and \code{noNA} check whether the ALTREP vector is sorted and contains any
-NA value respectively. The return value is an Integer where 0 mean \code{FALSE} and 1
-means \code{TRUE}.
+\code{isSorted} whether the ALTREP vector is sorted in the ascending or descending order.
+The vector status can be unknown sortness, known unsorted, ascending, descending,
+ascending with NA first, descending with NA first. You can find the corresponding
+return values by accessing the list variable \code{altrepSortStatus}.
+
+\code{noNA} check whether the ALTREP vector contains any NA value.
+The return value must be an element of the list \code{altrepNAStatus}.
 
 \code{sum}, \code{min} and \code{max} have the same meaning as R's corresponding functions. These
 functions are only available for \code{integer} and \code{real} ALTREP class type.

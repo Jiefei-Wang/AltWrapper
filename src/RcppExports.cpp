@@ -135,6 +135,26 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// C_get_sortness_macro
+List C_get_sortness_macro();
+RcppExport SEXP _AltWrapper_C_get_sortness_macro() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(C_get_sortness_macro());
+    return rcpp_result_gen;
+END_RCPP
+}
+// C_get_NA_status_macro
+List C_get_NA_status_macro();
+RcppExport SEXP _AltWrapper_C_get_NA_status_macro() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(C_get_NA_status_macro());
+    return rcpp_result_gen;
+END_RCPP
+}
 // rcpp_hello_world
 List rcpp_hello_world();
 RcppExport SEXP _AltWrapper_rcpp_hello_world() {
@@ -158,6 +178,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_AltWrapper_C_getName", (DL_FUNC) &_AltWrapper_C_getName, 1},
     {"_AltWrapper_C_duplicate", (DL_FUNC) &_AltWrapper_C_duplicate, 2},
     {"_AltWrapper_C_initial_package", (DL_FUNC) &_AltWrapper_C_initial_package, 2},
+    {"_AltWrapper_C_get_sortness_macro", (DL_FUNC) &_AltWrapper_C_get_sortness_macro, 0},
+    {"_AltWrapper_C_get_NA_status_macro", (DL_FUNC) &_AltWrapper_C_get_NA_status_macro, 0},
     {"_AltWrapper_rcpp_hello_world", (DL_FUNC) &_AltWrapper_rcpp_hello_world, 0},
     {NULL, NULL, 0}
 };

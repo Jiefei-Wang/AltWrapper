@@ -45,6 +45,14 @@ C_initial_package <- function(altrep_class_space, altrep_symbol_space) {
     invisible(.Call(`_AltWrapper_C_initial_package`, altrep_class_space, altrep_symbol_space))
 }
 
+C_get_sortness_macro <- function() {
+    .Call(`_AltWrapper_C_get_sortness_macro`)
+}
+
+C_get_NA_status_macro <- function() {
+    .Call(`_AltWrapper_C_get_NA_status_macro`)
+}
+
 rcpp_hello_world <- function() {
     .Call(`_AltWrapper_rcpp_hello_world`)
 }
