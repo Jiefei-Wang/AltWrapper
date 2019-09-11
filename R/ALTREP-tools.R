@@ -1,3 +1,5 @@
+## These macros will be added when package is loaded
+## see zzz.R file for the code
 #' ALTREP macro
 #' 
 #' @details 
