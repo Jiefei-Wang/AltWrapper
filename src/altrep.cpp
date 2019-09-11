@@ -1,14 +1,21 @@
 #include "Rcpp.h"
-#include "R_ext/Altrep.h"
-#include "altrep.h"
 #include "tools.h"
+#include "altrep.h"
 #include "altrep_macro.h"
-#include "altrep_tools.h"
 
 using namespace Rcpp;
 
+SEXP ALTREP_REGISTRY_ENVIRONMENT;
+R_altrep_class_t altrep_raw_class;
+R_altrep_class_t altrep_logical_class;
+R_altrep_class_t altrep_integer_class;
+R_altrep_class_t altrep_real_class;
 
 
+R_altrep_class_t altrep_internal_raw_class;
+R_altrep_class_t altrep_internal_logical_class;
+R_altrep_class_t altrep_internal_integer_class;
+R_altrep_class_t altrep_internal_real_class;
 
 
 R_altrep_class_t get_altrep_class(SEXP class_type) {
@@ -77,3 +84,18 @@ int get_class_type_size(SEXP class_type) {
 	return 0;
 }
 
+
+SEXP ALTREP_SYMBOL_LIST;
+SEXP get_alt_symbol(const char* name) {
+#define X(i,func_name) \
+if (std::strcmp(name, #func_name)==0)\
+	return VECTOR_ELT(ALTREP_SYMBOL_LIST, i);
+	ALTREP_SYMBOLS
+#undef X
+		unsigned int offset = 40;
+	if (std::strcmp(name, "class_type") == 0)
+		return VECTOR_ELT(ALTREP_SYMBOL_LIST, offset + 0);
+	errorHandle("The symbol '%s' is not found.\n", name);
+
+	return ALTREP_SYMBOL_LIST;
+}

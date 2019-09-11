@@ -1,7 +1,6 @@
 #include "Rcpp.h"
 #include "altrep.h"
 #include "altrep_macro.h"
-#include "altrep_tools.h"
 #include "tools.h"
 #include <type_traits>
 using namespace Rcpp;

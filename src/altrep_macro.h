@@ -57,7 +57,9 @@ X(42, classSettings)
 #define GET_ALT_CLASS_SETTING_SERIALIZE(class_name) as<bool>(VECTOR_ELT(GET_ALT_CLASS_SETTING(class_name),2))
 
 
-
+// Get a function from the ALTREP class specified by the class name
+// If the class is not defined, throw an error.
+// The existance of the function will not be checked
 #define ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, alt_class_func_symbol)\
 SEXP alt_class_env =GET_ALT_CLASS(alt_class_name_symbol);\
 if(alt_class_env==R_UnboundValue) errorHandle("Unable to find the var '%s' in the class '%s': Class does not exist",\

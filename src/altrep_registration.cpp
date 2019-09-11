@@ -1,26 +1,11 @@
 #include "Rcpp.h"
-#include "R_ext/Altrep.h"
-#include "altrep.h"
 #include "tools.h"
+#include "altrep.h"
 #include "altrep_macro.h"
 #include "altrep_functions.h"
 
 using namespace Rcpp;
 
-SEXP ALTREP_REGISTRY_ENVIRONMENT;
-
-
-
-R_altrep_class_t altrep_raw_class;
-R_altrep_class_t altrep_logical_class;
-R_altrep_class_t altrep_integer_class;
-R_altrep_class_t altrep_real_class;
-
-
-R_altrep_class_t altrep_internal_raw_class;
-R_altrep_class_t altrep_internal_logical_class;
-R_altrep_class_t altrep_internal_integer_class;
-R_altrep_class_t altrep_internal_real_class;
 
 #define ALTREP_COMMOM_REGISTRATION(ALT_CLASS)\
 	/* override ALTREP methods */\
