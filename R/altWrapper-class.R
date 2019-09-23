@@ -116,15 +116,18 @@ printAltWrapper <- function(x, ...) {
     # browser()
     # message("My print")
     if (!is.altWrapper(x)) {
-        print(unclass(x))
+        return(NextMethod(generic = "print"))
     }
     
     x = removeWrapper(x)
     className = getAltClassName(x)
     classType = getClassType(className)
-    func = .getAltMethod(className = className, methodName = "getDataptr")
-    if (!is.null(func)) {
-        return(NextMethod())
+    ptr_func = .getAltMethod(className = className, methodName = "getDataptr")
+    ptr_null_func = .getAltMethod(className = className, methodName = "getDataptrOrNull")
+    if (!is.null(ptr_func)&&
+        !is.null(ptr_null_func)&&
+        !is.null(ptr_null_func(.getAltData1(x), x))) {
+        return(NextMethod(generic = "print"))
     }
     
     
@@ -143,7 +146,7 @@ printAltWrapper <- function(x, ...) {
     func = .getAltMethod(className = className, methodName = "getRegion")
     if (!is.null(func)) {
         regionVector = C_create_internal_altrep(classType, chunkSize)
-        xData = getAltData1(x)
+        xData = .getAltData1(x)
         for (i in seq_len(chunkNum)) {
             start = (i - 1) * chunkSize
             len = func(xData, start + 1, chunkSize, regionVector, x)

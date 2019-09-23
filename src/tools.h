@@ -1,6 +1,7 @@
 #include "Rcpp.h"
 #include <string>
 
+//Set "DEBUG(x) x" to enable debug message
 #define DEBUG(x)
 
 #define PACKAGE_NAME "AltWrapper"
@@ -15,7 +16,7 @@ if (map.find(key) == map.end()) errorHandle("Unable to find the class type: %s",
 #define ERROR_WHEN_NOT_FIND_INT_KEY(map,key)\
 if (map.find(key) == map.end()) errorHandle("Unable to find the key `%d` in the map `%s`", key,#map);
 
-//To char*
+//SEXP to char*
 #define SYMBOL_TO_CHAR(x) CHAR(PRINTNAME(x))
 #define CHARSXP_TO_CHAR(x) CHAR(STRING_ELT(x, 0))
 

@@ -17,6 +17,10 @@ R_altrep_class_t altrep_internal_logical_class;
 R_altrep_class_t altrep_internal_integer_class;
 R_altrep_class_t altrep_internal_real_class;
 
+#define X(i,func_name) \
+const int func_name##_index = i;
+ALTREP_SYMBOLS
+#undef X
 
 R_altrep_class_t get_altrep_class(SEXP class_type) {
 	const char* class_type_char = CHAR(Rf_asChar(class_type));
@@ -85,7 +89,8 @@ int get_class_type_size(SEXP class_type) {
 }
 
 
-SEXP ALTREP_SYMBOL_LIST;
+
+/*
 SEXP get_alt_symbol(const char* name) {
 #define X(i,func_name) \
 if (std::strcmp(name, #func_name)==0)\
@@ -99,3 +104,5 @@ if (std::strcmp(name, #func_name)==0)\
 
 	return ALTREP_SYMBOL_LIST;
 }
+
+*/

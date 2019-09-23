@@ -32,22 +32,22 @@ test_that("is altWrapper",{
 })
 
 test_that("getAltData1&2",{
-    expect_true(is.null(getAltData1(a)))
-    expect_true(!is.null(getAltData1(b)))
+    expect_true(is.null(.getAltData1(a)))
+    expect_true(!is.null(.getAltData1(b)))
     
     
-    expect_true(is.null(getAltData2(a)))
-    expect_true(!is.null(getAltData2(b)))
+    expect_true(is.null(.getAltData2(a)))
+    expect_true(!is.null(.getAltData2(b)))
 })
 
 
 test_that("setAltData1&2",{
-    expect_false(setAltData1(a,a))
-    expect_true(setAltData1(b,a))
+    expect_false(.setAltData1(a,a))
+    expect_true(.setAltData1(b,a))
     
     
-    expect_false(setAltData2(a,a))
-    expect_true(setAltData2(b,getAltData2(b)))
+    expect_false(.setAltData2(a,a))
+    expect_true(.setAltData2(b,.getAltData2(b)))
 })
 
 

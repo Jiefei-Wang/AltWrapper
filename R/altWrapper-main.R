@@ -1,5 +1,5 @@
 ################################
-## AltWrapper symbol list
+## AltWrapper global variables
 ################################
 altrepRegistryEnvironment = new.env()
 altrepClassFunctionArgNum = c(
@@ -22,12 +22,7 @@ altrepClassFunctionArgNum = c(
 )
 
 altrepClassFunctionList = names(altrepClassFunctionArgNum)
-length(altrepClassFunctionList) = 40
-altrepSymbolList = c(altrepClassFunctionList,
-                     "classType",
-                     "functionEnvironment",
-                     "classSettings")
-altrepSymbolList = lapply(altrepSymbolList, as.symbol)
+
 
 altWrapperClassDefaultSettings = list(
     autoExportClassDef = TRUE,
@@ -45,12 +40,16 @@ altWrapperClassDefaultSettings = list(
 #'
 #' @param className Character, the name of an altWrapper class
 #' @param x The data of the returned altWrapper object
-#' @param attributes Named list, attributes that will be attached to the object
-#' @param S3Class Logical, whether the return value is of an AltWrapper S3 class. If the
-#' argument `attributes` also contains `class` element, AltWrapper will be a subclass of the class
-#' specified in the element `class`.
-#' @param S4Class Logical,  whether the return value is of an AltWrapper S4 class.
-#' An error will be returned if both `S3Class` and `S4Class` are TRUE.
+#' @param attributes Named list, attributes that will be attached to the object. The 
+#' attribute `class` will be ignored
+#' @param S3Class Logical or character vector, whether the return value is of an 
+#' altWrapper S3 class. If the argument is a character vector, it will overwrite the 
+#' default settings and resulting in an S3 object with the class type specified in the
+#' character vector.
+#' @param S4Class Logical or character, whether the return value is of 
+#' an AltWrapper S4 class. If the argument is a character, it must be a class name and
+#' the return value is an S4 object specified by the class name.
+#' An error will be returned if both `S3Class` and `S4Class` are defined.
 #' @examples
 #' ## Define the ALTREP functions
 #' length_func<-function(x) length(x)
@@ -67,16 +66,6 @@ altWrapperClassDefaultSettings = list(
 #' A
 #'
 #'
-#' ## Define a function to compute variance for the altWrapper object.
-#' var_func <- function(x, y = NULL, na.rm = FALSE, use)
-#'   return(var(x, y, na.rm, use))
-#'
-#' ## attach the function to the altWrapper class
-#' ## The function cannot be called automatically by R
-#' ## Users can retrieve the function via `getAltMethod`
-#' ## and call it explicitly.
-#' attachAltMethod(className = "example", var = var_func)
-#'
 #' @return An ALTREP vector
 #' @export
 makeAltrep <- function(className,
@@ -87,8 +76,22 @@ makeAltrep <- function(className,
     if (!isAltClassExist(className)) {
         stop("The class '", className, "' is not found.")
     }
-    if (!is.null(attributes) && !is.list(attributes))
+    if(is.null(attributes)){
+        attributes = list()
+    }
+    if (!is.list(attributes))
         stop("The attributes must be a list")
+    attributes$class = NULL
+    
+    RClassName = NULL
+    if(is.character(S3Class)){
+        RClassName = S3Class
+        S3Class = TRUE
+    }
+    if(is.character(S4Class)){
+        RClassName = S4Class
+        S4Class = TRUE
+    }
     
     if (S3Class && S4Class) {
         stop("The altWrapper object cannot be both S3 and S4 class type")
@@ -97,11 +100,7 @@ makeAltrep <- function(className,
     classType = getClassType(className)
     altBaseClassName = getAltBaseClassName(classType)
     
-    if (S3Class) {
-        if (is.null(attributes))
-            attributes = list()
-        attributes$class = c(attributes$class, altBaseClassName)
-    }
+    
     
     state = list(
         packageName = "AltWrapper",
@@ -114,15 +113,26 @@ makeAltrep <- function(className,
     ## For S4 object the reference number is 7
     ## Hopefully it can be removed in future
     if (S4Class) {
+        if(is.null(RClassName))
+            RClassName = altBaseClassName
+        
         altWrapperObject = C_create_altrep(className,
                                            x,
                                            classType,
                                            state,
                                            names(attributes),
                                            attributes)
-        new(altBaseClassName, altWrapperObject)
+        new(RClassName, altWrapperObject)
         #altClassConstructorList[[altBaseClassName]](altWrapperObject)
     } else{
+        if(S3Class){
+            if(is.null(RClassName))
+                attributes$class = altBaseClassName
+            else
+                attributes$class = RClassName
+        }else{
+            attributes$class = NULL
+        }
         C_create_altrep(className,
                         x,
                         classType,
@@ -160,12 +170,13 @@ setAltClass <-
                     "' has been defined and will be replaced.")
         }
         
-        classEnv = new.env(parent = globalenv())
-        classEnv[["classType"]] = classType
-        classEnv[["functionEnvironment"]] = new.env(parent = classEnv)
-        classEnv[["classSettings"]] = altWrapperClassDefaultSettings
+        classSpace = list()
+        classSpace[["classType"]] = classType
+        classSpace[["functionSpace"]] = vector("list", length(altrepClassFunctionList))
+        names(classSpace[["functionSpace"]]) = altrepClassFunctionList
+        classSpace[["classSettings"]] = altWrapperClassDefaultSettings
         
-        .setClassEnvironment(className, classEnv)
+        setClassSpace(className, classSpace)
         invisible()
     }
 
@@ -314,25 +325,5 @@ setAltMethod <- function(className,
     for (i in args) {
         func = get(as.character(i))
         .setAltMethod(className, i, func)
-    }
-}
-
-#' Attach ALTREP method
-#'
-#' Attach a function to an altwrapper class. The function will
-#' not be called by R automatically. It is designed to mimic
-#' the object-oriented feature for an altwrapper class.
-#'
-#' @inheritParams makeAltrep
-#' @param ... Named arguments. The functions that you want to attach to the class.
-#' @inherit makeAltrep examples
-#'
-#' @return No return value
-#' @export
-attachAltMethod <- function(className, ...) {
-    call = match.call()
-    args = names(call)[seq_len(length(call) - 2) + 2]
-    for (i in args) {
-        .attachAltMethod(className, i, eval(call[[i]]))
     }
 }

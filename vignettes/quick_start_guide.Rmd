@@ -59,7 +59,7 @@ is.vector(A_vector)
 We claim that the altWrapper class is an integer class. Therefore, the return value of the function `makeAltrep` is an integer R vector. The value can be accessed via regular `[` operator. An altWrapper object must have `getLength` defined. For most operations, altWrapper API `getDataptr` is required. Since there is no actual data for a compact sequence, we define the API `getElement` instead. Please refer to `?setAltMethod` to see a full list of available APIs.
 
 Please note that the variable `A_vector` cannot be printed just by typing its variable name in the console for 
-ALTREP is still underdevelopment and some R functions do not catch up with it. At the time of this writting, only R 3.7 devel version can correctly print the object. Before R 3.7, the variable can be printed out either by using `[` operator to force R to use `get_Elt` method, or by using `printAltWrapper` function providing  by AltWrapper package.
+ALTREP is still underdevelopment and some R functions do not catch up with it. At the time of this writting, only R 3.7 devel version can correctly print the object. Before R 3.7, the variable can be printed out either by using `[` operator to force R to use `get_Elt` method, or by using `printAltWrapper` function provided  by AltWrapper package.
 ```{r}
 ## Use [ operator
 A_vector[1:10]
@@ -110,6 +110,19 @@ sum(A_vector)
 ```
 A warning will be shown to indicate the sum function has been defined previously. It can be suppressed by calling `setAltWrapperOptions(redefineWarning=FALSE)`. A function can be deleted by setting its value to `NULL`. For example, The sum function can be removed from the class `compactSeq` via `setAltMethod(className = "compactSeq", sum = NULL)`.
 
+## Check altWrapper data
+you can get the altWrapper data from an altWrapper object by calling `getAltWrapperData` function on `A_vector`
+```{r}
+x = getAltWrapperData(A_vector)
+x
+```
+Naturally, the altWrapper data can be set via `setAltWrapperData`
+```{r}
+x$start = 2
+A_vector = setAltWrapperData(A_vector, x)
+A_vector
+```
+By default, the function `setAltWrapperData` will duplicate the object. If you only want to memorize some data(e.g. caching on-disk data), you can call `setAltWrapperData` with argument `duplicate = FALSE`. Please do not set `duplicate = FALSE` if you new `x` will change the value of `A_vector`.
 
 ## Check Class Functions
 The following example shows how to retrieve a function from an altWrapper class.
@@ -119,11 +132,20 @@ sumFunc
 ```
 A NULL value will be returned if the function is not found. Note that there is an extra argument `.self` in `sumFunc` function. This argument is used to pass the altWrapper object itself. 
 
-You can also get a summary report of an altWrapper class
+You can also get a summary report of an altWrapper class, the report shows the type of the ALTREP class and status of all ALTREP APIs. 
 ```{r}
 altClassStatus(className = "compactSeq")
 ```
-The report shows the type of the ALTREP class and status of all ALTREP APIs. The attached function number are the functions which are not ALTREP APIs and associated with the altWrapper class. Please refer to `?attachAltMethod` to see the details.
+
+# ALTREP support
+Because the altWrapper class is built upon ALTREP, the package exports a few ALTREP APIs. Please note that it is not recommended to call an ALTREP function directly to get/set the value of an altWrapper object since the data structure of an altWrapper object is subjected to change. These functions are served as development tools only. Here we simply list the ALTREP APIs, please call `?function` in R to see their documents. 
+```{r}
+is.altrep(A_vector)
+.getAltData1(A_vector)
+.getAltData2(A_vector)
+.setAltData1(A_vector, .getAltData1(A_vector))
+.setAltData2(A_vector, .getAltData2(A_vector))
+```
 
 
 # Session Info

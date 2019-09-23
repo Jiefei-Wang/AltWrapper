@@ -11,14 +11,13 @@ using namespace Rcpp;
 template<class T>
 int get_altrep_data(T* result, R_xlen_t n, SEXP x, R_xlen_t* index, R_xlen_t start, bool ptr, bool ptr_or_null, bool element, bool subset) {
 	SEXP alt_class_name_symbol = GET_ALT_CLASS_NAME_SYMBOL(x);
-	SEXP alt_class_env = GET_ALT_CLASS(alt_class_name_symbol);
-	if (alt_class_env == R_UnboundValue)
+	SEXP alt_class_space = GET_ALT_CLASS(alt_class_name_symbol);
+	if (alt_class_space == R_UnboundValue)
 		errorHandle("Unable to find the the class '%s'", SYMBOL_TO_CHAR(alt_class_name_symbol));
 	if (ptr_or_null) {
 		//Check whether the pointer is available
-		SEXP alt_class_func_symbol = GET_ALT_SYMBOL(getDataptrOrNull);
-		SEXP func = GET_ALT_METHOD(alt_class_env, alt_class_func_symbol);
-		if (func != R_UnboundValue) {
+		SEXP func = GET_ALT_METHOD(alt_class_space, getDataptrOrNull);
+		if (func != R_NilValue) {
 			DEBUG(Rprintf("Alternatively access ptr_or_null\n"));
 			SEXP res = make_call(func, GET_ALT_DATA(x), x);
 			const T* ptr = nullptr;
@@ -47,9 +46,8 @@ int get_altrep_data(T* result, R_xlen_t n, SEXP x, R_xlen_t* index, R_xlen_t sta
 	//This is a shortcut for getting only one element
 	if (element && n == 1) {
 		//Check whether the element function is available
-		SEXP alt_class_func_symbol = GET_ALT_SYMBOL(getElement);
-		SEXP func = GET_ALT_METHOD(alt_class_env, alt_class_func_symbol);
-		if (func != R_UnboundValue) {
+		SEXP func = GET_ALT_METHOD(alt_class_space, getElement);
+		if (func != R_NilValue) {
 			DEBUG(Rprintf("Alternatively access element\n"));
 			SEXP res;
 			if (index != nullptr) {
@@ -66,9 +64,8 @@ int get_altrep_data(T* result, R_xlen_t n, SEXP x, R_xlen_t* index, R_xlen_t sta
 
 	if (subset) {
 		//Check whether the subset function is available
-		SEXP alt_class_func_symbol = GET_ALT_SYMBOL(getSubset);
-		SEXP func = GET_ALT_METHOD(alt_class_env, alt_class_func_symbol);
-		if (func != R_UnboundValue) {
+		SEXP func = GET_ALT_METHOD(alt_class_space, getSubset);
+		if (func != R_NilValue) {
 			DEBUG(Rprintf("Alternatively access subset\n"));
 			NumericVector indx(10);
 			for (R_xlen_t i = 0; i < n; i++) {
@@ -89,9 +86,8 @@ int get_altrep_data(T* result, R_xlen_t n, SEXP x, R_xlen_t* index, R_xlen_t sta
 
 	if (element) {
 		//Check whether the element function is available
-		SEXP alt_class_func_symbol = GET_ALT_SYMBOL(getElement);
-		SEXP func = GET_ALT_METHOD(alt_class_env, alt_class_func_symbol);
-		if (func != R_UnboundValue) {
+		SEXP func = GET_ALT_METHOD(alt_class_space, getElement);
+		if (func != R_NilValue) {
 			DEBUG(Rprintf("Alternatively access element\n"));
 			for (R_xlen_t i = 0; i < n; i++) {
 				SEXP res;
@@ -109,9 +105,8 @@ int get_altrep_data(T* result, R_xlen_t n, SEXP x, R_xlen_t* index, R_xlen_t sta
 
 	if (ptr) {
 		//Check whether the pointer is available
-		SEXP alt_class_func_symbol = GET_ALT_SYMBOL(getDataptr);
-		SEXP func = GET_ALT_METHOD(alt_class_env, alt_class_func_symbol);
-		if (func != R_UnboundValue) {
+		SEXP func = GET_ALT_METHOD(alt_class_space, getDataptr);
+		if (func != R_NilValue) {
 			DEBUG(Rprintf("Alternatively access ptr\n"));
 			SEXP R_writeable = PROTECT(wrap<int>(0));
 			SEXP res = make_call(func, GET_ALT_DATA(x), R_writeable, x);
@@ -166,9 +161,8 @@ Rboolean altrep_inspect(SEXP x, int pre, int deep, int pvec,
 	void (*inspect_subtree)(SEXP, int, int, int)) {
 	try {
 		SEXP alt_class_name_symbol = GET_ALT_CLASS_NAME_SYMBOL(x);
-		SEXP alt_class_func_symbol = GET_ALT_SYMBOL(inspect);
-		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, alt_class_func_symbol);
-		if (func != R_UnboundValue) {
+		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, inspect);
+		if (func != R_NilValue) {
 			SEXP res=make_call(func, GET_ALT_DATA(x),x);
 			if (TYPEOF(res) == LGLSXP) {
 				return (Rboolean)as<bool>(res);
@@ -193,9 +187,8 @@ R_xlen_t altrep_length(SEXP x) {
 	DEBUG(Rprintf("accessing length\n"));
 	try {
 		SEXP alt_class_name_symbol = GET_ALT_CLASS_NAME_SYMBOL(x);
-		SEXP alt_class_func_symbol = GET_ALT_SYMBOL(getLength);
-		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, alt_class_func_symbol);
-		if (func != R_UnboundValue) {
+		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, getLength);
+		if (func != R_NilValue) {
 			SEXP res = make_call(func, GET_ALT_DATA(x), x);
 			return as<R_xlen_t>(res);
 		}
@@ -214,9 +207,8 @@ void* altrep_dataptr(SEXP x, Rboolean writeable) {
 	DEBUG(Rprintf("accessing data pointer\n"));
 	try {
 		SEXP alt_class_name_symbol = GET_ALT_CLASS_NAME_SYMBOL(x);
-		SEXP alt_class_func_symbol = GET_ALT_SYMBOL(getDataptr);
-		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, alt_class_func_symbol);
-		if (func != R_UnboundValue) {
+		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, getDataptr);
+		if (func != R_NilValue) {
 			SEXP R_writeable = PROTECT(wrap<int>(writeable));
 			SEXP res = make_call(func, GET_ALT_DATA(x), R_writeable, x);
 			UNPROTECT(1);
@@ -229,9 +221,9 @@ void* altrep_dataptr(SEXP x, Rboolean writeable) {
 		}
 		//Check if the pointer is accessable from dataptrOrNull function
 		DEBUG(Rprintf("data pointer is not available. Auto accessing data pointer or null\n"));
-		alt_class_func_symbol = GET_ALT_SYMBOL(getDataptrOrNull);
-		func = GET_ALT_METHOD(alt_class_env, alt_class_func_symbol);
-		if (func != R_UnboundValue) {
+		func = GET_ALT_METHOD(alt_class_space, getDataptrOrNull);
+		Rf_PrintValue(func);
+		if (func != R_NilValue) {
 			SEXP res = make_call(func, GET_ALT_DATA(x), x);
 			switch (TYPEOF(res)) {
 			case NILSXP:
@@ -254,9 +246,8 @@ const void* altrep_dataptr_or_null(SEXP x)
 	DEBUG(Rprintf("accessing data pointer or null\n"));
 	try {
 		SEXP alt_class_name_symbol = GET_ALT_CLASS_NAME_SYMBOL(x);
-		SEXP alt_class_func_symbol = GET_ALT_SYMBOL(getDataptrOrNull);
-		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, alt_class_func_symbol);
-		if (func != R_UnboundValue) {
+		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, getDataptrOrNull);
+		if (func != R_NilValue) {
 			SEXP res = make_call(func, GET_ALT_DATA(x), x);
 			switch (TYPEOF(res)) {
 			case NILSXP:
@@ -279,9 +270,8 @@ SEXP altrep_subset(SEXP x, SEXP indx, SEXP call_stack) {
 	DEBUG(Rprintf("subsetting data\n"););
 	try {
 		SEXP alt_class_name_symbol = GET_ALT_CLASS_NAME_SYMBOL(x);
-		SEXP alt_class_func_symbol = GET_ALT_SYMBOL(getSubset);
-		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, alt_class_func_symbol);
-		if (func != R_UnboundValue) {
+		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, getSubset);
+		if (func != R_NilValue) {
 			SEXP res = make_call(func, GET_ALT_DATA(x), indx, x);
 			return res;
 		}
@@ -300,9 +290,8 @@ T altrep_get_element(SEXP x, R_xlen_t i) {
 	DEBUG(Rprintf("accessing element %d\n", (int)i));
 	try {
 		SEXP alt_class_name_symbol = GET_ALT_CLASS_NAME_SYMBOL(x);
-		SEXP alt_class_func_symbol = GET_ALT_SYMBOL(getElement);
-		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, alt_class_func_symbol);
-		if (func != R_UnboundValue) {
+		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, getElement);
+		if (func != R_NilValue) {
 			SEXP res = make_call(func, GET_ALT_DATA(x), wrap(i + 1), x);
 			T returnValue = as<T>(res);
 			//printf("value:%d\n", returnValue);
@@ -349,9 +338,8 @@ R_xlen_t numeric_region(SEXP x, R_xlen_t start, R_xlen_t size, T * out) {
 	DEBUG(Rprintf("accessing numeric region\n"));
 	try {
 		SEXP alt_class_name_symbol = GET_ALT_CLASS_NAME_SYMBOL(x);
-		SEXP alt_class_func_symbol = GET_ALT_SYMBOL(getRegion);
-		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, alt_class_func_symbol);
-		if (func != R_UnboundValue) {
+		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, getRegion);
+		if (func != R_NilValue) {
 			const char* alt_class_type = CHARSXP_TO_CHAR(GET_ALT_CLASS_TYPE(x));
 			SEXP output = PROTECT(wrap_out_pointer(out, size, alt_class_type));
 			SEXP res = make_call(func, GET_ALT_DATA(x), wrap(start + 1), wrap(size), output, x);
@@ -379,9 +367,8 @@ SEXP altrep_duplicate(SEXP x, Rboolean deep) {
 	DEBUG(Rprintf("Duplicating data, deep: %d\n", deep));
 	try {
 		SEXP alt_class_name_symbol = GET_ALT_CLASS_NAME_SYMBOL(x);
-		SEXP alt_class_func_symbol = GET_ALT_SYMBOL(duplicate);
-		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, alt_class_func_symbol);
-		if (func != R_UnboundValue) {
+		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, duplicate);
+		if (func != R_NilValue) {
 			SEXP R_deep = PROTECT(wrap<int>(deep));
 			SEXP res = make_call(func, GET_ALT_DATA(x), R_deep, x);
 			UNPROTECT(1);
@@ -420,9 +407,8 @@ SEXP altrep_coerce(SEXP x, int type) {
 	DEBUG(Rprintf("Coercing data\n"));
 	try {
 		SEXP alt_class_name_symbol = GET_ALT_CLASS_NAME_SYMBOL(x);
-		SEXP alt_class_func_symbol = GET_ALT_SYMBOL(coerce);
-		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, alt_class_func_symbol);
-		if (func != R_UnboundValue) {
+		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, coerce);
+		if (func != R_NilValue) {
 			SEXP R_type = PROTECT(wrap<int>(type));
 			SEXP res = make_call(func, GET_ALT_DATA(x), R_type, x);
 			UNPROTECT(1);
@@ -448,10 +434,9 @@ SEXP altrep_serialize_state(SEXP x) {
 	DEBUG(Rprintf("serializing data\n"));
 	try {
 		SEXP alt_class_name_symbol = GET_ALT_CLASS_NAME_SYMBOL(x);
-		SEXP alt_class_func_symbol = GET_ALT_SYMBOL(serialize);
-		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, alt_class_func_symbol);
+		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, serialize);
 		SEXP state;
-		if (func != R_UnboundValue) {
+		if (func != R_NilValue) {
 			state = PROTECT(make_call(func, GET_ALT_DATA(x), x));
 		}
 		else {
@@ -497,14 +482,13 @@ SEXP altrep_unserialize(SEXP R_class, SEXP serializedInfo) {
 		Environment package_env(PACKAGE_NAMESPACE);
 		Function unserializeAltWrapper = package_env[".unserializeAltWrapper"];
 		unserializeAltWrapper(serializedInfo);
+		//Rf_PrintValue(serializedInfo);
 
 		List serializedInfoList = serializedInfo;
 		SEXP state = serializedInfoList["state"];
 		SEXP alt_class_name_symbol = serializedInfoList["className"];
-		SEXP alt_class_func_symbol = GET_ALT_SYMBOL(unserialize);
-		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, alt_class_func_symbol);
-
-		if (func != R_UnboundValue) {
+		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, unserialize);
+		if (func != R_NilValue) {
 			SEXP res = make_call(func, R_class, state, R_NilValue);
 			return res;
 		}
@@ -539,9 +523,8 @@ int altrep_is_sorted(SEXP x) {
 	DEBUG(Rprintf("is_sorted function\n"););
 	try {
 		SEXP alt_class_name_symbol = GET_ALT_CLASS_NAME_SYMBOL(x);
-		SEXP alt_class_func_symbol = GET_ALT_SYMBOL(isSorted);
-		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, alt_class_func_symbol);
-		if (func != R_UnboundValue) {
+		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, isSorted);
+		if (func != R_NilValue) {
 			SEXP res = PROTECT(make_call(func, GET_ALT_DATA(x), x));
 			UNPROTECT(1);
 			return as<int>(res);
@@ -562,9 +545,8 @@ int altrep_no_NA(SEXP x) {
 	DEBUG(Rprintf("no_NA function\n"););
 	try {
 		SEXP alt_class_name_symbol = GET_ALT_CLASS_NAME_SYMBOL(x);
-		SEXP alt_class_func_symbol = GET_ALT_SYMBOL(noNA);
-		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, alt_class_func_symbol);
-		if (func != R_UnboundValue) {
+		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, noNA);
+		if (func != R_NilValue) {
 			SEXP res = PROTECT(make_call(func, GET_ALT_DATA(x), x));
 			UNPROTECT(1);
 			return as<int>(res);
@@ -583,9 +565,8 @@ SEXP altrep_sum(SEXP x, Rboolean na_rm) {
 	DEBUG(Rprintf("sum function\n"););
 	try {
 		SEXP alt_class_name_symbol = GET_ALT_CLASS_NAME_SYMBOL(x);
-		SEXP alt_class_func_symbol = GET_ALT_SYMBOL(sum);
-		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, alt_class_func_symbol);
-		if (func != R_UnboundValue) {
+		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, sum);
+		if (func != R_NilValue) {
 			SEXP R_na_rm = PROTECT(wrap((bool)na_rm));
 			SEXP res = PROTECT(make_call(func, GET_ALT_DATA(x), R_na_rm, x));
 			UNPROTECT(2);
@@ -605,9 +586,8 @@ SEXP altrep_min(SEXP x, Rboolean na_rm) {
 	DEBUG(Rprintf("min function\n"););
 	try {
 		SEXP alt_class_name_symbol = GET_ALT_CLASS_NAME_SYMBOL(x);
-		SEXP alt_class_func_symbol = GET_ALT_SYMBOL(min);
-		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, alt_class_func_symbol);
-		if (func != R_UnboundValue) {
+		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, min);
+		if (func != R_NilValue) {
 			SEXP R_na_rm = PROTECT(wrap((bool)na_rm));
 			SEXP res = PROTECT(make_call(func, GET_ALT_DATA(x), R_na_rm, x));
 			UNPROTECT(2);
@@ -627,9 +607,8 @@ SEXP altrep_max(SEXP x, Rboolean na_rm) {
 	DEBUG(Rprintf("max function\n"););
 	try {
 		SEXP alt_class_name_symbol = GET_ALT_CLASS_NAME_SYMBOL(x);
-		SEXP alt_class_func_symbol = GET_ALT_SYMBOL(max);
-		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, alt_class_func_symbol);
-		if (func != R_UnboundValue) {
+		ERROR_WHEN_NOT_FIND_ALT_CLASS(func, alt_class_name_symbol, max);
+		if (func != R_NilValue) {
 			SEXP R_na_rm = PROTECT(wrap((bool)na_rm));
 			SEXP res = PROTECT(make_call(func, GET_ALT_DATA(x), R_na_rm, x));
 			UNPROTECT(2);

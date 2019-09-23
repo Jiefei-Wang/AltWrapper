@@ -60,7 +60,6 @@ for (i in seq_along(classTypeList)) {
     setAltMethod("test", getLength = length_func)
     setAltMethod("test", getDataptr = get_ptr_func)
     setAltMethod("test", getDataptrOrNull = ptr_or_null_func)
-    attachAltMethod("test", someFunc = sum)
     
     a = classTypeList[[i]](runif(10) * 100)
     b = makeAltrep("test", a)
@@ -101,10 +100,6 @@ for (i in seq_along(classTypeList)) {
             getAltMethod(x = b, methodName = c("getLength","getDataptr")),
             c(length_func,get_ptr_func)
             )
-        expect_equal(
-            getAltMethod(x = b, methodName = "someFunc"),
-            sum
-        )
     })
     
     test_that("Inspect class status from data", {
@@ -129,10 +124,6 @@ for (i in seq_along(classTypeList)) {
             c(length_func,get_ptr_func)
         )
         
-        expect_equal(
-            getAltMethod(className = "test", methodName = "someFunc"),
-            sum
-        )
     })
     
     test_that("Inspect class status from class name", {

@@ -1,74 +1,71 @@
 ## Set the ALTREP method
 .setAltMethod <- function(className, functionName, func) {
-    if(!is.null(func)){
-        argsNum = length(formals(func))
-        expectedNum=altrepClassFunctionArgNum[functionName]
-        if(argsNum!=expectedNum){
-            stop("The number of arguments of the function `",functionName,"` does not match the requirement.\n",
-                 "\t Expected: ",expectedNum,"\t Actual: ",argsNum)
-        }
-    }
-    classEnv = altrepRegistryEnvironment[[className]]
-    func = .addAltrepArg(func)
-    .setMethod(classEnv, functionName, func)
-}
-## Attach a method to an ALTREP class
-## The method will not be called by R
-.attachAltMethod <- function(className, functionName, func) {
-    classEnv = .getClassFunctionEnvironment(className)
-    .setMethod(classEnv, functionName, func)
-}
-
-## A general function to assign a function to an environment
-## If the function is NULL, it will remove the function from the
-## environment
-.setMethod <- function(classEnv, functionName, func) {
     if (is.null(func)) {
-        rm(list = functionName, envir = classEnv)
+        classFunctionSpace = getClassFunctionSpace(className)
+        classFunctionSpace[functionName] = list(NULL)
+        setClassFunctionSpace(className, classFunctionSpace)
         return()
     }
-    if ((!is.null(classEnv[[functionName]])) &&
+    ## If the function is not null
+    argsNum = length(formals(func))
+    expectedNum = altrepClassFunctionArgNum[functionName]
+    if (argsNum != expectedNum) {
+        stop(
+            "The number of arguments of the function `",
+            functionName,
+            "` does not match the requirement.\n",
+            "\t Expected: ",
+            expectedNum,
+            "\t Actual: ",
+            argsNum
+        )
+    }
+    func = addAltrepArg(func)
+    classFunctionSpace = getClassFunctionSpace(className)
+    if ((!is.null(classFunctionSpace[[functionName]])) &&
         getAltWrapperOptions("redefineWarning")) {
         warning("The method '",
                 functionName,
                 "' has been defined and will be replaced.")
     }
-    #environment(func) = classEnv
-    classEnv[[functionName]] = func
+    classFunctionSpace[[functionName]] = func
+    setClassFunctionSpace(className, classFunctionSpace)
 }
 
 ## Get the class environment
 ## The class environment is the place where
 ## all the ALTREP functions and class settings for
 ## an altWrapper class are stored.
-.getClassEnvironment <- function(className) {
-    classEnv = altrepRegistryEnvironment[[className]]
-    classEnv
+getClassSpace <- function(className) {
+    classSpace = altrepRegistryEnvironment[[className]]
+    classSpace
 }
-.setClassEnvironment <- function(className, classEnv) {
-    parent.env(classEnv)= altrepRegistryEnvironment
-    altrepRegistryEnvironment[[className]] = classEnv
+setClassSpace <- function(className, classSpace) {
+    altrepRegistryEnvironment[[className]] = classSpace
 }
 ## Get the class function environment
 ## It is the sub environment of the class environment
 ## The environment is used to store the attached functions
-.getClassFunctionEnvironment <- function(className) {
-    classEnv = .getClassEnvironment(className)
-    classEnv[["functionEnvironment"]]
+getClassFunctionSpace <- function(className) {
+    classSpace = getClassSpace(className)
+    classSpace[["functionSpace"]]
 }
-
+setClassFunctionSpace <- function(className, classFunctionSpace) {
+    altrepRegistryEnvironment[[className]][["functionSpace"]] = classFunctionSpace
+}
 
 
 ## Check if x is an altWrapper
 ## x must be an altrep
 .isAltWrapper <- function(x) {
-    data2 = getAltData2(x)
+    data2 = .getAltData2(x)
     is.list(data2) &&
         length(data2) > 0 &&
         data2[[1]] == "AltWrapper"
 }
 
 ## Get Class name by either its name or the altWrapper object
+## verify: whether check if the class has been defined
 getClassName <-
     function(className = NULL,
              x = NULL,
@@ -93,30 +90,31 @@ getClassName <-
 
 
 ## Convert classType to a base R type
-toBaseRType<-function(classType){
-    if(classType=="real") classType="numeric"
+toBaseRType <- function(classType) {
+    if (classType == "real")
+        classType = "numeric"
     classType
 }
 
 ## Get the alt class name from class type
 ## altRaw, altLogical, altInteger, altReal
-getAltBaseClassName<-function(classType){
+getAltBaseClassName <- function(classType) {
     ## Capitalize the first letter
-    classType=paste0(toupper(substr(classType,1,1)),substring(classType,2))
-    paste0("alt",classType)
+    classType = paste0(toupper(substr(classType, 1, 1)), substring(classType, 2))
+    paste0("alt", classType)
 }
 
 ## Add an altrep argument(.self) to a function
-.addAltrepArg <- function(func) {
+addAltrepArg <- function(func) {
     if (is.null(func))
         return(NULL)
     args = formals(func)
-    formals(func) <- c(args, alist(.self = ))
+    formals(func) <- c(args, alist(.self =))
     func
 }
 
 ## remove an altrep argument(.self) from a function
-.removeAltrepArg <- function(func) {
+removeAltrepArg <- function(func) {
     if (is.null(func))
         return(NULL)
     args = formals(func)
@@ -140,15 +138,11 @@ getAltBaseClassName<-function(classType){
     if (!isAltClassExist(className)) {
         NULL
     }
-    if (methodName %in% altrepClassFunctionList) {
-        classEnv = .getClassEnvironment(className)
-    } else{
-        classEnv = .getClassFunctionEnvironment(className)
-    }
+    classSpace = getClassFunctionSpace(className)
     if (showInternal) {
-        return(classEnv[[methodName]])
+        return(classSpace[[methodName]])
     } else{
-        return(.removeAltrepArg(classEnv[[methodName]]))
+        return(removeAltrepArg(classSpace[[methodName]]))
     }
 }
 
@@ -168,17 +162,14 @@ getAltBaseClassName<-function(classType){
     serializeObject = list(
         autoExport = autoExport,
         className = as.symbol(className),
-        classEnv = NULL,
+        classSpace = NULL,
         state = state
     )
-
-    if (autoExport) {
-        classEnv = .getClassEnvironment(className)
-        #print(as.list(classEnv))
-        # serializeObject[["classEnv"]] = classEnv
-        serializeObject[["classEnv"]] = as.list(classEnv)
-    }
     
+    if (autoExport) {
+        classSpace = getClassSpace(className)
+        serializeObject[["classSpace"]] = classSpace
+    }
     serializeObject
 }
 
@@ -189,30 +180,25 @@ getAltBaseClassName<-function(classType){
 #'
 #' @noRd
 .unserializeAltWrapper <- function(serializedInfo) {
-    #browser()
-    #print("Internal unserialize altWrapper function")
-    #message(serializedInfo)
+    #print(serializedInfo)
     if (serializedInfo[["autoExport"]]) {
         className = as.character(serializedInfo[["className"]])
-        # classEnv = serializedInfo[["classEnv"]]
-        classEnv = list2env(serializedInfo[["classEnv"]],parent=emptyenv())
-        # print(serializedInfo)
-        # print(classEnv)
-        # print(as.list(classEnv))
-        .setClassEnvironment(className, classEnv)
+        classSpace = serializedInfo[["classSpace"]]
+        setClassSpace(className, classSpace)
     }
 }
 
 
 .getAltClassSetting <- function(className, settingName) {
-    classEnv = .getClassEnvironment(className)
-    settingList = classEnv[["classSettings"]]
+    classSpace = getClassSpace(className)
+    settingList = classSpace[["classSettings"]]
     settingList[settingName]
 }
 
 .setAltClassSetting <- function(className, settingName, value) {
-    classEnv = .getClassEnvironment(className)
-    settingList = classEnv[["classSettings"]]
+    classSpace = getClassSpace(className)
+    settingList = classSpace[["classSettings"]]
     settingList[[settingName]] = value
-    classEnv[["classSettings"]] = settingList
+    classSpace[["classSettings"]] = settingList
+    setClassSpace(className, classSpace)
 }

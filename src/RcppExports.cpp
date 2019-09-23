@@ -125,13 +125,12 @@ BEGIN_RCPP
 END_RCPP
 }
 // C_initial_package
-void C_initial_package(SEXP altrep_class_space, SEXP altrep_symbol_space);
-RcppExport SEXP _AltWrapper_C_initial_package(SEXP altrep_class_spaceSEXP, SEXP altrep_symbol_spaceSEXP) {
+void C_initial_package(SEXP altrep_class_space);
+RcppExport SEXP _AltWrapper_C_initial_package(SEXP altrep_class_spaceSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type altrep_class_space(altrep_class_spaceSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type altrep_symbol_space(altrep_symbol_spaceSEXP);
-    C_initial_package(altrep_class_space, altrep_symbol_space);
+    C_initial_package(altrep_class_space);
     return R_NilValue;
 END_RCPP
 }
@@ -177,7 +176,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_AltWrapper_C_create_internal_altrep", (DL_FUNC) &_AltWrapper_C_create_internal_altrep, 2},
     {"_AltWrapper_C_getName", (DL_FUNC) &_AltWrapper_C_getName, 1},
     {"_AltWrapper_C_duplicate", (DL_FUNC) &_AltWrapper_C_duplicate, 2},
-    {"_AltWrapper_C_initial_package", (DL_FUNC) &_AltWrapper_C_initial_package, 2},
+    {"_AltWrapper_C_initial_package", (DL_FUNC) &_AltWrapper_C_initial_package, 1},
     {"_AltWrapper_C_get_sortness_macro", (DL_FUNC) &_AltWrapper_C_get_sortness_macro, 0},
     {"_AltWrapper_C_get_NA_status_macro", (DL_FUNC) &_AltWrapper_C_get_NA_status_macro, 0},
     {"_AltWrapper_rcpp_hello_world", (DL_FUNC) &_AltWrapper_rcpp_hello_world, 0},

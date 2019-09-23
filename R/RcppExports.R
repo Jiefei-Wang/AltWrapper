@@ -41,8 +41,8 @@ C_duplicate <- function(x, shallow) {
     .Call(`_AltWrapper_C_duplicate`, x, shallow)
 }
 
-C_initial_package <- function(altrep_class_space, altrep_symbol_space) {
-    invisible(.Call(`_AltWrapper_C_initial_package`, altrep_class_space, altrep_symbol_space))
+C_initial_package <- function(altrep_class_space) {
+    invisible(.Call(`_AltWrapper_C_initial_package`, altrep_class_space))
 }
 
 C_get_sortness_macro <- function() {

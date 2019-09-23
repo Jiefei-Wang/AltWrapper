@@ -1,11 +1,31 @@
 #include <Rcpp.h>
 #include "R_ext/Altrep.h"
 
+//Declare the global variables
+
+//a list of R's symbol
+#define ALTREP_SYMBOLS \
+X(0,inspect)\
+X(1,getLength)\
+X(2,getDataptr)\
+X(3,getDataptrOrNull)\
+X(4,getSubset)\
+X(5,getElement)\
+X(6,getRegion)\
+X(7,duplicate)\
+X(8,coerce)\
+X(9,serialize)\
+X(10,unserialize)\
+X(11,isSorted)\
+X(12,noNA)\
+X(13,sum)\
+X(14,min)\
+X(15,max)
+
+
 //The environment that stores the ALTREP class information
 //All registered ALTREP classes will be here
 extern SEXP ALTREP_REGISTRY_ENVIRONMENT;
-//The symbol is used for quick reference
-extern SEXP ALTREP_SYMBOL_LIST;
 
 //Dispacher altrep class
 extern R_altrep_class_t altrep_raw_class;
@@ -19,7 +39,11 @@ extern R_altrep_class_t altrep_internal_logical_class;
 extern R_altrep_class_t altrep_internal_integer_class;
 extern R_altrep_class_t altrep_internal_real_class;
 
-
+//Declare each R's symbol with _symbol postfix
+#define X(i,func_name) \
+extern const int func_name##_index;
+ALTREP_SYMBOLS
+#undef X
 
 
 /* 
@@ -58,10 +82,13 @@ X(13,sum)\
 X(14,min)\
 X(15,max)\
 X(40, classType)\
-X(41, functionEnvironment)\
+X(41, functionSpace)\
 X(42, classSettings)
 */
-SEXP get_alt_symbol(const char* name);
+
+
+
+//SEXP get_alt_symbol(const char* name);
 
 
 

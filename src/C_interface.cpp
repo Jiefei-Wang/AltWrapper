@@ -93,9 +93,9 @@ SEXP C_duplicate(SEXP x, bool shallow) {
 }
 
 // [[Rcpp::export]]
-void C_initial_package(SEXP altrep_class_space,SEXP altrep_symbol_space) {
+void C_initial_package(SEXP altrep_class_space) {
 	ALTREP_REGISTRY_ENVIRONMENT = altrep_class_space;
-	ALTREP_SYMBOL_LIST = altrep_symbol_space;
+
 }
 
 // [[Rcpp::export]]
