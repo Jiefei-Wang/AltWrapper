@@ -120,7 +120,7 @@ Naturally, the altWrapper data can be set via `setAltWrapperData`
 ```{r}
 x$start = 2
 A_vector = setAltWrapperData(A_vector, x)
-A_vector
+printAltWrapper(A_vector)
 ```
 By default, the function `setAltWrapperData` will duplicate the object. If you only want to memorize some data(e.g. caching on-disk data), you can call `setAltWrapperData` with argument `duplicate = FALSE`. Please do not set `duplicate = FALSE` if you new `x` will change the value of `A_vector`.
 

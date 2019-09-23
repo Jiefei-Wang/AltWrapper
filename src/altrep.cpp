@@ -89,20 +89,3 @@ int get_class_type_size(SEXP class_type) {
 }
 
 
-
-/*
-SEXP get_alt_symbol(const char* name) {
-#define X(i,func_name) \
-if (std::strcmp(name, #func_name)==0)\
-	return VECTOR_ELT(ALTREP_SYMBOL_LIST, i);
-	ALTREP_SYMBOLS
-#undef X
-		unsigned int offset = 40;
-	if (std::strcmp(name, "class_type") == 0)
-		return VECTOR_ELT(ALTREP_SYMBOL_LIST, offset + 0);
-	errorHandle("The symbol '%s' is not found.\n", name);
-
-	return ALTREP_SYMBOL_LIST;
-}
-
-*/
