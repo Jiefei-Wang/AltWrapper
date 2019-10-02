@@ -88,7 +88,7 @@ print.altWrapper <- function(x, ...) {
     toDefault = printAltWrapper(x)
     if (toDefault) {
         NextMethod()
-    }else{
+    } else{
         invisible(NULL)
     }
 }
@@ -109,12 +109,14 @@ setMethod("show", "altWrapper", function(object)
 #' @rdname print-function
 #' @export
 printAltWrapper <- function(x, ...) {
-    # browser()
-    # message("My print")
+    ## In generic call, the function return true if it wants to call
+    ## the parent function, return false if it can handle the print
+    ## In non-generic call, the function return the object x invisibly.
+    .generic = parent.frame(n = 1)[[".Generic"]]
+    isGeneric = !is.null(.generic)
     if (!is.altWrapper(x)) {
-        .generic = parent.frame(n = 1)[[".Generic"]]
-        if (!is.null(.generic)) {
-            return(FALSE)
+        if (isGeneric) {
+            return(TRUE)
         } else{
             return(print(x, ...))
         }
@@ -128,9 +130,8 @@ printAltWrapper <- function(x, ...) {
     if (!is.null(ptr_func) &&
         !is.null(ptr_null_func) &&
         !is.null(ptr_null_func(.getAltData1(x), x))) {
-        .generic = parent.frame(n = 1)[[".Generic"]]
-        if (!is.null(.generic)) {
-            return(FALSE)
+        if (isGeneric) {
+            return(TRUE)
         }
     }
     
@@ -143,9 +144,9 @@ printAltWrapper <- function(x, ...) {
     
     ## Create a temp variable
     constructor = get(toBaseRType(classType))
-    if(isS4(x)){
-        output=new(class(x),constructor(printSize))
-    }else{
+    if (isS4(x)) {
+        output = new(class(x), constructor(printSize))
+    } else{
         output = constructor(printSize)
         attributes(output) = attributes(x)
     }
@@ -161,16 +162,23 @@ printAltWrapper <- function(x, ...) {
             len = func(xData, start + 1, chunkSize, regionVector, x)
             output[start + seq_len(len)] = regionVector[seq_len(len)]
         }
-        print(output)
-        return(TRUE)
-    }else{
+        res = print(output)
+    } else{
         ## print from subset or element method
         output[seq_len(printSize)] = x[seq_len(printSize)]
-        print(output)
+        res = print(output)
     }
-    if(printSize>length(x)){
-        cat('[ reached getOption("max.print") -- omitted ',length(x)-printSize,' entries ]')
+    if (printSize > length(x)) {
+        cat(
+            '[ reached getOption("max.print") -- omitted ',
+            length(x) - printSize,
+            ' entries ]'
+        )
     }
     
-    return(TRUE)
+    if (isGeneric) {
+        return(FALSE)
+    } else{
+        return(invisible(res))
+    }
 }

@@ -122,7 +122,7 @@ x$start = 2
 A_vector = setAltWrapperData(A_vector, x)
 printAltWrapper(A_vector)
 ```
-By default, the function `setAltWrapperData` will duplicate the object. If you only want to memorize some data(e.g. caching on-disk data), you can call `setAltWrapperData` with argument `duplicate = FALSE`. Please do not set `duplicate = FALSE` if you new `x` will change the value of `A_vector`.
+By default, the function `setAltWrapperData` will duplicate the object. If you only want to memorize some data(e.g. caching on-disk data), you can call `setAltWrapperData` with argument `duplicate = FALSE`. Please do not set `duplicate = FALSE` if your new `x` will change the value of `A_vector`, because one R object can have multiple variable names, changing the value of an immutable object will change the value of all associated variables.
 
 ## Check Class Functions
 The following example shows how to retrieve a function from an altWrapper class.
