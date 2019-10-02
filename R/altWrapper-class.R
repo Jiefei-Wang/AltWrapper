@@ -38,11 +38,11 @@ setClass(Class = "altReal",
 #' A convinent collection of altWrapper classes
 #' @rdname altWrapper-collection
 #' @export
-setClassUnion("altNumeric", c("altInteger", "altLogical", "altInteger"))
+setClassUnion("altNumeric", c("altInteger", "altLogical", "altReal"))
 #' @rdname altWrapper-collection
 #' @export
 setClassUnion("altWrapper",
-              c("altRaw", "altInteger", "altLogical", "altInteger"))
+              c("altRaw", "altNumeric"))
 ################################
 ##print method
 ################################
