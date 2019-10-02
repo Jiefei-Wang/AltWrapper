@@ -4,7 +4,7 @@
 \alias{makeAltrep}
 \title{Make an altWrapper object}
 \usage{
-makeAltrep(className, x, attributes = NULL, S3Class = FALSE,
+makeAltrep(className, x, attributes = list(), S3Class = FALSE,
   S4Class = FALSE)
 }
 \arguments{

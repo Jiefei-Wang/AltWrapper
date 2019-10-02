@@ -70,26 +70,40 @@ altWrapperClassDefaultSettings = list(
 #' @export
 makeAltrep <- function(className,
                        x,
-                       attributes = NULL,
+                       attributes = list(),
                        S3Class = FALSE,
                        S4Class = FALSE) {
     if (!isAltClassExist(className)) {
         stop("The class '", className, "' is not found.")
     }
+    
     if(is.null(attributes)){
         attributes = list()
+    }else{
+        if (!is.list(attributes)){
+            stop("The attributes must be a list")
+        }
+        attributes$class = NULL
     }
-    if (!is.list(attributes))
-        stop("The attributes must be a list")
-    attributes$class = NULL
     
-    RClassName = NULL
+    classType = getClassType(className)
+    altBaseClassName = getAltBaseClassName(classType)
+    
+    
+    
+    if(is.logical(S3Class)&&S3Class){
+        attributes$class = c(altBaseClassName,"altWrapper")
+    }
     if(is.character(S3Class)){
-        RClassName = S3Class
+        attributes$class = S3Class
         S3Class = TRUE
     }
+    RS4ClassName = NULL
+    if(is.logical(S4Class)&&S4Class){
+        RS4ClassName = altBaseClassName
+    }
     if(is.character(S4Class)){
-        RClassName = S4Class
+        RS4ClassName = S4Class
         S4Class = TRUE
     }
     
@@ -97,8 +111,7 @@ makeAltrep <- function(className,
         stop("The altWrapper object cannot be both S3 and S4 class type")
     }
     
-    classType = getClassType(className)
-    altBaseClassName = getAltBaseClassName(classType)
+    
     
     
     
@@ -113,26 +126,14 @@ makeAltrep <- function(className,
     ## For S4 object the reference number is 7
     ## Hopefully it can be removed in future
     if (S4Class) {
-        if(is.null(RClassName))
-            RClassName = altBaseClassName
-        
         altWrapperObject = C_create_altrep(className,
                                            x,
                                            classType,
                                            state,
                                            names(attributes),
                                            attributes)
-        new(RClassName, altWrapperObject)
-        #altClassConstructorList[[altBaseClassName]](altWrapperObject)
+        new(RS4ClassName, altWrapperObject)
     } else{
-        if(S3Class){
-            if(is.null(RClassName))
-                attributes$class = altBaseClassName
-            else
-                attributes$class = RClassName
-        }else{
-            attributes$class = NULL
-        }
         C_create_altrep(className,
                         x,
                         classType,

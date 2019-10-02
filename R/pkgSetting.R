@@ -1,14 +1,21 @@
 globalSettings <- new.env()
 globalSettings$redefineWarning = TRUE
-
+globalSettings$chunkSize = 512L
 #' AltWrapper Options Settings
 #'
 #' Get and set the package settings
 #'
 #' @param ... a list of named arguments to change the package settings,
-#'  or a vector of character names to get the package settings. Currently the
-#'  only available setting is `redefineWarning`, which controls whether an warning
-#'  can be given when users try to redine a function or a class of an AltWrapper class.
+#'  or a vector of character names to get the package settings. See details for
+#'  the available settings
+#'  
+#'  @details 
+#'  `redefineWarning`: controls whether an warning will be given 
+#'  when users try to redine a function or a class of an AltWrapper class.
+#'  
+#'  `chunkSize`: The batch size that will be used to temporary stores values for a vector.
+#'  It is used for the S3/S4 altWrapper `print` function when the data pointer of the vector
+#'  is not available.
 #'
 #' @examples
 #' ## Get the default package settings

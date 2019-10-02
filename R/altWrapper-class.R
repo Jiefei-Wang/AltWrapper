@@ -7,12 +7,10 @@ altClassList <- data.frame(
     stringsAsFactors = FALSE
 )
 
-
 ## Make S3 class compatible with S4 dispatching
 for (i in seq_len(nrow(altClassList))) {
     setOldClass(c(altClassList$className[i], altClassList$type[i]))
 }
-
 
 #' @title The S4 class for ALTREP of type raw, logical, integer and real
 #'
@@ -37,7 +35,14 @@ setClass(Class = "altInteger",
 setClass(Class = "altReal",
          contains = "numeric")
 
-
+#' A convinent collection of altWrapper classes
+#' @rdname altWrapper-collection
+#' @export
+setClassUnion("altNumeric", c("altInteger", "altLogical", "altInteger"))
+#' @rdname altWrapper-collection
+#' @export
+setClassUnion("altWrapper",
+              c("altRaw", "altInteger", "altLogical", "altInteger"))
 ################################
 ##print method
 ################################
@@ -78,36 +83,27 @@ setClass(Class = "altReal",
 #' @return The argument `x`
 #' @name altWrapperPrint
 #' @rdname print-function
-NULL
-
-
-
-#' @rdname print-function
 #' @export
-print.altRaw <- function(x, ...) {
-    printAltWrapper(x)
-}
-#' @rdname print-function
-#' @export
-print.altInteger <- function(x, ...) {
-    printAltWrapper(x)
-}
-#' @rdname print-function
-#' @export
-print.altLogical <- function(x, ...) {
-    printAltWrapper(x)
-}
-#' @rdname print-function
-#' @export
-print.altReal <- function(x, ...) {
-    printAltWrapper(x)
+print.altWrapper <- function(x, ...) {
+    toDefault = printAltWrapper(x)
+    if (toDefault) {
+        NextMethod()
+    }else{
+        invisible(NULL)
+    }
 }
 
 ## Set print dispatch for S4 class
-for (i in seq_len(nrow(altClassList))) {
-    setMethod("show", altClassList$className[i], function(object)
-        printAltWrapper(object))
-}
+setMethod("show", "altWrapper", function(object)
+{
+    toDefault = printAltWrapper(object)
+    if (toDefault) {
+        callNextMethod()
+    } else{
+        invisible(object)
+    }
+})
+
 
 
 #' @rdname print-function
@@ -116,7 +112,12 @@ printAltWrapper <- function(x, ...) {
     # browser()
     # message("My print")
     if (!is.altWrapper(x)) {
-        return(NextMethod(generic = "print"))
+        .generic = parent.frame(n = 1)[[".Generic"]]
+        if (!is.null(.generic)) {
+            return(FALSE)
+        } else{
+            return(print(x, ...))
+        }
     }
     
     x = removeWrapper(x)
@@ -124,27 +125,35 @@ printAltWrapper <- function(x, ...) {
     classType = getClassType(className)
     ptr_func = .getAltMethod(className = className, methodName = "getDataptr")
     ptr_null_func = .getAltMethod(className = className, methodName = "getDataptrOrNull")
-    if (!is.null(ptr_func)&&
-        !is.null(ptr_null_func)&&
+    if (!is.null(ptr_func) &&
+        !is.null(ptr_null_func) &&
         !is.null(ptr_null_func(.getAltData1(x), x))) {
-        return(NextMethod(generic = "print"))
+        .generic = parent.frame(n = 1)[[".Generic"]]
+        if (!is.null(.generic)) {
+            return(FALSE)
+        }
     }
     
     
     ## Chunk settings
     maxPrint = getOption("max.print")
     printSize = min(maxPrint, length(x))
-    chunkSize = 512
+    chunkSize = getAltWrapperOptions("chunkSize")
     chunkNum = ceiling(printSize / chunkSize)
     
     ## Create a temp variable
     constructor = get(toBaseRType(classType))
-    output = structure(constructor(printSize))
-    #attributes(output)=attributes(x)
+    if(isS4(x)){
+        output=new(class(x),constructor(printSize))
+    }else{
+        output = constructor(printSize)
+        attributes(output) = attributes(x)
+    }
     
-    ## Print from region
     func = .getAltMethod(className = className, methodName = "getRegion")
     if (!is.null(func)) {
+        ## Print from region
+        ## not a perfect solution but it should work reasonably fast.
         regionVector = C_create_internal_altrep(classType, chunkSize)
         xData = .getAltData1(x)
         for (i in seq_len(chunkNum)) {
@@ -153,11 +162,15 @@ printAltWrapper <- function(x, ...) {
             output[start + seq_len(len)] = regionVector[seq_len(len)]
         }
         print(output)
-        return(invisible(x))
+        return(TRUE)
+    }else{
+        ## print from subset or element method
+        output[seq_len(printSize)] = x[seq_len(printSize)]
+        print(output)
+    }
+    if(printSize>length(x)){
+        cat('[ reached getOption("max.print") -- omitted ',length(x)-printSize,' entries ]')
     }
     
-    ## print from subset or element method
-    output[seq_len(printSize)] = x[seq_len(printSize)]
-    print(output)
-    return(invisible(x))
+    return(TRUE)
 }

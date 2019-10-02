@@ -2,7 +2,7 @@
 #' @importFrom Rcpp sourceCpp
 #' @importFrom DescTools StrAlign
 #' @import BiocStyle
-#' @importFrom methods setMethod new
+#' @importFrom methods setMethod new callNextMethod
 .onLoad <- function(libname, pkgname) {
     C_initial_package(altrepRegistryEnvironment)
     env = getNamespace("AltWrapper")

@@ -322,10 +322,17 @@ setAltWrapperData <- function(x, value , duplicate = TRUE) {
     if (!is.altWrapper(x))
         stop("The object is not altWrapper")
     if (duplicate) {
+        xAttr=attributes(x)
+        xS3Class=ifelse(!isS4(x)&&!is.null(xAttr$class), 
+                        xAttr$class, FALSE)
+        xS4Class=ifelse(isS4(x),class(x), FALSE)
+        
         return(makeAltrep(
             className = getClassName(x = x),
             x = value,
-            attributes = attributes(x)
+            attributes = xAttr,
+            S3Class = xS3Class,
+            S4Class = xS4Class
         ))
     } else{
         .setAltData1(x, value)
