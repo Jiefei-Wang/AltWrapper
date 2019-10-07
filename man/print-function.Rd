@@ -36,7 +36,7 @@ setAltMethod(className = "example", getElement = element_function)
 
 
 ## Create an altWrapper object by providing the class name and data.
-A=makeAltrep(className = "example", x = 1L:10L)
+A <- newAltrep(className = "example", x = 1L:10L)
 
 ## The default print function does not wrok since it uses
 ## data pointer only.

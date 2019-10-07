@@ -2,33 +2,41 @@ Package: AltWrapper
 Type: Package
 Title: 
     Create an ALTREP object by defining ALTREP functions in R
-Version: 0.99.11
+Version: 0.99.12
 Date: 2019-06-04
 Author: Jiefei Wang
 Maintainer: Jiefei Wang <szwjf08@gmail.com>
 Description: 
-    The package is designed for facilitating development of ALTREP-related 
-    packages. It provides a set of functions to define and manage an ALTREP 
-    class in purely R level. Defining an ALTREP
+    The package is designed for reducing the learning curve of ALTREP and 
+    facilitating development of ALTREP-related packages. It provides a set of
+    functions to manage user-defined ALTREP classes at the R level. Defining an ALTREP
     function is informal and ad hoc. There is no C/C++ code involved for defining 
     an ALTREP function and the function can be redefined at any time.
     Users are expected to call setAltClass to define the class name and 
     type first. Then calling setAltMethod to define the behavior of an ALTREP
-    class. Finally an ALTREP object can be made by calling makeAltrep.
+    class. Finally an ALTREP object can be made by calling newAltrep.
 License: GPL (>= 2)
 Imports: 
     Rcpp (>= 1.0.1),
-    DescTools,
-    BiocStyle,
     methods
 Suggests: 
     testthat,
     knitr,
     rmarkdown,
-    parallel
+    parallel,
+    BiocStyle
 LinkingTo: Rcpp
 RoxygenNote: 6.1.1
 biocViews: Infrastructure
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 VignetteBuilder: knitr
+Collate: 
+    'ALTREP-tools.R'
+    'RcppExports.R'
+    'altWrapper-internal.R'
+    'altWrapper-class.R'
+    'altWrapper-main.R'
+    'altWrapper-tools.R'
+    'pkgSetting.R'
+    'zzz.R'

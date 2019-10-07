@@ -38,7 +38,7 @@ NULL
 #' @param x The data of an altWrapper object
 #' @examples
 #' ## The data is a list
-#' data = list(data=runif(10))
+#' data <- list(data=runif(10))
 #'
 #' ## Define the ALTREP functions
 #' length_func <- function(x) length(x$data)
@@ -51,7 +51,7 @@ NULL
 #' sum_func <- function(x, na.rm) {
 #'    if(is.null(x$sum)){
 #'      message("computing sum")
-#'      x$sum = sum(x$data)
+#'      x$sum <- sum(x$data)
 #'      setAltSelfData(x)
 #'      return(x$sum)
 #'    }else{
@@ -61,12 +61,12 @@ NULL
 #' }
 #'
 #' ## Define the altWrapper class and its functions
-#' setAltClass(className = "example", classType = "real")
+#' setAltClass(className = "example", classType = "double")
 #' setAltMethod(className = "example", getLength = length_func)
 #' setAltMethod(className = "example", getDataptr = get_ptr_func)
 #' setAltMethod(className = "example", sum = sum_func)
 #'
-#' A = makeAltrep(className = "example", x = data)
+#' A <- newAltrep(className = "example", x = data)
 #'
 #' #First sum call
 #' sum(A)
@@ -76,9 +76,7 @@ NULL
 #'
 #' @export
 setAltSelfData <- function(x) {
-    altObject = get(".self", envir = parent.frame())
-    #altObject = removeWrapper(altObject)
-    
+    altObject <- get(".self", envir = parent.frame())
     setAltWrapperData(altObject, x, duplicate = FALSE)
 }
 
@@ -94,7 +92,7 @@ setAltSelfData <- function(x) {
 #' length_func <- function(x) length(x)
 #' setAltClass(className = "example", classType = "integer")
 #' setAltMethod(className = "example", getLength = length_func)
-#' A = makeAltrep(className = "example", x = 1L:10L)
+#' A <- newAltrep(className = "example", x = 1L:10L)
 #' is.altrep(x)
 #' is.altWrapper(A)
 #' @return Logical value indicating whether the object is an altWrapper
@@ -107,8 +105,12 @@ is.altWrapper <- function(x) {
 
 #' Remove the wrapper created by R
 #'
-#' This function can only be used with an altWrapper object. It
-#' will remove the wrapper created by R.
+#' This function can only be used on an altWrapper object.
+#' The wrapper is an ALTREP and created by R to automatically memorize some statistics
+#' (e.g. sum). Since there is no easy way to predict when there will be a 
+#' wrapper on the top of an altWrapper, this function is designed to remove the
+#' wrapper when it happens.
+#' 
 #'
 #' @param x An altWrapper object
 #'
@@ -117,11 +119,11 @@ is.altWrapper <- function(x) {
 #' length_func<-function(x) length(x)
 #' setAltClass(className = "example", classType = "integer")
 #' setAltMethod(className = "example", getLength = length_func)
-#' A = makeAltrep(className = "example", x = 1L:10L)
+#' A <- newAltrep(className = "example", x = 1L:10L)
 #'
 #' ## Since A is a new object and does not have a wrapper,
 #' ## calling `removeWrapper` does not have any effect.
-#' A = removeWrapper(A)
+#' A <- removeWrapper(A)
 #' @return An altWrapper object
 #' @export
 removeWrapper <- function(x) {
@@ -130,7 +132,7 @@ removeWrapper <- function(x) {
             stop("The object is not an altWrapper")
         if (.isAltWrapper(x))
             return(x)
-        x = .getAltData1(x)
+        x <- .getAltData1(x)
     }
     return(x)
 }
@@ -149,8 +151,8 @@ removeWrapper <- function(x) {
 #' 
 #' @return An object of the same type as the input
 #' @examples 
-#' a = 10
-#' b = duplicateObject(a)
+#' a <- 10
+#' b <- duplicateObject(a)
 #' .Internal(inspect(a))
 #' .Internal(inspect(b))
 #' @export
@@ -179,14 +181,14 @@ duplicateObject<-function(x, shallow = FALSE){
 #' setAltMethod(className = "example", getDataptr = get_ptr_func)
 #'
 #' ## Create an altWrapper object by providing the class name and data.
-#' A = makeAltrep(className = "example", x = 1L:10L)
+#' A <- newAltrep(className = "example", x = 1L:10L)
 #' A
 #'
 #' ## Check the existance of an altWrapper class
-#' isAltClassExist(className = "example")
+#' isAltClassDefined(className = "example")
 #'
 #' ## Check the existance of a function of an altWrapper class
-#' isAltMethodExist(className = "example", methodName = "getLength")
+#' isAltMethodDefined(className = "example", methodName = "getLength")
 #'
 #' ## Get a function from an altWrapper class
 #' getAltMethod(className = "example", methodName = "getLength")
@@ -195,8 +197,8 @@ duplicateObject<-function(x, shallow = FALSE){
 #' getAltClassName(A)
 #'
 #' ## Get the class type either by a class name or by an altWrapper object
-#' getClassType(className = "example")
-#' getClassType(x = A)
+#' getAltClassType(className = "example")
+#' getAltClassType(x = A)
 #'
 #' ## Get the data of an altWrapper object
 #' getAltWrapperData(x = A)
@@ -206,35 +208,35 @@ duplicateObject<-function(x, shallow = FALSE){
 #'
 #' ## Show the status of an altWrapper class
 #' ## The class can be found either by its name or an altWrapper object
-#' altClassStatus(className = "example")
-#' altClassStatus(x = A)
+#' showAltClass(className = "example")
+#' showAltClass(x = A)
 #'
 #' @details
-#' `isAltClassExist` : Whether an altWrapper class exist or not
+#' `isAltClassDefined` : Whether an altWrapper class exist or not
 #' @return
-#' `isAltClassExist` : Logical
+#' `isAltClassDefined` : Logical
 #' @rdname altwrapper-api
 #' @export
-isAltClassExist <- function(className) {
-    className = as.character(className)
+isAltClassDefined <- function(className) {
+    className <- as.character(className)
     ! is.null(getClassSpace(className))
 }
 
 #' @details
-#' `isAltMethodExist` : Whether an altWrapper method for
+#' `isAltMethodDefined` : Whether an altWrapper method for
 #' an altWrapper class exist or not. This function will return `FALSE`
-#' if the altWrapper class does not exist.
+#' if it cannot find the altWrapper class.
 #' @rdname altwrapper-api
 #' @return
-#' `isAltMethodExist` : Logical
+#' `isAltMethodDefined` : Logical
 #' @export
-isAltMethodExist <- function(className, methodName) {
-    className = as.character(className)
-    methodName = as.character(methodName)
-    if (!isAltClassExist(className))
+isAltMethodDefined <- function(className, methodName) {
+    className <- as.character(className)
+    methodName <- as.character(methodName)
+    if (!isAltClassDefined(className))
         return(FALSE)
     
-    classFunctionSpace = getClassFunctionSpace(className)
+    classFunctionSpace <- getClassFunctionSpace(className)
     ! is.null(classFunctionSpace[[methodName]])
 }
 
@@ -248,22 +250,22 @@ isAltMethodExist <- function(className, methodName) {
 getAltClassName <- function(x) {
     if (!is.altrep(x))
         stop("The data is not an ALTREP object.")
-    x = removeWrapper(x)
-    data2 = .getAltData2(x)
-    className = as.character(data2[["className"]])
+    x <- removeWrapper(x)
+    data2 <- .getAltData2(x)
+    className <- as.character(data2[["className"]])
     className
 }
 
 #' @details
-#' `getClassType` : Get the altWrapper class type by
+#' `getAltClassType` : Get the altWrapper class type by
 #' a class name or an altWrapper object
 #' @rdname altwrapper-api
 #' @return
-#' `getClassType` : A character indicating data type
+#' `getAltClassType` : A character indicating data type
 #' @export
-getClassType <- function(className = NULL, x = NULL) {
-    className = getClassName(className = className, x = x)
-    classSpace = getClassSpace(className)
+getAltClassType <- function(className = NULL, x = NULL) {
+    className <- getClassName(className = className, x = x)
+    classSpace <- getClassSpace(className)
     classSpace[["classType"]]
 }
 
@@ -322,12 +324,12 @@ setAltWrapperData <- function(x, value , duplicate = TRUE) {
     if (!is.altWrapper(x))
         stop("The object is not altWrapper")
     if (duplicate) {
-        xAttr=attributes(x)
-        xS3Class=ifelse(!isS4(x)&&!is.null(xAttr$class), 
+        xAttr <- attributes(x)
+        xS3Class <- ifelse(!isS4(x)&&!is.null(xAttr$class), 
                         xAttr$class, FALSE)
-        xS4Class=ifelse(isS4(x),class(x), FALSE)
+        xS4Class <- ifelse(isS4(x),class(x), FALSE)
         
-        return(makeAltrep(
+        return(newAltrep(
             className = getClassName(x = x),
             x = value,
             attributes = xAttr,
@@ -343,15 +345,15 @@ setAltWrapperData <- function(x, value , duplicate = TRUE) {
 
 
 #' @details
-#' `deleteClass` : Delete an AltWrapper class
+#' `deleteAltClass` : Delete an AltWrapper class
 #' @param warning Logical, whether to give an warning if the class is not found.
 #' @rdname altwrapper-api
 #' @return
-#' `deleteClass` : No return value
+#' `deleteAltClass` : No return value
 #' @export
-deleteClass <- function(className, warning = TRUE) {
-    className = as.character(className)
-    if (isAltClassExist(className)) {
+deleteAltClass <- function(className, warning = TRUE) {
+    className <- as.character(className)
+    if (isAltClassDefined(className)) {
         rm(list = className, envir = altrepRegistryEnvironment)
     } else{
         if (warning) {
@@ -361,29 +363,29 @@ deleteClass <- function(className, warning = TRUE) {
 }
 
 #' @details
-#' `altClassStatus` : Show the status of an altWrapper class
+#' `showAltClass` : Show the status of an altWrapper class
 #' @rdname altwrapper-api
 #' @return
-#' `altClassStatus` : No return value
+#' `showAltClass` : No return value
 #' @export
-altClassStatus <- function(className = NULL, x = NULL) {
-    className = getClassName(className = className, x = x)
-    classType = getClassType(className, x)
-    title = c("Class name", "Class type")
-    content = c(className, classType)
+showAltClass <- function(className = NULL, x = NULL) {
+    className <- getClassName(className = className, x = x)
+    classType <- getAltClassType(className, x)
+    title <- c("Class name", "Class type")
+    content <- c(className, classType)
     
-    classFunctionSpace = getClassFunctionSpace(className)
-    statusChar = c("defined", "undefined")
+    classFunctionSpace <- getClassFunctionSpace(className)
+    statusChar <- c("defined", "undefined")
     for (i in altrepClassFunctionList) {
         if (is.na(i))
             break
-        isExist = statusChar[is.null(classFunctionSpace[[i]]) + 1]
-        title = c(title, paste0(" ", as.character(i)))
-        content = c(content, isExist)
+        isExist <- statusChar[is.null(classFunctionSpace[[i]]) + 1]
+        title <- c(title, paste0(" ", as.character(i)))
+        content <- c(content, isExist)
     }
     
-    title = StrAlign(paste0(title, " : "), sep = "\\l")
-    output = paste0(title, content, "\n")
+    title <- format(paste0(title, " : "))
+    output <- paste0(title, content, "\n")
     cat(output, sep = "")
 }
 
@@ -392,7 +394,7 @@ altClassStatus <- function(className = NULL, x = NULL) {
 #' The function get or set altClass settings. The setting include
 #' `autoExportClassDef`, `autoDuplicate` and `autoSerialize`.
 #'
-#' @inheritParams getClassType
+#' @inheritParams getAltClassType
 #' @param settingName A character vector. The name of the setting you want to query
 #' @param ... Named arguments. It is used to change the setting.
 #' @details
@@ -430,7 +432,7 @@ altClassStatus <- function(className = NULL, x = NULL) {
 #' setAltMethod(className = "example", getDataptr = get_ptr_func)
 #'
 #' ## Create an altWrapper object by providing the class name and data.
-#' A = makeAltrep(className = "example", x = 1L:10L)
+#' A <- newAltrep(className = "example", x = 1L:10L)
 #' A
 #' 
 #' ##Get altWrapper class settings by class name
@@ -445,13 +447,13 @@ altClassStatus <- function(className = NULL, x = NULL) {
 getAltClassSetting <- function(className = NULL,
                                settingName = NULL,
                                x = NULL) {
-    className = getClassName(className = className, x = x)
+    className <- getClassName(className = className, x = x)
     if (is.null(settingName)) {
-        settingName = names(altWrapperClassDefaultSettings)
+        settingName <- names(altWrapperClassDefaultSettings)
     }
-    result = .getAltClassSetting(className = className, settingName)
+    result <- .getAltClassSetting(className = className, settingName)
     if (length(result) == 1)
-        result = unlist(result)
+        result <- unlist(result)
     result
 }
 #' @rdname altWrapper-setting
@@ -459,10 +461,10 @@ getAltClassSetting <- function(className = NULL,
 setAltClassSetting <- function(className = NULL,
                                ...,
                                x = NULL) {
-    className = getClassName(className = className, x = x)
-    args = c(...)
-    argNames = names(args)
-    missingInd = which(!argNames %in% names(altWrapperClassDefaultSettings))
+    className <- getClassName(className = className, x = x)
+    args <- c(...)
+    argNames <- names(args)
+    missingInd <- which(!argNames %in% names(altWrapperClassDefaultSettings))
     if (length(missingInd) > 0) {
         warning("Unsupported settings: ",
                 paste0(argNames[missingInd], collapse = ", "))

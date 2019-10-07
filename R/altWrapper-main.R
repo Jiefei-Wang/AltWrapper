@@ -1,8 +1,11 @@
 ################################
 ## AltWrapper global variables
 ################################
-altrepRegistryEnvironment = new.env()
-altrepClassFunctionArgNum = c(
+## This is the place to store all altWrapper definitions
+altrepRegistryEnvironment <- new.env()
+## The argument numbers of each function
+## It is used to check if the function definition is correct
+altrepClassFunctionArgNum <- c(
     inspect = 1,
     getLength = 1,
     getDataptr = 2,
@@ -21,10 +24,9 @@ altrepClassFunctionArgNum = c(
     max = 2
 )
 
-altrepClassFunctionList = names(altrepClassFunctionArgNum)
+altrepClassFunctionList <- names(altrepClassFunctionArgNum)
 
-
-altWrapperClassDefaultSettings = list(
+altWrapperClassDefaultSettings <- list(
     autoExportClassDef = TRUE,
     autoDuplicate = TRUE,
     autoSerialize = TRUE
@@ -52,8 +54,8 @@ altWrapperClassDefaultSettings = list(
 #' An error will be returned if both `S3Class` and `S4Class` are defined.
 #' @examples
 #' ## Define the ALTREP functions
-#' length_func<-function(x) length(x)
-#' get_ptr_func<-function(x,writeable) x
+#' length_func <- function(x) length(x)
+#' get_ptr_func <- function(x,writeable) x
 #'
 #'
 #' ## Define the altWrapper class and its functions
@@ -62,45 +64,44 @@ altWrapperClassDefaultSettings = list(
 #' setAltMethod(className = "example", getDataptr = get_ptr_func)
 #'
 #' ## Create an altWrapper object by providing the class name and data.
-#' A=makeAltrep(className = "example", x = 1L:10L)
+#' A <- newAltrep(className = "example", x = 1L:10L)
 #' A
 #'
 #'
 #' @return An ALTREP vector
 #' @export
-makeAltrep <- function(className,
+newAltrep <- function(className,
                        x,
                        attributes = list(),
                        S3Class = FALSE,
                        S4Class = FALSE) {
-    if (!isAltClassExist(className)) {
+    if (!isAltClassDefined(className)) {
         stop("The class '", className, "' is not found.")
     }
     
     if(is.null(attributes)){
-        attributes = list()
+        attributes <- list()
     }else{
         if (!is.list(attributes)){
             stop("The attributes must be a list")
         }
-        attributes$class = NULL
+        attributes$class <- NULL
     }
     
-    classType = getClassType(className)
-    altBaseClassName = getAltBaseClassName(classType)
-    
+    classType <- getAltClassType(className)
+    altBaseClassName <- getAltBaseClassName(classType)
     
     
     if(is.logical(S3Class)&&S3Class){
-        attributes$class = c(altBaseClassName,"altWrapper")
+        attributes$class <- getAltS3ClassVector(classType)
     }
     if(is.character(S3Class)){
-        attributes$class = S3Class
-        S3Class = TRUE
+        attributes$class <- S3Class
+        S3Class <- TRUE
     }
-    RS4ClassName = NULL
+    RS4ClassName <- NULL
     if(is.logical(S4Class)&&S4Class){
-        RS4ClassName = altBaseClassName
+        RS4ClassName <- altBaseClassName
     }
     if(is.character(S4Class)){
         RS4ClassName = S4Class
@@ -112,9 +113,6 @@ makeAltrep <- function(className,
     }
     
     
-    
-    
-    
     state = list(
         packageName = "AltWrapper",
         className = as.symbol(className),
@@ -122,11 +120,11 @@ makeAltrep <- function(className,
     )
     
     ## This unfortunate code is for reducing the reference count
-    ## for S3 or atomic object
-    ## For S4 object the reference number is 7
-    ## Hopefully it can be removed in future
+    ## for S3 or atomic object.
+    ## For S4 object the reference number is always 7
+    ## Hopefully it can be solved in future
     if (S4Class) {
-        altWrapperObject = C_create_altrep(className,
+        altWrapperObject <- C_create_altrep(className,
                                            x,
                                            classType,
                                            state,
@@ -155,27 +153,27 @@ makeAltrep <- function(className,
 #' @param className Character, the name of the class
 #' @param classType Character, the type of the altWrapper
 #'
-#' @inherit makeAltrep examples
+#' @inherit newAltrep examples
 #' @return No return value
 #' @export
 setAltClass <-
     function(className,
-             classType = c("raw", "logical", "integer", "real")) {
-        className = as.character(className)
-        classType = as.character(match.arg(classType))
+             classType = c("raw", "logical", "integer", "double")) {
+        className <- as.character(className)
+        classType <- as.character(match.arg(classType))
         
-        if (isAltClassExist(className) &&
+        if (isAltClassDefined(className) &&
             getAltWrapperOptions("redefineWarning")) {
             warning("The class '",
                     className,
                     "' has been defined and will be replaced.")
         }
         
-        classSpace = list()
-        classSpace[["classType"]] = classType
-        classSpace[["functionSpace"]] = vector("list", length(altrepClassFunctionList))
-        names(classSpace[["functionSpace"]]) = altrepClassFunctionList
-        classSpace[["classSettings"]] = altWrapperClassDefaultSettings
+        classSpace <- list()
+        classSpace[["classType"]] <- classType
+        classSpace[["functionSpace"]] <- vector("list", length(altrepClassFunctionList))
+        names(classSpace[["functionSpace"]]) <- altrepClassFunctionList
+        classSpace[["classSettings"]] <- altWrapperClassDefaultSettings
         
         setClassSpace(className, classSpace)
         invisible()
@@ -204,7 +202,7 @@ setAltClass <-
 #' @param min Function, see detail
 #' @param max Function, see detail
 #'
-#' @inherit makeAltrep examples
+#' @inherit newAltrep examples
 #'
 #'
 #'
@@ -295,7 +293,7 @@ setAltClass <-
 #'  The return value must be an element of the list `altrepNAStatus`. 
 #'
 #' `sum`, `min` and `max` have the same meaning as R's corresponding functions. These
-#' functions are only available for `integer` and `real` ALTREP class type.
+#' functions are only available for `integer` and `double` ALTREP class type.
 #'
 #' @return No return value
 #' @export
@@ -316,15 +314,15 @@ setAltMethod <- function(className,
                          sum,
                          min,
                          max) {
-    call = match.call()
-    args = names(call)[seq_len(length(call) - 2) + 2]
+    call <- match.call()
+    args <- names(call)[seq_len(length(call) - 2) + 2]
     
-    if (!isAltClassExist(className)) {
+    if (!isAltClassDefined(className)) {
         stop("The class '", className, "' is not found.")
     }
     
     for (i in args) {
-        func = get(as.character(i))
+        func <- get(as.character(i))
         .setAltMethod(className, i, func)
     }
 }

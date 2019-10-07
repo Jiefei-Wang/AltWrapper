@@ -10,14 +10,14 @@ ptr_or_null_func <- function(x) {
     return(x)
 }
 
-deleteClass(className = "test",warning=FALSE)
-setAltClass("test", "real")
+deleteAltClass(className = "test",warning=FALSE)
+setAltClass("test", "double")
 setAltMethod("test", getLength = length_func)
 setAltMethod("test", getDataptr = get_ptr_func)
 setAltMethod("test", getDataptrOrNull = ptr_or_null_func)
 
 a=runif(10)
-b = makeAltrep("test", a)
+b = newAltrep("test", a)
 
 test_that("is altrep",{
     expect_false(is.altrep(a))

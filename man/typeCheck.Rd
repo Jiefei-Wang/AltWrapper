@@ -40,7 +40,7 @@ is.altWrapper(x)
 length_func <- function(x) length(x)
 setAltClass(className = "example", classType = "integer")
 setAltMethod(className = "example", getLength = length_func)
-A = makeAltrep(className = "example", x = 1L:10L)
+A <- newAltrep(className = "example", x = 1L:10L)
 is.altrep(x)
 is.altWrapper(A)
 }

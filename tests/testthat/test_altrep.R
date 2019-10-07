@@ -49,8 +49,8 @@ unserialize_func <- function(x) {
     #message("I'm unserializing")
     x
 }
-classTypeList = list(integer = as.integer, real = as.numeric)
-deleteClass(className = "test",warning=FALSE)
+classTypeList = list(integer = as.integer, double = as.numeric)
+deleteAltClass(className = "test",warning=FALSE)
 
 for (i in seq_along(classTypeList)) {
     classType = names(classTypeList)[i]
@@ -62,7 +62,7 @@ for (i in seq_along(classTypeList)) {
     setAltMethod("test", getDataptrOrNull = ptr_or_null_func)
     
     a = classTypeList[[i]](runif(10) * 100)
-    b = makeAltrep("test", a)
+    b = newAltrep("test", a)
     
     test_that("creation", {
         expect_equal(a, b)
@@ -92,7 +92,7 @@ for (i in seq_along(classTypeList)) {
     ## Get settings from data
     ################################
     test_that("get class type from data", {
-        expect_equal(getClassType(x = b), classType)
+        expect_equal(getAltClassType(x = b), classType)
     })
     test_that("get class method from data", {
         expect_null(getAltMethod(x = b, methodName = "inspect"))
@@ -103,7 +103,7 @@ for (i in seq_along(classTypeList)) {
     })
     
     test_that("Inspect class status from data", {
-        expect_output(altClassStatus(x = b), NULL)
+        expect_output(showAltClass(x = b), NULL)
     })
     
     ################################
@@ -111,8 +111,8 @@ for (i in seq_along(classTypeList)) {
     ################################
     
     test_that("get class type from class name", {
-        expect_equal(getClassType(className = "test"), classType)
-        expect_error(getClassType(className = "test1"))
+        expect_equal(getAltClassType(className = "test"), classType)
+        expect_error(getAltClassType(className = "test1"))
     })
     
     test_that("get class method from class name", {
@@ -127,8 +127,8 @@ for (i in seq_along(classTypeList)) {
     })
     
     test_that("Inspect class status from class name", {
-        expect_output(altClassStatus(className = "test"), NULL)
-        expect_error(altClassStatus(className = "test1"))
+        expect_output(showAltClass(className = "test"), NULL)
+        expect_error(showAltClass(className = "test1"))
     })
     
     
@@ -152,9 +152,9 @@ for (i in seq_along(classTypeList)) {
     ## AltWrapper tools
     ################################
     test_that("check method existance", {
-        expect_true(isAltMethodExist(className="test",methodName="getDataptr"))
-        expect_false(isAltMethodExist(className="test1",methodName="getDataptr"))
-        expect_false(isAltMethodExist(className="test",methodName="noNA"))
+        expect_true(isAltMethodDefined(className="test",methodName="getDataptr"))
+        expect_false(isAltMethodDefined(className="test1",methodName="getDataptr"))
+        expect_false(isAltMethodDefined(className="test",methodName="noNA"))
     })
     
     test_that("get altWrapper data", {
@@ -168,8 +168,8 @@ for (i in seq_along(classTypeList)) {
     ## class deletion
     ################################
     test_that("remove class", {
-        expect_warning(deleteClass(className = "test1"))
-        expect_error(deleteClass(className = "test"), NA)
+        expect_warning(deleteAltClass(className = "test1"))
+        expect_error(deleteAltClass(className = "test"), NA)
         expect_error(b, NA)
     })
 }

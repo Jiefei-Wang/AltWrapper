@@ -1,6 +1,6 @@
 globalSettings <- new.env()
-globalSettings$redefineWarning = TRUE
-globalSettings$chunkSize = 512L
+globalSettings$redefineWarning <- TRUE
+globalSettings$chunkSize <- 512L
 #' AltWrapper Options Settings
 #'
 #' Get and set the package settings
@@ -31,10 +31,10 @@ globalSettings$chunkSize = 512L
 #' @rdname AltWrapperOption
 #' @export
 setAltWrapperOptions <- function(...) {
-    options = list(...)
-    options = checkOptionExistance(options)
+    options <- list(...)
+    options <- checkOptionExistance(options)
     for (i in seq_along(options)) {
-        globalSettings[[names(options)[i]]] = options[[i]]
+        globalSettings[[names(options)[i]]] <- options[[i]]
     }
 }
 #' @rdname AltWrapperOption
@@ -59,6 +59,6 @@ checkOptionExistance <- function(options) {
         vapply(paste0(names(options)[noneExistOptions]), function(x)
             warning("The option `", x, "` does not exist"), character(1))
     }
-    options = options[!noneExistOptions]
+    options <- options[!noneExistOptions]
     return(options)
 }

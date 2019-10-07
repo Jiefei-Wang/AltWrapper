@@ -61,7 +61,7 @@ setAltMethod(className = "example", getLength = length_func)
 setAltMethod(className = "example", getDataptr = get_ptr_func)
 
 ## Create an altWrapper object by providing the class name and data.
-A = makeAltrep(className = "example", x = 1L:10L)
+A <- newAltrep(className = "example", x = 1L:10L)
 A
 
 ##Get altWrapper class settings by class name

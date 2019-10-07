@@ -1,48 +1,47 @@
+#' @include altWrapper-internal.R
 ################################
 ##Class definition
 ################################
-altClassList <- data.frame(
-    type = c("raw", "logical", "integer", "numeric"),
-    className = c("altRaw", "altLogical", "altInteger", "altReal"),
-    stringsAsFactors = FALSE
-)
-
 ## Make S3 class compatible with S4 dispatching
-for (i in seq_len(nrow(altClassList))) {
-    setOldClass(c(altClassList$className[i], altClassList$type[i]))
+for (i in c("raw", "logical", "integer", "double")) {
+    setOldClass(getAltS3ClassVector(i))
 }
 
-#' @title The S4 class for ALTREP of type raw, logical, integer and real
+#' The S3/S4 classes for ALTREP of type `raw`, `logical`, `integer` and `double`
 #'
-#' @name altwrapper-S4class
-#' @rdname S4AltWrapper
-NULL
-
-#' @rdname S4AltWrapper
+#' The S3/S4 classes for `raw`, `logical`, `integer` and `double` are `altRaw`, `altLogical`, 
+#' `altInteger` and `altDouble` respectively. `altLogical`, `altInteger` and 
+#' `altDouble` inherit `altNumeric` class. `altRaw` and `altNumeric` inherit `altWrapper` class.
+#' `altWrapper` is a subclass of `ANY` type.
+#'
+#' @name altWrapperClass
+#' @aliases altWrapper-class altNumeric-class altRaw-class 
+#' altLogical-class altInteger-class altDouble-class
+#' @rdname altWrapperClass
+#' @export
+setClass(Class = "altWrapper",
+         contains = "ANY")
+#' @rdname altWrapperClass
+#' @export
+setClass(Class = "altNumeric",
+         contains = "altWrapper")
+#' @rdname altWrapperClass
 #' @export
 setClass(Class = "altRaw",
-         contains = "raw")
-#' @rdname S4AltWrapper
+         contains = "altWrapper")
+#' @rdname altWrapperClass
 #' @export
 setClass(Class = "altLogical",
-         contains = "logical")
-#' @rdname S4AltWrapper
+         contains = "altNumeric")
+#' @rdname altWrapperClass
 #' @export
 setClass(Class = "altInteger",
-         contains = "integer")
-#' @rdname S4AltWrapper
+         contains = "altNumeric")
+#' @rdname altWrapperClass
 #' @export
-setClass(Class = "altReal",
-         contains = "numeric")
+setClass(Class = "altDouble",
+         contains = "altNumeric")
 
-#' A convinent collection of altWrapper classes
-#' @rdname altWrapper-collection
-#' @export
-setClassUnion("altNumeric", c("altInteger", "altLogical", "altReal"))
-#' @rdname altWrapper-collection
-#' @export
-setClassUnion("altWrapper",
-              c("altRaw", "altNumeric"))
 ################################
 ##print method
 ################################
@@ -69,7 +68,7 @@ setClassUnion("altWrapper",
 #'
 #'
 #' ## Create an altWrapper object by providing the class name and data.
-#' A=makeAltrep(className = "example", x = 1L:10L)
+#' A <- newAltrep(className = "example", x = 1L:10L)
 #'
 #' ## The default print function does not wrok since it uses
 #' ## data pointer only.
@@ -104,16 +103,14 @@ setMethod("show", "altWrapper", function(object)
     }
 })
 
-
-
 #' @rdname print-function
 #' @export
 printAltWrapper <- function(x, ...) {
     ## In generic call, the function return true if it wants to call
     ## the parent function, return false if it can handle the print
     ## In non-generic call, the function return the object x invisibly.
-    .generic = parent.frame(n = 1)[[".Generic"]]
-    isGeneric = !is.null(.generic)
+    .generic <- parent.frame(n = 1)[[".Generic"]]
+    isGeneric <- !is.null(.generic)
     if (!is.altWrapper(x)) {
         if (isGeneric) {
             return(TRUE)
@@ -122,11 +119,11 @@ printAltWrapper <- function(x, ...) {
         }
     }
     
-    x = removeWrapper(x)
-    className = getAltClassName(x)
-    classType = getClassType(className)
-    ptr_func = .getAltMethod(className = className, methodName = "getDataptr")
-    ptr_null_func = .getAltMethod(className = className, methodName = "getDataptrOrNull")
+    x <- removeWrapper(x)
+    className <- getAltClassName(x)
+    classType <- getAltClassType(className)
+    ptr_func <- .getAltMethod(className = className, methodName = "getDataptr")
+    ptr_null_func <- .getAltMethod(className = className, methodName = "getDataptrOrNull")
     if (!is.null(ptr_func) &&
         !is.null(ptr_null_func) &&
         !is.null(ptr_null_func(.getAltData1(x), x))) {
@@ -137,37 +134,38 @@ printAltWrapper <- function(x, ...) {
     
     
     ## Chunk settings
-    maxPrint = getOption("max.print")
-    printSize = min(maxPrint, length(x))
-    chunkSize = getAltWrapperOptions("chunkSize")
-    chunkNum = ceiling(printSize / chunkSize)
+    maxPrint <- getOption("max.print")
+    printSize <- min(maxPrint, length(x))
+    chunkSize <- getAltWrapperOptions("chunkSize")
+    chunkNum <- ceiling(printSize / chunkSize)
     
     ## Create a temp variable
-    constructor = get(toBaseRType(classType))
+    constructor <- get(classType)
     if (isS4(x)) {
-        output = new(class(x), constructor(printSize))
+        output <- new(class(x), constructor(printSize))
     } else{
-        output = constructor(printSize)
+        output <- constructor(printSize)
         attributes(output) = attributes(x)
     }
     
-    func = .getAltMethod(className = className, methodName = "getRegion")
+    func <- .getAltMethod(className = className, methodName = "getRegion")
     if (!is.null(func)) {
         ## Print from region
         ## not a perfect solution but it should work reasonably fast.
-        regionVector = C_create_internal_altrep(classType, chunkSize)
-        xData = .getAltData1(x)
+        regionVector <- C_create_internal_altrep(classType, chunkSize)
+        xData <- .getAltData1(x)
         for (i in seq_len(chunkNum)) {
-            start = (i - 1) * chunkSize
-            len = func(xData, start + 1, chunkSize, regionVector, x)
-            output[start + seq_len(len)] = regionVector[seq_len(len)]
+            start <- (i - 1) * chunkSize
+            len <- func(xData, start + 1, chunkSize, regionVector, x)
+            output[start + seq_len(len)] <- regionVector[seq_len(len)]
         }
-        res = print(output)
+        res <- print(output)
     } else{
         ## print from subset or element method
-        output[seq_len(printSize)] = x[seq_len(printSize)]
-        res = print(output)
+        output[seq_len(printSize)] <- x[seq_len(printSize)]
+        res <- print(output)
     }
+    ## Print truncate information
     if (printSize > length(x)) {
         cat(
             '[ reached getOption("max.print") -- omitted ',

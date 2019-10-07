@@ -15,15 +15,15 @@ environment(length_func) = globalenv()
 environment(get_ptr_func) = globalenv()
 environment(ptr_or_null_func) = globalenv()
 
-deleteClass(className = "test", warning = FALSE)
+deleteAltClass(className = "test", warning = FALSE)
 
-setAltClass("test", "real")
+setAltClass("test", "double")
 setAltMethod("test", getLength = length_func)
 setAltMethod("test", getDataptr = get_ptr_func)
 setAltMethod("test", getDataptrOrNull = ptr_or_null_func)
 
 a = runif(10)
-b = makeAltrep("test", a)
+b = newAltrep("test", a)
 
 
 # autoExportClassDef = TRUE,
@@ -138,7 +138,7 @@ test_that("cluster export, auto serialize, no auto export class def", {
     )
     clusterEvalQ(cl = cl, {
         library(AltWrapper)
-        setAltClass("test", "real")
+        setAltClass("test", "double")
         setAltMethod("test", getLength = length_func)
         setAltMethod("test", getDataptr = get_ptr_func)
         setAltMethod("test", getDataptrOrNull = ptr_or_null_func)

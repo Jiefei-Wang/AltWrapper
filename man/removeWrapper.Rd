@@ -13,17 +13,20 @@ removeWrapper(x)
 An altWrapper object
 }
 \description{
-This function can only be used with an altWrapper object. It
-will remove the wrapper created by R.
+This function can only be used on an altWrapper object.
+The wrapper is an ALTREP and created by R to automatically memorize some statistics
+(e.g. sum). Since there is no easy way to predict when there will be a
+wrapper on the top of an altWrapper, this function is designed to remove the
+wrapper when it happens.
 }
 \examples{
 ## Define an altWrapper class
 length_func<-function(x) length(x)
 setAltClass(className = "example", classType = "integer")
 setAltMethod(className = "example", getLength = length_func)
-A = makeAltrep(className = "example", x = 1L:10L)
+A <- newAltrep(className = "example", x = 1L:10L)
 
 ## Since A is a new object and does not have a wrapper,
 ## calling `removeWrapper` does not have any effect.
-A = removeWrapper(A)
+A <- removeWrapper(A)
 }

@@ -51,26 +51,26 @@ setAltMethod(className = "compactSeq", getLength = lengthFunc)
 setAltMethod(className = "compactSeq", getElement = getElementFunc)
 
 #Create altWrapper object
-A_vector = makeAltrep(className = "compactSeq", x = A_compact)
+A_vector = newAltrep(className = "compactSeq", x = A_compact)
 
 #Check the result
 is.vector(A_vector)
 ```
-We claim that the altWrapper class is an integer class. Therefore, the return value of the function `makeAltrep` is an integer R vector. The value can be accessed via regular `[` operator. An altWrapper object must have `getLength` defined. For most operations, altWrapper API `getDataptr` is required. Since there is no actual data for a compact sequence, we define the API `getElement` instead. Please refer to `?setAltMethod` to see a full list of available APIs.
+We claim that the altWrapper class is an integer class. Therefore, the return value of the function `newAltrep` is an integer R vector. The value can be accessed via regular `[` operator. An altWrapper object must have `getLength` defined. For most operations, altWrapper API `getDataptr` is required. Since there is no actual data for a compact sequence, we define the API `getElement` instead. Please refer to `?setAltMethod` to see a full list of available APIs.
 
 Please note that the variable `A_vector` cannot be printed just by typing its variable name in the console for 
 ALTREP is still underdevelopment and some R functions do not catch up with it. At the time of this writting, only R 3.7 devel version can correctly print the object. Before R 3.7, the variable can be printed out either by using `[` operator to force R to use `get_Elt` method, or by using `printAltWrapper` function provided  by AltWrapper package.
 ```{r}
 ## Use [ operator
-A_vector[1:10]
+A_vector[1L:10L]
 
 ## Use print method
 printAltWrapper(A_vector)
 ```
-Alternatively, there is an S3/S4 print method defined for the altWrapper class, you can create an S3 object by calling the function `makeAltrep` with the argument `S3Class = TRUE`.
+Alternatively, there is an S3/S4 print method defined for the altWrapper class, you can create an S3 object by calling the function `newAltrep` with the argument `S3Class = TRUE`.
 ```{r}
 #Create an S3 version of altWrapper object
-A_vector_s3 = makeAltrep(className = "compactSeq", x = A_compact, S3Class = TRUE)
+A_vector_s3 = newAltrep(className = "compactSeq", x = A_compact, S3Class = TRUE)
 A_vector_s3
 #Check class type
 class(A_vector)
@@ -130,11 +130,9 @@ The following example shows how to retrieve a function from an altWrapper class.
 sumFunc = getAltMethod(className = "compactSeq", methodName = "sum")
 sumFunc
 ```
-A NULL value will be returned if the function is not found. Note that there is an extra argument `.self` in `sumFunc` function. This argument is used to pass the altWrapper object itself. 
-
-You can also get a summary report of an altWrapper class, the report shows the type of the ALTREP class and status of all ALTREP APIs. 
+A NULL value will be returned if the function is not found. You can also get a summary report of an altWrapper class, the report shows the type of the ALTREP class and status of all ALTREP APIs. 
 ```{r}
-altClassStatus(className = "compactSeq")
+showAltClass(className = "compactSeq")
 ```
 
 # ALTREP support

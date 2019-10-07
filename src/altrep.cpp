@@ -36,7 +36,7 @@ R_altrep_class_t get_altrep_class(SEXP class_type) {
 		DEBUG(Rprintf("Altrep type is integer\n"));
 		return altrep_integer_class;
 	}
-	if (std::strcmp(class_type_char, "real") == 0) {
+	if (std::strcmp(class_type_char, "double") == 0 || std::strcmp(class_type_char, "real") == 0) {
 		DEBUG(Rprintf("Altrep type is real\n"));
 		return altrep_real_class;
 	}
@@ -60,7 +60,7 @@ R_altrep_class_t get_altrep_internal_class(SEXP class_type) {
 		DEBUG(Rprintf("Altrep type is integer\n"));
 		return altrep_internal_integer_class;
 	}
-	if (std::strcmp(class_type_char, "real") == 0) {
+	if (std::strcmp(class_type_char, "double") == 0 || std::strcmp(class_type_char, "real") == 0) {
 		DEBUG(Rprintf("Altrep type is real\n"));
 		return altrep_internal_real_class;
 	}
@@ -81,7 +81,7 @@ int get_class_type_size(SEXP class_type) {
 	if (std::strcmp(class_type_char, "integer") == 0) {
 		return 4;
 	}
-	if (std::strcmp(class_type_char, "real") == 0) {
+	if (std::strcmp(class_type_char, "double") == 0 || std::strcmp(class_type_char, "real") == 0) {
 		return 8;
 	}
 	errorHandle("The class type is not available\n");

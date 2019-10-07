@@ -325,7 +325,7 @@ SEXP wrap_out_pointer(void* out, R_xlen_t length, const char* type) {
 	if (std::strcmp(type, "integer") == 0) {
 		return R_new_altrep(altrep_internal_integer_class, R_MakeExternalPtr(out, R_NilValue, R_NilValue), wrap(length));
 	}
-	if (std::strcmp(type,"real")==0) {
+	if (std::strcmp(type, "double") == 0 || std::strcmp(type, "real") == 0) {
 		return R_new_altrep(altrep_internal_real_class, R_MakeExternalPtr(out, R_NilValue, R_NilValue), wrap(length));
 	}
 	errorHandle("Unsupported output type\n");

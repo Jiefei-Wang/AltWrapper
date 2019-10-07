@@ -23,8 +23,8 @@ Please note that the function does not work with an enviroment
 object. It will return the same enviroment object.
 }
 \examples{
-a = 10
-b = duplicateObject(a)
+a <- 10
+b <- duplicateObject(a)
 .Internal(inspect(a))
 .Internal(inspect(b))
 }

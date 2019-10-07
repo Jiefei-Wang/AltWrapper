@@ -26,12 +26,12 @@ get_subset_func <- function(x, ind) {
     return(x[ind])
 }
 
-deleteClass(className = "test",warning=FALSE)
-setAltClass("test", "real")
+deleteAltClass(className = "test",warning=FALSE)
+setAltClass("test", "double")
 setAltMethod("test", getLength = length_func)
 a = runif(10)
-b_s3=makeAltrep("test",a,S3Class=TRUE)
-b_s4=makeAltrep("test",a,S4Class=TRUE)
+b_s3=newAltrep("test",a,S3Class=TRUE)
+b_s4=newAltrep("test",a,S4Class=TRUE)
 
 
 ################################

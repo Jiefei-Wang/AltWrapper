@@ -136,12 +136,12 @@ return values by accessing the list variable \code{altrepSortStatus}.
 The return value must be an element of the list \code{altrepNAStatus}.
 
 \code{sum}, \code{min} and \code{max} have the same meaning as R's corresponding functions. These
-functions are only available for \code{integer} and \code{real} ALTREP class type.
+functions are only available for \code{integer} and \code{double} ALTREP class type.
 }
 \examples{
 ## Define the ALTREP functions
-length_func<-function(x) length(x)
-get_ptr_func<-function(x,writeable) x
+length_func <- function(x) length(x)
+get_ptr_func <- function(x,writeable) x
 
 
 ## Define the altWrapper class and its functions
@@ -150,7 +150,7 @@ setAltMethod(className = "example", getLength = length_func)
 setAltMethod(className = "example", getDataptr = get_ptr_func)
 
 ## Create an altWrapper object by providing the class name and data.
-A=makeAltrep(className = "example", x = 1L:10L)
+A <- newAltrep(className = "example", x = 1L:10L)
 A
 
 
