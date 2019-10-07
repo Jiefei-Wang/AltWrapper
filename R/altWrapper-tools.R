@@ -109,7 +109,7 @@ is.altWrapper <- function(x) {
 #' The wrapper is an ALTREP object and created by R to automatically memorize 
 #' some statistics(e.g. sum). it can be silently made in some R functions and behaves exactly
 #' the same as the object it wraps. This function can be called 
-#' in order to make sure the variable `x` is not wrapped by a wrapper,
+#' in order to make sure the altWrapper variable `x` is not wrapped by a wrapper,
 #'
 #' @param x An altWrapper object
 #'
