@@ -218,7 +218,8 @@ duplicateObject<-function(x, shallow = FALSE){
 #' @export
 isAltClassDefined <- function(className) {
     className <- as.character(className)
-    ! is.null(getClassSpace(className))
+    #! is.null(getClassSpace(className))
+    exists(className, envir = altrepRegistryEnvironment, inherits = FALSE)
 }
 
 #' @details

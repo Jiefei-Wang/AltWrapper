@@ -14,10 +14,10 @@ An altWrapper object
 }
 \description{
 This function can only be used on an altWrapper object.
-The wrapper is an ALTREP and created by R to automatically memorize some statistics
-(e.g. sum). Since there is no easy way to predict when there will be a
-wrapper on the top of an altWrapper, this function is designed to remove the
-wrapper when it happens.
+The wrapper is an ALTREP object and created by R to automatically memorize
+some statistics(e.g. sum). it can be silently made in some R functions and behaves exactly
+the same as the object it wraps. This function can be called
+in order to make sure the altWrapper variable \code{x} is not wrapped by a wrapper,
 }
 \examples{
 ## Define an altWrapper class
