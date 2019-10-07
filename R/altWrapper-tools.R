@@ -168,7 +168,7 @@ duplicateObject<-function(x, shallow = FALSE){
 #'
 #' @param className Character, the name of an altWrapper class
 #' @param methodName Character, the name of a function
-#' @param x An altwrapper object
+#' @param x An altWrapper object
 #' @examples
 #' ## Define the ALTREP functions
 #' length_func <- function(x) length(x)
@@ -215,7 +215,7 @@ duplicateObject<-function(x, shallow = FALSE){
 #' `isAltClassDefined` : Whether an altWrapper class exist or not
 #' @return
 #' `isAltClassDefined` : Logical
-#' @rdname altwrapper-api
+#' @rdname altWrapper-api
 #' @export
 isAltClassDefined <- function(className) {
     className <- as.character(className)
@@ -226,7 +226,7 @@ isAltClassDefined <- function(className) {
 #' `isAltMethodDefined` : Whether an altWrapper method for
 #' an altWrapper class exist or not. This function will return `FALSE`
 #' if it cannot find the altWrapper class.
-#' @rdname altwrapper-api
+#' @rdname altWrapper-api
 #' @return
 #' `isAltMethodDefined` : Logical
 #' @export
@@ -243,7 +243,7 @@ isAltMethodDefined <- function(className, methodName) {
 #' @details
 #' `getAltClassName` : Get the altWrapper class name by
 #'  an altWrapper object
-#' @rdname altwrapper-api
+#' @rdname altWrapper-api
 #' @return
 #' `getAltClassName` : A character name
 #' @export
@@ -259,7 +259,7 @@ getAltClassName <- function(x) {
 #' @details
 #' `getAltClassType` : Get the altWrapper class type by
 #' a class name or an altWrapper object
-#' @rdname altwrapper-api
+#' @rdname altWrapper-api
 #' @return
 #' `getAltClassType` : A character indicating data type
 #' @export
@@ -273,7 +273,7 @@ getAltClassType <- function(className = NULL, x = NULL) {
 #' `getAltMethod` : Get the altWrapper method by
 #' a method name. Either `className` or `x` must be specified to
 #' find the altWrapper class.
-#' @rdname altwrapper-api
+#' @rdname altWrapper-api
 #' @return
 #' `getAltMethod` : An R function or NULL value if the function is not found
 #' @export
@@ -298,8 +298,8 @@ getAltMethod <- function(className = NULL,
 }
 
 #' @details
-#' `getAltWrapperData` : Get the data for an altwrapper object
-#' @rdname altwrapper-api
+#' `getAltWrapperData` : Get the data for an altWrapper object
+#' @rdname altWrapper-api
 #' @return
 #' `getAltWrapperData` : An R object
 #' @export
@@ -312,11 +312,11 @@ getAltWrapperData <- function(x) {
 #' @param value The data of an altWrapper object
 #' @param duplicate Whther duplicating the object(For the function `setAltWrapperData`)
 #' @details
-#' `setAltWrapperData` : Set the data of an altwrapper object, if
+#' `setAltWrapperData` : Set the data of an altWrapper object, if
 #' `duplicate` is TRUE, the function returns a duplication of the object.
 #' Set `duplicate = FALSE` only when the new `value` does not change
 #' the altWrapper object(e.g. caching on-dist data).
-#' @rdname altwrapper-api
+#' @rdname altWrapper-api
 #' @return
 #' `setAltWrapperData` : The altWrapper object
 #' @export
@@ -347,7 +347,7 @@ setAltWrapperData <- function(x, value , duplicate = TRUE) {
 #' @details
 #' `deleteAltClass` : Delete an AltWrapper class
 #' @param warning Logical, whether to give an warning if the class is not found.
-#' @rdname altwrapper-api
+#' @rdname altWrapper-api
 #' @return
 #' `deleteAltClass` : No return value
 #' @export
@@ -364,7 +364,7 @@ deleteAltClass <- function(className, warning = TRUE) {
 
 #' @details
 #' `showAltClass` : Show the status of an altWrapper class
-#' @rdname altwrapper-api
+#' @rdname altWrapper-api
 #' @return
 #' `showAltClass` : No return value
 #' @export

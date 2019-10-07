@@ -14,7 +14,7 @@ setAltClassSetting(className = NULL, ..., x = NULL)
 
 \item{settingName}{A character vector. The name of the setting you want to query}
 
-\item{x}{An altwrapper object}
+\item{x}{An altWrapper object}
 
 \item{...}{Named arguments. It is used to change the setting.}
 }
