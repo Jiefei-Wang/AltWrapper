@@ -2,7 +2,7 @@ Package: AltWrapper
 Type: Package
 Title: 
     Create an ALTREP object by defining ALTREP functions in R
-Version: 0.99.16
+Version: 0.99.17
 Date: 2019-06-04
 Author: Jiefei Wang
 Maintainer: Jiefei Wang <szwjf08@gmail.com>
