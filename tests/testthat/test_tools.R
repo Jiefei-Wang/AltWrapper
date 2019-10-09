@@ -52,6 +52,6 @@ test_that("setAltData1&2",{
 
 
 test_that("remove wrapper",{
-    expect_error(removeWrapper(a))
+    expect_error(removeCachingWrapper(a))
 })
 

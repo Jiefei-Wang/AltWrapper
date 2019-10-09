@@ -107,25 +107,39 @@ is.altWrapper <- function(x) {
 #'
 #' This function can only be used on an altWrapper object.
 #' The wrapper is an ALTREP object and created by R to automatically memorize 
-#' some statistics(e.g. sum). it can be silently made in some R functions and behaves exactly
-#' the same as the object it wraps. This function can be called 
+#' some statistics(e.g. sortness status). It can be silently added by some R functions and behaves 
+#' exactly the same as the object it wraps. This function can be called 
 #' in order to make sure the altWrapper variable `x` is not wrapped by a wrapper,
 #'
 #' @param x An altWrapper object
 #'
 #' @examples
 #' ## Define an altWrapper class
-#' length_func<-function(x) length(x)
+#' lengthFunc <- function(x) length(x)
+#' elementFunc <- function(x, i) x[i]
 #' setAltClass(className = "example", classType = "integer")
-#' setAltMethod(className = "example", getLength = length_func)
+#' setAltMethod(className = "example", 
+#'              getLength = lengthFunc,
+#'              getElement = elementFunc)
 #' A <- newAltrep(className = "example", x = 1L:10L)
-#'
-#' ## Since A is a new object and does not have a wrapper,
-#' ## calling `removeWrapper` does not have any effect.
-#' A <- removeWrapper(A)
+#' 
+#' ## Wrap the variable A through an internal function
+#' ## Note that this can happenes in some R functions.
+#' B <- .Internal(wrap_meta(A, sorted = 0L, noNA = TRUE))
+#' .Internal(inspect(B))
+#' 
+#' ## Although the variable B still behaves like the variable A
+#' ## Calling `getAltWrapperData` will show an error because the object
+#' ## is not an altWrapper
+#' tryCatch(getAltWrapperData(B), error = function(e) message(e))
+#' 
+#' ## Call `removeCachingWrapper` to remove R's wrapper
+#' C <- removeCachingWrapper(B)
+#' getAltWrapperData(C)
+#' 
 #' @return An altWrapper object
 #' @export
-removeWrapper <- function(x) {
+removeCachingWrapper <- function(x) {
     repeat {
         if (!is.altrep(x))
             stop("The object is not an altWrapper")
@@ -250,7 +264,7 @@ isAltMethodDefined <- function(className, methodName) {
 getAltClassName <- function(x) {
     if (!is.altrep(x))
         stop("The data is not an ALTREP object.")
-    x <- removeWrapper(x)
+    #x <- removeCachingWrapper(x)
     data2 <- .getAltData2(x)
     className <- as.character(data2[["className"]])
     className

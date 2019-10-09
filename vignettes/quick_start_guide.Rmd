@@ -145,6 +145,15 @@ is.altrep(A_vector)
 .setAltData2(A_vector, .getAltData2(A_vector))
 ```
 
+# warnings
+Although there is no real limitation on how an altWrapper function is constructed, there are certain expectations of the altWrapper function and it is a good practice to follow them: 
+
+
+* The garbage collector will be suspended when calling `getDataptr` function, so it will be problematic if the function allocates too many object without GC. Especially calling other functions in `getDataptr` function should be better avoided since R's copy-on-write feature can cause unexpected allocations.
+
+* An altWrapper function should not run transfer control(e.g. `LONGJMP`).
+
+
 
 # Session Info
 ```{r}

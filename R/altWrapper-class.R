@@ -119,7 +119,7 @@ printAltWrapper <- function(x, ...) {
         }
     }
     
-    x <- removeWrapper(x)
+    #x <- removeCachingWrapper(x)
     className <- getAltClassName(x)
     classType <- getAltClassType(className)
     ptr_func <- .getAltMethod(className = className, methodName = "getDataptr")
